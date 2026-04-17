@@ -30,7 +30,7 @@ import android.text.Spanned;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.SnoozeActivity;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.IntentHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.helpers.notifications.NotificationChannels.NotificationChannelNames;
@@ -66,7 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     if (!NotificationListener.isRunning()) {
       note.setReminderFired(true);
     }
-    DbHelper.getInstance().updateNote(note, false);
+    FlatFileHelper.getInstance().updateNote(note, false);
   }
 
   private void createNotification(Context mContext, Note note) {

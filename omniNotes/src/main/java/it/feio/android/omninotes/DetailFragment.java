@@ -132,7 +132,7 @@ import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.async.notes.SaveNoteTask;
 import it.feio.android.omninotes.databinding.FragmentDetailBinding;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.checked.ContentSecurityException;
 import it.feio.android.omninotes.exceptions.checked.UnhandledIntentException;
 import it.feio.android.omninotes.helpers.AttachmentsHelper;
@@ -464,7 +464,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
     // Action called from home shortcut
     if (IntentChecker.checkAction(i, ACTION_SHORTCUT, ACTION_NOTIFICATION_CLICK)) {
       afterSavedReturnsToList = false;
-      noteOriginal = DbHelper.getInstance().getNote(i.getLongExtra(INTENT_KEY, 0));
+      noteOriginal = FlatFileHelper.getInstance().getNote(i.getLongExtra(INTENT_KEY, 0));
       // Checks if the note pointed from the shortcut has been deleted
       try {
         note = new Note(noteOriginal);
@@ -489,7 +489,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
         if (categoryId != null) {
           Category category;
           try {
-            category = DbHelper.getInstance().getCategory(parseLong(categoryId));
+            category = FlatFileHelper.getInstance().getCategory(parseLong(categoryId));
             noteTmp = new Note();
             noteTmp.setCategory(category);
           } catch (NumberFormatException e) {
@@ -1228,7 +1228,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
   private void categorizeNote() {
     var currentCategory = noteTmp.getCategory() != null ? String.valueOf(noteTmp.getCategory().getId()) : null;
     var  originalCategory = noteOriginal.getCategory() != null ? String.valueOf(noteOriginal.getCategory().getId()) : null;
-    final var categories = DbHelper.getInstance().getCategories().stream()
+    final var categories = FlatFileHelper.getInstance().getCategories().stream()
         .map(category -> {
           if (String.valueOf(category.getId()).equals(currentCategory) && currentCategory != originalCategory) {
             category.setCount(category.getCount() + 1);

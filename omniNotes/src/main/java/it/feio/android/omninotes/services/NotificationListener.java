@@ -24,7 +24,7 @@ import android.service.notification.StatusBarNotification;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.async.bus.NotificationRemovedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.date.DateUtils;
@@ -59,9 +59,9 @@ public class NotificationListener extends NotificationListenerService {
 
   public void onEventAsync(NotificationRemovedEvent event) {
     long nodeId = Long.parseLong(event.getStatusBarNotification().getTag());
-    Note note = DbHelper.getInstance().getNote(nodeId);
+    Note note = FlatFileHelper.getInstance().getNote(nodeId);
     if (!DateUtils.isFuture(note.getAlarm())) {
-      DbHelper.getInstance().setReminderFired(nodeId, true);
+      FlatFileHelper.getInstance().setReminderFired(nodeId, true);
     }
   }
 

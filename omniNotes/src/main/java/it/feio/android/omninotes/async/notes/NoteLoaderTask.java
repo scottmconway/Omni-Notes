@@ -19,7 +19,7 @@ package it.feio.android.omninotes.async.notes;
 import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.async.bus.NotesLoadedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.NotesLoadingException;
 import it.feio.android.omninotes.models.Note;
 import java.lang.reflect.InvocationTargetException;
@@ -57,7 +57,7 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, List<Note>> {
   protected List<Note> doInBackground(Object... params) {
 
     String methodName = params[0].toString();
-    DbHelper db = DbHelper.getInstance();
+    FlatFileHelper db = FlatFileHelper.getInstance();
 
     if (params.length < 2 || params[1] == null) {
       try {

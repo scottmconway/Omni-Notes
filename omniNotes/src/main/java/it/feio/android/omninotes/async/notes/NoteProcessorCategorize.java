@@ -17,7 +17,7 @@
 
 package it.feio.android.omninotes.async.notes;
 
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import java.util.List;
@@ -37,6 +37,6 @@ public class NoteProcessorCategorize extends NoteProcessor {
   @Override
   protected void processNote(Note note) {
     note.setCategory(category);
-    DbHelper.getInstance().updateNote(note, false);
+    FlatFileHelper.getInstance().updateNote(note, false);
   }
 }

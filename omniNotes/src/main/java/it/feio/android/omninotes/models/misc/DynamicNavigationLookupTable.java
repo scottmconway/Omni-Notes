@@ -23,7 +23,7 @@ import static java.lang.Boolean.FALSE;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.async.bus.DynamicNavigationReadyEvent;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Note;
 import java.util.List;
@@ -56,7 +56,7 @@ public class DynamicNavigationLookupTable {
 
   public void update() {
     archived = trashed = uncategorized = reminders = 0;
-    List<Note> notes = DbHelper.getInstance().getAllNotes(false);
+    List<Note> notes = FlatFileHelper.getInstance().getAllNotes(false);
     for (int i = 0; i < notes.size(); i++) {
       if (Boolean.TRUE.equals(notes.get(i).isTrashed())) {
         trashed++;

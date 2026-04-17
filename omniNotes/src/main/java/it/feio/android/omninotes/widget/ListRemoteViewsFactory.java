@@ -34,7 +34,7 @@ import android.widget.RemoteViewsService.RemoteViewsFactory;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
@@ -72,17 +72,32 @@ public class ListRemoteViewsFactory implements RemoteViewsFactory {
   @Override
   public void onCreate() {
     LogDelegate.d("Created widget " + appWidgetId);
-    String condition = Prefs.getString(PREF_WIDGET_PREFIX + appWidgetId, "");
-    notes = DbHelper.getInstance().getNotes(condition, true);
+    notes = loadWidgetNotes();
   }
 
   @Override
   public void onDataSetChanged() {
     LogDelegate.d("onDataSetChanged widget " + appWidgetId);
     navigation = Navigation.getNavigation();
+    notes = loadWidgetNotes();
+  }
 
+  /**
+   * Loads notes for this widget based on the stored condition preference.
+   * Conditions are stored as simple strings: "active" or "category:{id}".
+   */
+  private List<Note> loadWidgetNotes() {
     String condition = Prefs.getString(PREF_WIDGET_PREFIX + appWidgetId, "");
-    notes = DbHelper.getInstance().getNotes(condition, true);
+    FlatFileHelper helper = FlatFileHelper.getInstance();
+    if (condition.startsWith("category:")) {
+      try {
+        Long categoryId = Long.parseLong(condition.substring("category:".length()));
+        return helper.getNotesByCategory(categoryId);
+      } catch (NumberFormatException e) {
+        return helper.getNotesActive();
+      }
+    }
+    return helper.getNotesActive();
   }
 
   @Override

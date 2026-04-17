@@ -98,7 +98,7 @@ import it.feio.android.omninotes.async.notes.NoteProcessorCategorize;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.async.notes.NoteProcessorTrash;
 import it.feio.android.omninotes.databinding.FragmentListBinding;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.helpers.NotesHelper;
 import it.feio.android.omninotes.models.Category;
@@ -307,7 +307,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
     if (index >= 0 && index < navigationListCodes.length) {
       title = navigationList[index];
     } else {
-      Category category = DbHelper.getInstance().getCategory(Long.parseLong(navigation));
+      Category category = FlatFileHelper.getInstance().getCategory(Long.parseLong(navigation));
       title = category != null ? category.getName() : "";
     }
     title = title == null ? getString(R.string.title_activity_list) : title;
@@ -938,7 +938,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         if (checkNavigation(Navigation.CATEGORY) || !isEmpty(mainActivity.navigationTmp)) {
           String categoryId = ObjectUtils.defaultIfNull(mainActivity.navigationTmp,
               Navigation.getCategory().toString());
-          note.setCategory(DbHelper.getInstance().getCategory(Long.parseLong(categoryId)));
+          note.setCategory(FlatFileHelper.getInstance().getCategory(Long.parseLong(categoryId)));
         }
       } catch (NumberFormatException e) {
         LogDelegate.v("Maybe was not a category!");
@@ -1485,7 +1485,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
    * Associates to or removes categories
    */
   private void categorizeNotes() {
-    var categories = DbHelper.getInstance().getCategories();
+    var categories = FlatFileHelper.getInstance().getCategories();
 
     var dialogBuilder = new MaterialDialog.Builder(mainActivity)
         .title(R.string.categorize_as)
@@ -1577,7 +1577,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
   private void tagNotes() {
 
     // Retrieves all available tags
-    final List<Tag> tags = DbHelper.getInstance().getTags();
+    final List<Tag> tags = FlatFileHelper.getInstance().getTags();
 
     // If there is no tag a message will be shown
     if (tags.isEmpty()) {
@@ -1631,7 +1631,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
 
     eventuallyRemoveDeselectedTags(note, taggingResult.second);
 
-    DbHelper.getInstance().updateNote(note, false);
+    FlatFileHelper.getInstance().updateNote(note, false);
   }
 
   private void eventuallyRemoveDeselectedTags(Note note, List<Tag> tagsToRemove) {

@@ -41,7 +41,7 @@ import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.CategoriesUpdatedEvent;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.TestException;
 import it.feio.android.omninotes.helpers.BuildHelper;
 import it.feio.android.omninotes.models.Attachment;
@@ -69,7 +69,7 @@ import org.junit.Rule;
 public class BaseAndroidTestCase {
 
   protected static final Locale PRESET_LOCALE = new Locale(ENGLISH.toString());
-  protected static DbHelper dbHelper;
+  protected static FlatFileHelper dbHelper;
   protected static Context testContext;
   protected static SharedPreferences prefs;
   private File testAttachment;
@@ -115,10 +115,34 @@ public class BaseAndroidTestCase {
   }
 
   private static void prepareDatabase() {
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_NOTES, null, null);
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_CATEGORY, null, null);
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_ATTACHMENTS, null, null);
-    assertFalse("Database MUST be writable", dbHelper.getDatabase(true).isReadOnly());
+    // Clean all flat files for a fresh test state
+    File notesDir = new File(FlatFileHelper.NOTES_DIR);
+    if (notesDir.exists()) {
+      for (File f : notesDir.listFiles()) {
+        if (f.isFile() && f.getName().endsWith(".md")) {
+          f.delete();
+        }
+      }
+    }
+    File categoriesDir = new File(FlatFileHelper.CATEGORIES_DIR);
+    if (categoriesDir.exists()) {
+      for (File f : categoriesDir.listFiles()) {
+        if (f.isFile() && f.getName().endsWith(".md")) {
+          f.delete();
+        }
+      }
+    }
+    File attachmentsDir = new File(FlatFileHelper.ATTACHMENTS_DIR);
+    if (attachmentsDir.exists()) {
+      for (File f : attachmentsDir.listFiles()) {
+        if (f.isDirectory()) {
+          for (File child : f.listFiles()) {
+            child.delete();
+          }
+          f.delete();
+        }
+      }
+    }
   }
 
   private void prepareLocale() {
@@ -231,7 +255,7 @@ public class BaseAndroidTestCase {
   }
 
   private static void setDbHelperForTests() {
-    dbHelper = DbHelper.getInstance(testContext);
+    dbHelper = FlatFileHelper.getInstance(testContext);
   }
 
   private static void setSharedPreferencesForTests() {

@@ -22,7 +22,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Stats;
 
 
@@ -42,7 +42,7 @@ public class StatsActivity extends Activity {
 
       @Override
       protected Stats doInBackground(Void... params) {
-        return (DbHelper.getInstance()).getStats();
+        return (FlatFileHelper.getInstance()).getStats();
       }
 
 

@@ -34,7 +34,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.MainActivity;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.BackupException;
 import it.feio.android.omninotes.helpers.BackupHelper;
 import it.feio.android.omninotes.helpers.DocumentFileHelper;
@@ -176,7 +176,7 @@ public class DataBackupIntentService extends IntentService implements OnAttachin
    */
   private void resetReminders() {
     LogDelegate.d("Resetting reminders");
-    for (Note note : DbHelper.getInstance().getNotesWithReminderNotFired()) {
+    for (Note note : FlatFileHelper.getInstance().getNotesWithReminderNotFired()) {
       ReminderHelper.addReminder(OmniNotes.getAppContext(), note);
     }
   }

@@ -20,7 +20,7 @@ package it.feio.android.omninotes.async.notes;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.async.bus.NotesDeletedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.StorageHelper;
@@ -46,7 +46,7 @@ public class NoteProcessorDelete extends NoteProcessor {
 
   @Override
   protected void processNote(Note note) {
-    DbHelper db = DbHelper.getInstance();
+    FlatFileHelper db = FlatFileHelper.getInstance();
     if (db.deleteNote(note) && !keepAttachments) {
       for (Attachment mAttachment : note.getAttachmentsList()) {
         StorageHelper
