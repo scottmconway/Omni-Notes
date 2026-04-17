@@ -20,7 +20,7 @@ plugins {
     id "com.android.application"
 }
 
-boolean signConfigExists = project.hasProperty("SIGN_PROPS") && new File(project.property("SIGN_PROPS")).exists()
+boolean signConfigExists = project.hasProperty("SIGN_PROPS") && !project.property("SIGN_PROPS").toString().isEmpty() && new File(project.property("SIGN_PROPS")).exists()
 if (signConfigExists) {
     Properties props = new Properties()
     props.load(new FileInputStream(file(project.property("SIGN_PROPS"))))
@@ -93,19 +93,9 @@ android {
 
     flavorDimensions = ["standard"]
     productFlavors {
-        play {
-            dimension "standard"
-        }
         foss {
             dimension "standard"
             applicationIdSuffix ".foss"
-        }
-        beta {
-            dimension "standard"
-        }
-        alpha {
-            dimension "standard"
-            applicationIdSuffix ".alpha"
         }
     }
 
@@ -126,7 +116,7 @@ android {
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.6.0'
+    testImplementation 'org.mockito:mockito-core:5.23.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test:rules:1.5.0'
@@ -144,11 +134,11 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.44'
+    annotationProcessor 'org.projectlombok:lombok:1.18.44'
 
-    annotationProcessor 'org.androidannotations:androidannotations:4.8.0'
-    implementation 'org.androidannotations:androidannotations-api:4.8.0'
+    // Removed unused androidannotations processor + API (no @E* annotations in codebase;
+    // the old 4.8.0 processor crashes with ExceptionInInitializerError under Java 17).
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10"
@@ -168,7 +158,7 @@ dependencies {
     implementation 'com.pushbullet:android-extensions:1.0.4@aar'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
     implementation 'com.github.bumptech.glide:glide:4.8.0'   // To be modified with Gallery library
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0' // To be modified with Gallery library
+    // Removed unused Glide annotation processor (no @GlideModule in codebase).
     implementation('com.github.afollestad.material-dialogs:core:0.9.6.0') {
         transitive = true
         exclude group: "com.android.support"
@@ -203,9 +193,6 @@ dependencies {
     implementation 'com.github.federicoiosue:pixlui:3.0.1'
 
     // Flavors specific dependencies
-    playImplementation 'com.google.android.gms:play-services-location:21.3.0'
-    betaImplementation 'com.google.android.gms:play-services-location:21.3.0'
-    alphaImplementation 'com.google.android.gms:play-services-location:21.3.0'
 //    fossImplementation 'com.jakewharton.timber:timber:5.0.1'
 }
 
@@ -237,7 +224,7 @@ apply plugin: 'jacoco'
 jacoco {
     toolVersion = jacocoVersion
 }
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testAlphaDebugUnitTest', 'createAlphaDebugCoverageReport', 'connectedPlayDebugAndroidTest']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testFossDebugUnitTest', 'createFossDebugCoverageReport', 'connectedFossDebugAndroidTest']) {
     reports {
         xml.required = true
         html.required = true
@@ -250,8 +237,8 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testAlphaDebugUnitTest', 
     sourceDirectories.from = files([mainSrc])
     classDirectories.from = files([debugTree])
     executionData.from = fileTree(dir: "$buildDir", includes: [
-            "jacoco/testAlphaDebugUnitTest.exec",
-            "outputs/code_coverage/alphaDebugAndroidTest/connected/*coverage.ec"
+            "jacoco/testFossDebugUnitTest.exec",
+            "outputs/code_coverage/fossDebugAndroidTest/connected/*coverage.ec"
     ])
 }
 
@@ -262,7 +249,7 @@ tasks.withType(Test).configureEach {
 
     testLogging {
         events "standardOut", "standardError", "started", "passed", "skipped", "failed"
-        exceptionFormat "full"
+        exceptionFormat = "full"
     }
 }
 
