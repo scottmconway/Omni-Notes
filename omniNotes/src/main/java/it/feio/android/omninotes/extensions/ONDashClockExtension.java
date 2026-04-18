@@ -29,7 +29,7 @@ import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
 import it.feio.android.omninotes.MainActivity;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.TextHelper;
 import it.feio.android.omninotes.utils.date.DateUtils;
@@ -123,7 +123,7 @@ public class ONDashClockExtension extends DashClockExtension {
     List<Note> reminders = new ArrayList<>();
     List<Note> today = new ArrayList<>();
     List<Note> tomorrow = new ArrayList<>();
-    for (Note note : DbHelper.getInstance().getNotesActive()) {
+    for (Note note : FlatFileHelper.getInstance().getNotesActive()) {
       activeNotes.add(note);
       if (note.getAlarm() != null && !note.isReminderFired()) {
         reminders.add(note);

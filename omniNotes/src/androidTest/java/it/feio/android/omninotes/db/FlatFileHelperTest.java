@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(AndroidJUnit4.class)
-public class DbHelperTest extends BaseAndroidTestCase {
+public class FlatFileHelperTest extends BaseAndroidTestCase {
 
   @Test
   public void testGetNotesByTag() {

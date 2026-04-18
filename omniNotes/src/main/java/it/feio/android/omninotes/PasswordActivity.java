@@ -32,7 +32,7 @@ import de.greenrobot.event.EventBus;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.LifecycleCallback;
 import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.ONStyle;
 import it.feio.android.omninotes.models.PasswordValidator;
 import it.feio.android.omninotes.utils.PasswordHelper;
@@ -168,8 +168,8 @@ public class PasswordActivity extends BaseActivity {
           .putString(PREF_PASSWORD_QUESTION, questionText)
           .putString(PREF_PASSWORD_ANSWER, Security.md5(answerText))
           .apply();
-      DbHelper.getInstance().getNotesWithLock(true)
-          .forEach(note -> DbHelper.getInstance().updateNote(note, false));
+      FlatFileHelper.getInstance().getNotesWithLock(true)
+          .forEach(note -> FlatFileHelper.getInstance().updateNote(note, false));
       var crouton = Crouton.makeText(mActivity, R.string.password_successfully_changed,
           ONStyle.CONFIRM, croutonHandle);
       crouton.setLifecycleCallback(new LifecycleCallback() {

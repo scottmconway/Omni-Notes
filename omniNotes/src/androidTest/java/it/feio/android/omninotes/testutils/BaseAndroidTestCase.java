@@ -41,7 +41,7 @@ import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.CategoriesUpdatedEvent;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.TestException;
 import it.feio.android.omninotes.helpers.BuildHelper;
 import it.feio.android.omninotes.models.Attachment;
@@ -69,7 +69,7 @@ import org.junit.Rule;
 public class BaseAndroidTestCase {
 
   protected static final Locale PRESET_LOCALE = new Locale(ENGLISH.toString());
-  protected static DbHelper dbHelper;
+  protected static FlatFileHelper dbHelper;
   protected static Context testContext;
   protected static SharedPreferences prefs;
   private File testAttachment;
@@ -79,7 +79,7 @@ public class BaseAndroidTestCase {
     setContextForTests();
     grantPermissions();
     setSharedPreferencesForTests();
-    setDbHelperForTests();
+    setFlatFileHelperForTests();
   }
 
   @Before
@@ -115,10 +115,43 @@ public class BaseAndroidTestCase {
   }
 
   private static void prepareDatabase() {
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_NOTES, null, null);
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_CATEGORY, null, null);
-    dbHelper.getDatabase(true).delete(DbHelper.TABLE_ATTACHMENTS, null, null);
-    assertFalse("Database MUST be writable", dbHelper.getDatabase(true).isReadOnly());
+    // Use a file-backed root in app-private storage for tests
+    File testNotesDir = new File(testContext.getExternalFilesDir(null), "test_notes");
+    FlatFileHelper.setRootDirForTesting(testContext, testNotesDir);
+    dbHelper = FlatFileHelper.getInstance();
+
+    // Clean all flat files for a fresh test state
+    cleanDirectory(testNotesDir, ".md");
+    File categoriesDir = new File(testNotesDir, "categories");
+    cleanDirectory(categoriesDir, ".md");
+    File attachmentsDir = new File(testNotesDir, "attachments");
+    if (attachmentsDir.exists()) {
+      File[] children = attachmentsDir.listFiles();
+      if (children != null) {
+        for (File child : children) {
+          if (child.isDirectory()) {
+            File[] grandchildren = child.listFiles();
+            if (grandchildren != null) {
+              for (File gc : grandchildren) {
+                gc.delete();
+              }
+            }
+            child.delete();
+          }
+        }
+      }
+    }
+  }
+
+  private static void cleanDirectory(File dir, String extension) {
+    if (dir == null || !dir.exists()) return;
+    File[] files = dir.listFiles();
+    if (files == null) return;
+    for (File f : files) {
+      if (f.isFile() && f.getName().endsWith(extension)) {
+        f.delete();
+      }
+    }
   }
 
   private void prepareLocale() {
@@ -230,8 +263,8 @@ public class BaseAndroidTestCase {
     testContext = ApplicationProvider.getApplicationContext();
   }
 
-  private static void setDbHelperForTests() {
-    dbHelper = DbHelper.getInstance(testContext);
+  private static void setFlatFileHelperForTests() {
+    dbHelper = FlatFileHelper.getInstance(testContext);
   }
 
   private static void setSharedPreferencesForTests() {

@@ -31,7 +31,7 @@ import android.text.SpannedString;
 import android.text.TextUtils;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.date.DateHelper;
 import it.feio.android.omninotes.models.Note;
 import java.util.Locale;
@@ -98,15 +98,25 @@ public class TextHelper {
 
 
   /**
-   * Checks if a query conditions searches for category
+   * Checks if a query conditions searches for category.
+   * Supports both the new flat-file format ("category:{id}") and the legacy
+   * SQL format for backward compatibility.
    *
-   * @param sqlCondition query "where" condition
-   * @return Category ID
+   * @param condition widget query condition
+   * @return Category ID or null
    */
-  public static String checkIntentCategory(String sqlCondition) {
-    String pattern = DbHelper.KEY_CATEGORY + "\\s*=\\s*([\\d]+)";
+  public static String checkIntentCategory(String condition) {
+    if (condition == null) {
+      return null;
+    }
+    // New flat-file format: "category:{id}"
+    if (condition.startsWith("category:")) {
+      return condition.substring("category:".length()).trim();
+    }
+    // Legacy SQL format
+    String pattern = FlatFileHelper.KEY_CATEGORY + "\\s*=\\s*([\\d]+)";
     Pattern p = Pattern.compile(pattern);
-    Matcher matcher = p.matcher(sqlCondition);
+    Matcher matcher = p.matcher(condition);
     if (matcher.find() && matcher.group(1) != null) {
       return matcher.group(1).trim();
     }
@@ -125,18 +135,18 @@ public class TextHelper {
 
     // Reminder screen forces sorting
     if (Navigation.REMINDERS == navigation) {
-      sort_column = DbHelper.KEY_REMINDER;
+      sort_column = FlatFileHelper.KEY_REMINDER;
     } else {
       sort_column = Prefs.getString(PREF_SORTING_COLUMN, "");
     }
 
     switch (sort_column) {
-      case DbHelper.KEY_CREATION:
+      case FlatFileHelper.KEY_CREATION:
         dateText = mContext.getString(R.string.creation) + " " + DateHelper
             .getFormattedDate(note.getCreation
                 (), Prefs.getBoolean(PREF_PRETTIFIED_DATES, true));
         break;
-      case DbHelper.KEY_REMINDER:
+      case FlatFileHelper.KEY_REMINDER:
         if (note.getAlarm() == null) {
           dateText = mContext.getString(R.string.no_reminder_set);
         } else {

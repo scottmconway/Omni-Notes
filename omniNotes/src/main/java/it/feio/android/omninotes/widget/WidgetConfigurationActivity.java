@@ -27,7 +27,7 @@ import android.widget.CheckBox;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.adapters.CategoryBaseAdapter;
@@ -68,7 +68,7 @@ public class WidgetConfigurationActivity extends Activity {
 
     categorySpinner = findViewById(R.id.widget_config_spinner);
     categorySpinner.setEnabled(false);
-    DbHelper db = DbHelper.getInstance();
+    FlatFileHelper db = FlatFileHelper.getInstance();
     ArrayList<Category> categories = db.getCategories();
     categorySpinner.setAdapter(new CategoryBaseAdapter(this, categories));
 
@@ -76,16 +76,10 @@ public class WidgetConfigurationActivity extends Activity {
     configOkButton.setOnClickListener(v -> {
 
       if (mRadioGroup.getCheckedRadioButtonId() == R.id.widget_config_notes) {
-        sqlCondition =
-            " WHERE " + DbHelper.KEY_ARCHIVED + " IS NOT 1 AND " + DbHelper.KEY_TRASHED + " IS" +
-                " NOT 1 ";
-
+        sqlCondition = "active";
       } else {
         Category tag = (Category) categorySpinner.getSelectedItem();
-        sqlCondition = " WHERE " + DbHelper.TABLE_NOTES + "."
-            + DbHelper.KEY_CATEGORY + " = " + tag.getId()
-            + " AND " + DbHelper.KEY_ARCHIVED + " IS NOT 1"
-            + " AND " + DbHelper.KEY_TRASHED + " IS NOT 1";
+        sqlCondition = "category:" + tag.getId();
       }
 
       CheckBox showThumbnailsCheckBox = findViewById(R.id.show_thumbnails);

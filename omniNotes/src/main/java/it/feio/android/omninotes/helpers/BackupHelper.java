@@ -36,7 +36,7 @@ import com.lazygeniouz.dfc.file.DocumentFileCompat;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.DataBackupIntentService;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.exceptions.checked.BackupAttachmentException;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
 import it.feio.android.omninotes.models.Attachment;
@@ -65,7 +65,7 @@ public final class BackupHelper {
 
   public static void exportNotes(DocumentFileCompat backupDir) {
     backupDir.createFile("", ".nomedia");
-    for (Note note : DbHelper.getInstance(true).getAllNotes(false)) {
+    for (Note note : FlatFileHelper.getInstance(true).getAllNotes(false)) {
       exportNote(backupDir, note);
     }
   }
@@ -94,7 +94,7 @@ public final class BackupHelper {
    */
   public static void exportAttachments(DocumentFileCompat backupDir, NotificationsHelper notificationsHelper) {
     DocumentFileCompat attachmentsDestinationDir = backupDir.createDirectory(StorageHelper.getAttachmentDir().getName());
-    List<Attachment> list = DbHelper.getInstance().getAllAttachments();
+    List<Attachment> list = FlatFileHelper.getInstance().getAllAttachments();
     exportAttachments(notificationsHelper, attachmentsDestinationDir, list, null);
   }
 
@@ -170,9 +170,9 @@ public final class BackupHelper {
     }
 
     if (note.getCategory() != null) {
-      DbHelper.getInstance().updateCategory(note.getCategory());
+      FlatFileHelper.getInstance().updateCategory(note.getCategory());
     }
-    DbHelper.getInstance().updateNote(note, false);
+    FlatFileHelper.getInstance().updateNote(note, false);
     return note;
   }
 
@@ -202,7 +202,7 @@ public final class BackupHelper {
     }
 
     AtomicInteger imported = new AtomicInteger();
-    ArrayList<Attachment> attachments = DbHelper.getInstance().getAllAttachments();
+    ArrayList<Attachment> attachments = FlatFileHelper.getInstance().getAllAttachments();
     var BackupedAttachments = backupAttachmentsDir.listFiles();
     attachments.forEach(attachment -> {
       try {
@@ -249,7 +249,7 @@ public final class BackupHelper {
     try {
       Note note = new Note();
       note.buildFromJson(FileUtils.readFileToString(file));
-      DbHelper.getInstance().deleteNote(note);
+      FlatFileHelper.getInstance().deleteNote(note);
     } catch (IOException e) {
       LogDelegate.e("Error parsing note json");
     }
@@ -293,7 +293,7 @@ public final class BackupHelper {
 
 //  public static List<LinkedList<DiffMatchPatch.Diff>> integrityCheck(File backupDir) {
 //    List<LinkedList<DiffMatchPatch.Diff>> errors = new ArrayList<>();
-//    for (Note note : DbHelper.getInstance(true).getAllNotes(false)) {
+//    for (Note note : FlatFileHelper.getInstance(true).getAllNotes(false)) {
 //      File noteFile = getBackupNoteFile(backupDir, note);
 //      try {
 //        String noteString = note.toJSON();

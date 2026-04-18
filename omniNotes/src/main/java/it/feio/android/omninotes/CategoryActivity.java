@@ -38,7 +38,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.async.bus.CategoriesUpdatedEvent;
 import it.feio.android.omninotes.databinding.ActivityCategoryBinding;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.utils.Display;
@@ -156,7 +156,7 @@ public class CategoryActivity extends AppCompatActivity implements
     }
 
     // Saved to DB and new ID or update result catched
-    DbHelper db = DbHelper.getInstance();
+    FlatFileHelper db = FlatFileHelper.getInstance();
     category = db.updateCategory(category);
 
     // Sets result to show proper message
@@ -177,7 +177,7 @@ public class CategoryActivity extends AppCompatActivity implements
           if (String.valueOf(category.getId()).equals(navigation)) {
             Prefs.edit().putString(PREF_NAVIGATION, navNotes).apply();
           }
-          DbHelper.getInstance().deleteCategory(category);
+          FlatFileHelper.getInstance().deleteCategory(category);
 
           EventBus.getDefault().post(new CategoriesUpdatedEvent());
           BaseActivity.notifyAppWidgets(OmniNotes.getAppContext());

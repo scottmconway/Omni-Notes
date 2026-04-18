@@ -33,7 +33,7 @@ import com.pixplicity.easyprefs.library.Prefs;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.PasswordValidator;
 import lombok.experimental.UtilityClass;
 
@@ -136,9 +136,9 @@ public class PasswordHelper {
 
 
   public static void removePassword() {
-    DbHelper.getInstance().getNotesWithLock(true).forEach(note -> {
+    FlatFileHelper.getInstance().getNotesWithLock(true).forEach(note -> {
       note.setLocked(false);
-      DbHelper.getInstance().updateNote(note, false);
+      FlatFileHelper.getInstance().updateNote(note, false);
     });
     Prefs.edit()
         .remove(PREF_PASSWORD)

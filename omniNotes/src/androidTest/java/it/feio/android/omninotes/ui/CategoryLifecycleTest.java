@@ -48,7 +48,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import it.feio.android.omninotes.R;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.testutils.NoRealDeviceTest;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class CategoryLifecycleTest extends BaseEspressoTest {
         withParent(withId(R.id.toolbar)),
         isDisplayed())).perform(click());
 
-    ArrayList<Category> categories = DbHelper.getInstance().getCategories();
+    ArrayList<Category> categories = FlatFileHelper.getInstance().getCategories();
 
     assertEquals(1, categories.size());
     assertEquals(categoryName, categories.get(0).getName());

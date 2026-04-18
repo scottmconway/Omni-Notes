@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
 import it.feio.android.omninotes.BaseActivity;
 import it.feio.android.omninotes.OmniNotes;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.BuildHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Note;
@@ -54,7 +54,7 @@ public class AlarmRestoreOnRebootService extends JobIntentService {
 
     BaseActivity.notifyAppWidgets(mContext);
 
-    List<Note> notes = DbHelper.getInstance().getNotesWithReminderNotFired();
+    List<Note> notes = FlatFileHelper.getInstance().getNotesWithReminderNotFired();
     LogDelegate.d("Found " + notes.size() + " reminders");
     for (Note note : notes) {
       ReminderHelper.addReminder(OmniNotes.getAppContext(), note);

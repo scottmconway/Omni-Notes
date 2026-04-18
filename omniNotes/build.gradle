@@ -180,6 +180,7 @@ dependencies {
     implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
     implementation 'com.pixplicity.easyprefs:EasyPrefs:1.10.0'
     implementation 'com.lazygeniouz:dfc:0.8'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
 
     implementation('com.github.federicoiosue:simplegallery:3.0.1') {
         exclude group: 'com.android.support'

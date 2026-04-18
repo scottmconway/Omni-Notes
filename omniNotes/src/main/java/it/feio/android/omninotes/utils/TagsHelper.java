@@ -18,7 +18,7 @@
 package it.feio.android.omninotes.utils;
 
 import androidx.core.util.Pair;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.Tag;
 import it.feio.android.pixlui.links.UrlCompleter;
@@ -38,7 +38,7 @@ public class TagsHelper {
 
 
   public static List<Tag> getAllTags() {
-    return DbHelper.getInstance().getTags();
+    return FlatFileHelper.getInstance().getTags();
   }
 
 

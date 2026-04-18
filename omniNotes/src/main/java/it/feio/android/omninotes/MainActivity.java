@@ -44,6 +44,8 @@ import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
@@ -62,7 +64,7 @@ import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
 import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.databinding.ActivityMainBinding;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.helpers.NotesHelper;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
@@ -96,10 +98,16 @@ public class MainActivity extends BaseActivity implements
   boolean prefsChanged = false;
   private FragmentManager mFragmentManager;
 
+  private ActivityResultLauncher<Uri> directoryPickerLauncher;
+
   ActivityMainBinding binding;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    directoryPickerLauncher = registerForActivityResult(
+        new ActivityResultContracts.OpenDocumentTree(),
+        this::onDirectoryPicked);
+
     super.onCreate(savedInstanceState);
     setTheme(R.style.OmniNotesTheme_ApiSpec);
 
@@ -138,10 +146,32 @@ public class MainActivity extends BaseActivity implements
   @Override
   protected void onResume() {
     super.onResume();
+    if (!FlatFileHelper.hasStorageAccess()) {
+      promptForStorageAccess();
+      return;
+    }
     if (isPasswordAccepted) {
       init();
     } else {
       checkPassword();
+    }
+  }
+
+  private void promptForStorageAccess() {
+    Toast.makeText(this, R.string.storage_permission_required, Toast.LENGTH_LONG).show();
+    directoryPickerLauncher.launch(null);
+  }
+
+  private void onDirectoryPicked(Uri uri) {
+    if (uri != null) {
+      FlatFileHelper.setTreeUri(this, uri);
+      if (isPasswordAccepted) {
+        init();
+      } else {
+        checkPassword();
+      }
+    } else {
+      Toast.makeText(this, R.string.storage_permission_required, Toast.LENGTH_LONG).show();
     }
   }
 
@@ -400,7 +430,7 @@ public class MainActivity extends BaseActivity implements
     if (receivedIntent(i)) {
       Note note = i.getParcelableExtra(INTENT_NOTE);
       if (note == null) {
-        note = DbHelper.getInstance().getNote(i.getIntExtra(INTENT_KEY, 0));
+        note = FlatFileHelper.getInstance().getNote(i.getIntExtra(INTENT_KEY, 0));
       }
       // Checks if the same note is already opened to avoid to open again
       if (note != null && noteAlreadyOpened(note)) {
@@ -429,7 +459,7 @@ public class MainActivity extends BaseActivity implements
     // Home launcher shortcut widget
     if (Intent.ACTION_VIEW.equals(i.getAction()) && i.getData() != null) {
       Long id = Long.valueOf(Uri.parse(i.getDataString()).getQueryParameter("id"));
-      Note note = DbHelper.getInstance().getNote(id);
+      Note note = FlatFileHelper.getInstance().getNote(id);
       if (note == null) {
         showMessage(R.string.note_doesnt_exist, ONStyle.ALERT);
         return;
@@ -453,7 +483,7 @@ public class MainActivity extends BaseActivity implements
     Note note = new Note();
     note.setTitle(i.getStringExtra(Intent.EXTRA_SUBJECT));
     note.setContent(i.getStringExtra(Intent.EXTRA_TEXT));
-    DbHelper.getInstance().updateNote(note, true);
+    FlatFileHelper.getInstance().updateNote(note, true);
     showToast(getString(R.string.note_updated), Toast.LENGTH_SHORT);
     finish();
   }

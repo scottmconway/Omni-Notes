@@ -22,7 +22,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
@@ -51,7 +51,7 @@ public class SaveNoteTask extends AsyncTask<Note, Void, Note> {
     if (reminderMustBeSet) {
       note.setReminderFired(false);
     }
-    note = DbHelper.getInstance().updateNote(note, updateLastModification);
+    note = FlatFileHelper.getInstance().updateNote(note, updateLastModification);
     if (reminderMustBeSet) {
       ReminderHelper.addReminder(context, note);
     }

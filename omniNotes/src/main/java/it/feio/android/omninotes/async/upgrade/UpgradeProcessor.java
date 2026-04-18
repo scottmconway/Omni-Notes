@@ -25,11 +25,10 @@ import static it.feio.android.omninotes.utils.ConstantsBase.MIME_TYPE_VIDEO;
 import static java.lang.Integer.parseInt;
 import static java.util.stream.Collectors.toList;
 
-import android.content.ContentValues;
 import android.net.Uri;
 import android.text.TextUtils;
 import it.feio.android.omninotes.OmniNotes;
-import it.feio.android.omninotes.db.DbHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
@@ -47,8 +46,7 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * Processor used to perform asynchronous tasks on database upgrade. It's not intended to be used to
  * perform actions strictly related to DB (for this
- * {@link it.feio.android.omninotes.db.DbHelper#onUpgrade(android.database.sqlite.SQLiteDatabase,
- * int, int)} DbHelper.onUpgrade()} is used
+ * {@link it.feio.android.omninotes.db.FlatFileHelper} is used
  */
 public class UpgradeProcessor {
 
@@ -95,7 +93,7 @@ public class UpgradeProcessor {
    * Adjustment of all the old attachments without mimetype field set into DB
    */
   private void onUpgradeTo476() {
-    final DbHelper dbHelper = DbHelper.getInstance();
+    final FlatFileHelper dbHelper = FlatFileHelper.getInstance();
     for (Attachment attachment : dbHelper.getAllAttachments()) {
       if (attachment.getMime_type() == null) {
         String mimeType = StorageHelper.getMimeType(attachment.getUri().toString());
@@ -127,7 +125,7 @@ public class UpgradeProcessor {
    * Upgrades all the old audio attachments to the new format 3gpp to avoid mixing with videos
    */
   private void onUpgradeTo480() {
-    final DbHelper dbHelper = DbHelper.getInstance();
+    final FlatFileHelper dbHelper = FlatFileHelper.getInstance();
     for (Attachment attachment : dbHelper.getAllAttachments()) {
       if ("audio/3gp".equals(attachment.getMime_type()) || "audio/3gpp"
           .equals(attachment.getMime_type
@@ -155,29 +153,19 @@ public class UpgradeProcessor {
    * Reschedule reminders after upgrade
    */
   private void onUpgradeTo482() {
-    for (Note note : DbHelper.getInstance().getNotesWithReminderNotFired()) {
+    for (Note note : FlatFileHelper.getInstance().getNotesWithReminderNotFired()) {
       ReminderHelper.addReminder(OmniNotes.getAppContext(), note);
     }
   }
 
   /**
-   * Ensures that no duplicates will be found during the creation-to-ID transition
+   * Ensures that no duplicates will be found during the creation-to-ID transition.
+   * Note: This upgrade step was SQLite-specific. With flat-file storage the
+   * creation timestamp is embedded in each file's front matter, so duplicates
+   * are handled at write-time by {@code FlatFileHelper.getOrCreateNoteFile}.
    */
   private void onUpgradeTo501() {
-    List<Long> creations = new ArrayList<>();
-    for (Note note : DbHelper.getInstance().getAllNotes(false)) {
-      if (creations.contains(note.getCreation())) {
-
-        ContentValues values = new ContentValues();
-        values.put(DbHelper.KEY_CREATION, note.getCreation() + (long) (Math.random() * 999));
-        DbHelper.getInstance().getDatabase()
-            .update(DbHelper.TABLE_NOTES, values, DbHelper.KEY_TITLE +
-                    " = ? AND " + DbHelper.KEY_CREATION + " = ? AND " + DbHelper.KEY_CONTENT + " = ?",
-                new String[]{note
-                    .getTitle(), String.valueOf(note.getCreation()), note.getContent()});
-      }
-      creations.add(note.getCreation());
-    }
+    // No-op under flat-file storage
   }
 
   /**
@@ -185,7 +173,7 @@ public class UpgradeProcessor {
    */
   private void onUpgradeTo625() {
     var attachmentsDir = StorageHelper.getAttachmentDir();
-    var dbHelper = DbHelper.getInstance();
+    var dbHelper = FlatFileHelper.getInstance();
     dbHelper.getAllAttachments().stream()
         .filter(attachment -> "content".equals(attachment.getUri().getScheme()))
         .forEach(attachment -> {
