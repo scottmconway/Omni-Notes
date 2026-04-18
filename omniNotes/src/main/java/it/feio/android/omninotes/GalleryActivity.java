@@ -167,18 +167,15 @@ public class GalleryActivity extends AppCompatActivity {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        onBackPressed();
-        break;
-      case R.id.menu_gallery_share:
-        shareMedia();
-        break;
-      case R.id.menu_gallery:
-        viewMedia();
-        break;
-      default:
-        LogDelegate.e("Wrong element choosen: " + item.getItemId());
+    int itemId = item.getItemId();
+    if (itemId == android.R.id.home) {
+      onBackPressed();
+    } else if (itemId == R.id.menu_gallery_share) {
+      shareMedia();
+    } else if (itemId == R.id.menu_gallery) {
+      viewMedia();
+    } else {
+      LogDelegate.e("Wrong element choosen: " + item.getItemId());
     }
     return super.onOptionsItemSelected(item);
   }

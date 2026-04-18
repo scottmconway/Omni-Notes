@@ -52,17 +52,12 @@ public class WidgetConfigurationActivity extends Activity {
 
     mRadioGroup = findViewById(R.id.widget_config_radiogroup);
     mRadioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-      switch (checkedId) {
-        case R.id.widget_config_notes:
-          categorySpinner.setEnabled(false);
-          break;
-
-        case R.id.widget_config_categories:
-          categorySpinner.setEnabled(true);
-          break;
-
-        default:
-          LogDelegate.e("Wrong element choosen: " + checkedId);
+      if (checkedId == R.id.widget_config_notes) {
+        categorySpinner.setEnabled(false);
+      } else if (checkedId == R.id.widget_config_categories) {
+        categorySpinner.setEnabled(true);
+      } else {
+        LogDelegate.e("Wrong element choosen: " + checkedId);
       }
     });
 

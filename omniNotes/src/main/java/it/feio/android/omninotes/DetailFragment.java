@@ -1069,59 +1069,41 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       return true;
     }
 
-    switch (item.getItemId()) {
-      case R.id.menu_attachment:
-        showAttachmentsPopup();
-        break;
-      case R.id.menu_tag:
-        addTags();
-        break;
-      case R.id.menu_category:
-        categorizeNote();
-        break;
-      case R.id.menu_share:
-        shareNote();
-        break;
-      case R.id.menu_checklist_on:
-      case R.id.menu_checklist_off:
-        toggleChecklist();
-        break;
-      case R.id.menu_checklist_moveToBottom:
-        moveCheckedItemsToBottom();
-        break;
-      case R.id.menu_lock:
-      case R.id.menu_unlock:
-        lockNote();
-        break;
-      case R.id.menu_pin_note:
-        pinNote();
-        break;
-      case R.id.menu_add_shortcut:
-        addShortcut();
-        break;
-      case R.id.menu_archive:
-        archiveNote(true);
-        break;
-      case R.id.menu_unarchive:
-        archiveNote(false);
-        break;
-      case R.id.menu_trash:
-        trashNote(true);
-        break;
-      case R.id.menu_untrash:
-        trashNote(false);
-        break;
-      case R.id.menu_discard_changes:
-        discard();
-        break;
-      case R.id.menu_delete:
-        deleteNote();
-        break;
-      case R.id.menu_note_info:
-        showNoteInfo();
-        break;
-      default:
-        LogDelegate.w("Invalid menu option selected");
+    int itemId = item.getItemId();
+    if (itemId == R.id.menu_attachment) {
+      showAttachmentsPopup();
+    } else if (itemId == R.id.menu_tag) {
+      addTags();
+    } else if (itemId == R.id.menu_category) {
+      categorizeNote();
+    } else if (itemId == R.id.menu_share) {
+      shareNote();
+    } else if (itemId == R.id.menu_checklist_on || itemId == R.id.menu_checklist_off) {
+      toggleChecklist();
+    } else if (itemId == R.id.menu_checklist_moveToBottom) {
+      moveCheckedItemsToBottom();
+    } else if (itemId == R.id.menu_lock || itemId == R.id.menu_unlock) {
+      lockNote();
+    } else if (itemId == R.id.menu_pin_note) {
+      pinNote();
+    } else if (itemId == R.id.menu_add_shortcut) {
+      addShortcut();
+    } else if (itemId == R.id.menu_archive) {
+      archiveNote(true);
+    } else if (itemId == R.id.menu_unarchive) {
+      archiveNote(false);
+    } else if (itemId == R.id.menu_trash) {
+      trashNote(true);
+    } else if (itemId == R.id.menu_untrash) {
+      trashNote(false);
+    } else if (itemId == R.id.menu_discard_changes) {
+      discard();
+    } else if (itemId == R.id.menu_delete) {
+      deleteNote();
+    } else if (itemId == R.id.menu_note_info) {
+      showNoteInfo();
+    } else {
+      LogDelegate.w("Invalid menu option selected");
     }
     return super.onOptionsItemSelected(item);
   }
@@ -2217,48 +2199,39 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
     @Override
     public void onClick(View v) {
-      switch (v.getId()) {
-        case R.id.camera:
-//          requestCameraPermission(TAKE_PHOTO);
-          takePhoto();
-          break;
-        case R.id.recording:
-          if (!isRecording) {
-            startRecording(v);
-          } else {
-            stopRecording();
-            Attachment attachment = new Attachment(Uri.fromFile(new File(recordName)),
-                MIME_TYPE_AUDIO);
-            attachment.setLength(audioRecordingTime);
-            addAttachment(attachment);
-            mAttachmentAdapter.notifyDataSetChanged();
-            mGridView.autoresize();
-          }
-          break;
-        case R.id.video:
-          takeVideo();
-          break;
-        case R.id.files:
-          startGetContentAction();
-          break;
-        case R.id.sketch:
-          takeSketch(null);
-          break;
-        case R.id.location:
-          displayLocationDialog();
-          break;
-        case R.id.timestamp:
-          addTimestamp();
-          break;
-        case R.id.pushbullet:
-          MessagingExtension.mirrorMessage(mainActivity, getString(R.string.app_name),
-              getString(R.string.pushbullet),
-              getNoteContent(), BitmapFactory.decodeResource(getResources(),
-                  R.drawable.ic_stat_literal_icon),
-              null, 0);
-          break;
-        default:
-          LogDelegate.e("Wrong element choosen: " + v.getId());
+      int id = v.getId();
+      if (id == R.id.camera) {
+        takePhoto();
+      } else if (id == R.id.recording) {
+        if (!isRecording) {
+          startRecording(v);
+        } else {
+          stopRecording();
+          Attachment attachment = new Attachment(Uri.fromFile(new File(recordName)),
+              MIME_TYPE_AUDIO);
+          attachment.setLength(audioRecordingTime);
+          addAttachment(attachment);
+          mAttachmentAdapter.notifyDataSetChanged();
+          mGridView.autoresize();
+        }
+      } else if (id == R.id.video) {
+        takeVideo();
+      } else if (id == R.id.files) {
+        startGetContentAction();
+      } else if (id == R.id.sketch) {
+        takeSketch(null);
+      } else if (id == R.id.location) {
+        displayLocationDialog();
+      } else if (id == R.id.timestamp) {
+        addTimestamp();
+      } else if (id == R.id.pushbullet) {
+        MessagingExtension.mirrorMessage(mainActivity, getString(R.string.app_name),
+            getString(R.string.pushbullet),
+            getNoteContent(), BitmapFactory.decodeResource(getResources(),
+                R.drawable.ic_stat_literal_icon),
+            null, 0);
+      } else {
+        LogDelegate.e("Wrong element choosen: " + v.getId());
       }
       if (!isRecording) {
         attachmentDialog.dismiss();
