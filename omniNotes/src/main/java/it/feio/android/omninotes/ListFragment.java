@@ -264,20 +264,17 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         Prefs.getBoolean(PREF_FAB_EXPANSION_BEHAVIOR, false));
     fab.setOnFabItemClickedListener(id -> {
       View v = mainActivity.findViewById(id);
-      switch (id) {
-        case R.id.fab_camera:
-          Intent i = mainActivity.getIntent();
-          i.setAction(ACTION_FAB_TAKE_PHOTO);
-          mainActivity.setIntent(i);
-          editNote(new Note(), v);
-          break;
-        case R.id.fab_checklist:
-          Note note = new Note();
-          note.setChecklist(true);
-          editNote(note, v);
-          break;
-        default:
-          editNote(new Note(), v);
+      if (id == R.id.fab_camera) {
+        Intent i = mainActivity.getIntent();
+        i.setAction(ACTION_FAB_TAKE_PHOTO);
+        mainActivity.setIntent(i);
+        editNote(new Note(), v);
+      } else if (id == R.id.fab_checklist) {
+        Note note = new Note();
+        note.setChecklist(true);
+        editNote(note, v);
+      } else {
+        editNote(new Note(), v);
       }
     });
   }
@@ -802,91 +799,65 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
     }
 
     if (actionMode == null) {
-      switch (item.getItemId()) {
-        case android.R.id.home:
-          if (mainActivity.getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
-            mainActivity.getDrawerLayout().closeDrawer(GravityCompat.START);
-          } else {
-            mainActivity.getDrawerLayout().openDrawer(GravityCompat.START);
-          }
-          break;
-        case R.id.menu_filter:
-          filterReminders(true);
-          break;
-        case R.id.menu_filter_remove:
-          filterReminders(false);
-          break;
-        case R.id.menu_filter_category:
-          filterCategoryArchived(true);
-          break;
-        case R.id.menu_filter_category_remove:
-          filterCategoryArchived(false);
-          break;
-        case R.id.menu_uncomplete_checklists:
-          item.setVisible(false);
-          filterByUncompleteChecklists();
-          break;
-        case R.id.menu_tags:
-          filterByTags();
-          break;
-        case R.id.menu_sort:
-          initSortingSubmenu();
-          break;
-        case R.id.menu_expanded_view:
-          switchNotesView();
-          break;
-        case R.id.menu_contracted_view:
-          switchNotesView();
-          break;
-        case R.id.menu_empty_trash:
-          emptyTrash();
-          break;
-        case R.id.menu_search:
-          // Nothing to do, it's all managed by SearchView component
-          break;
-        default:
-          LogDelegate.e("Wrong element choosen: " + item.getItemId());
+      int itemId = item.getItemId();
+      if (itemId == android.R.id.home) {
+        if (mainActivity.getDrawerLayout().isDrawerOpen(GravityCompat.START)) {
+          mainActivity.getDrawerLayout().closeDrawer(GravityCompat.START);
+        } else {
+          mainActivity.getDrawerLayout().openDrawer(GravityCompat.START);
+        }
+      } else if (itemId == R.id.menu_filter) {
+        filterReminders(true);
+      } else if (itemId == R.id.menu_filter_remove) {
+        filterReminders(false);
+      } else if (itemId == R.id.menu_filter_category) {
+        filterCategoryArchived(true);
+      } else if (itemId == R.id.menu_filter_category_remove) {
+        filterCategoryArchived(false);
+      } else if (itemId == R.id.menu_uncomplete_checklists) {
+        item.setVisible(false);
+        filterByUncompleteChecklists();
+      } else if (itemId == R.id.menu_tags) {
+        filterByTags();
+      } else if (itemId == R.id.menu_sort) {
+        initSortingSubmenu();
+      } else if (itemId == R.id.menu_expanded_view) {
+        switchNotesView();
+      } else if (itemId == R.id.menu_contracted_view) {
+        switchNotesView();
+      } else if (itemId == R.id.menu_empty_trash) {
+        emptyTrash();
+      } else if (itemId == R.id.menu_search) {
+        // Nothing to do, it's all managed by SearchView component
+      } else {
+        LogDelegate.e("Wrong element choosen: " + item.getItemId());
       }
     } else {
-      switch (item.getItemId()) {
-        case R.id.menu_category:
-          categorizeNotes();
-          break;
-        case R.id.menu_tags:
-          tagNotes();
-          break;
-        case R.id.menu_share:
-          share();
-          break;
-        case R.id.menu_merge:
-          merge();
-          break;
-        case R.id.menu_archive:
-          archiveNotes(true);
-          break;
-        case R.id.menu_unarchive:
-          archiveNotes(false);
-          break;
-        case R.id.menu_trash:
-          trashNotes(true);
-          break;
-        case R.id.menu_untrash:
-          trashNotes(false);
-          break;
-        case R.id.menu_delete:
-          deleteNotes();
-          break;
-        case R.id.menu_select_all:
-          selectAllNotes();
-          break;
-        case R.id.menu_add_reminder:
-          addReminders();
-          break;
-//                case R.ID.menu_synchronize:
-//                    synchronizeSelectedNotes();
-//                    break;
-        default:
-          LogDelegate.e("Wrong element choosen: " + item.getItemId());
+      int itemId = item.getItemId();
+      if (itemId == R.id.menu_category) {
+        categorizeNotes();
+      } else if (itemId == R.id.menu_tags) {
+        tagNotes();
+      } else if (itemId == R.id.menu_share) {
+        share();
+      } else if (itemId == R.id.menu_merge) {
+        merge();
+      } else if (itemId == R.id.menu_archive) {
+        archiveNotes(true);
+      } else if (itemId == R.id.menu_unarchive) {
+        archiveNotes(false);
+      } else if (itemId == R.id.menu_trash) {
+        trashNotes(true);
+      } else if (itemId == R.id.menu_untrash) {
+        trashNotes(false);
+      } else if (itemId == R.id.menu_delete) {
+        deleteNotes();
+      } else if (itemId == R.id.menu_select_all) {
+        selectAllNotes();
+      } else if (itemId == R.id.menu_add_reminder) {
+        addReminders();
+      } else {
+        LogDelegate.e("Wrong element choosen: " + item.getItemId());
       }
     }
 

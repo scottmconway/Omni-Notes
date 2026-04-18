@@ -25,7 +25,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.StrictMode;
 import android.text.TextUtils;
-import androidx.multidex.MultiDexApplication;
+import android.app.Application;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.helpers.LanguageHelper;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
@@ -36,7 +36,7 @@ import org.acra.config.ToastConfigurationBuilder;
 import org.acra.sender.HttpSender.Method;
 
 
-public class OmniNotes extends MultiDexApplication {
+public class OmniNotes extends Application {
 
   private static Context mContext;
 
