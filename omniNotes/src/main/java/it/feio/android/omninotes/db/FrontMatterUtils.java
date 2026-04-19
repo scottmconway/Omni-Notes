@@ -216,7 +216,6 @@ public final class FrontMatterUtils {
    */
   public static LinkedHashMap<String, String> buildNoteFields(
       String title, long creation, long lastModification,
-      boolean archived, boolean trashed,
       String alarm, boolean reminderFired, String recurrenceRule,
       String latitude, String longitude, String address,
       Long categoryId, boolean locked, boolean checklist,
@@ -226,8 +225,6 @@ public final class FrontMatterUtils {
     fields.put("title", safe(title));
     fields.put("creation", String.valueOf(creation));
     fields.put("last_modification", String.valueOf(lastModification));
-    fields.put("archived", String.valueOf(archived));
-    fields.put("trashed", String.valueOf(trashed));
     fields.put("alarm", safe(alarm));
     fields.put("reminder_fired", String.valueOf(reminderFired));
     fields.put("recurrence_rule", safe(recurrenceRule));

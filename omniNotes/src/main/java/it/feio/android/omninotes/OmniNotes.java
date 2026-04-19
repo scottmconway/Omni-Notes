@@ -59,7 +59,7 @@ public class OmniNotes extends Application {
     enableStrictMode();
     new NotificationsHelper(this).initNotificationChannels();
     // Warm the flat-file cache on a background thread
-    new Thread(() -> FlatFileHelper.getInstance().getAllNotes(false),
+    new Thread(() -> FlatFileHelper.getInstance().getNotesActive(),
         "notes-preload").start();
   }
 

@@ -74,6 +74,8 @@ import org.json.JSONObject;
 public class FlatFileHelper implements NoteDataStore {
 
   public static final String NOTES_DIR = "/sdcard/omni_notes";
+  public static final String ARCHIVE_DIR = NOTES_DIR + "/archive";
+  public static final String TRASH_DIR = NOTES_DIR + "/trash";
   public static final String CATEGORIES_DIR = NOTES_DIR + "/categories";
   public static final String ATTACHMENTS_DIR = NOTES_DIR + "/attachments";
 
@@ -116,8 +118,10 @@ public class FlatFileHelper implements NoteDataStore {
   private static FlatFileHelper instance = null;
   private final Context mContext;
 
-  // In-memory caches
-  private List<Note> notesCache;
+  // In-memory caches - one per directory for lazy loading
+  private List<Note> activeCache;
+  private List<Note> archiveCache;
+  private List<Note> trashCache;
   private ArrayList<Category> categoriesCache;
 
 
@@ -159,6 +163,8 @@ public class FlatFileHelper implements NoteDataStore {
   private void ensureDirectories() {
     if (hasStorageAccess()) {
       new File(NOTES_DIR).mkdirs();
+      new File(ARCHIVE_DIR).mkdirs();
+      new File(TRASH_DIR).mkdirs();
       new File(CATEGORIES_DIR).mkdirs();
       new File(ATTACHMENTS_DIR).mkdirs();
     }
@@ -206,7 +212,7 @@ public class FlatFileHelper implements NoteDataStore {
         : Calendar.getInstance().getTimeInMillis();
     note.setLastModification(lastModification);
 
-    // If title changed, remove the old file (slug may differ)
+    // Remove old file from any directory (slug may differ or note may have moved)
     removeOldFileForNote(creation);
 
     // Serialize attachments to JSON
@@ -214,8 +220,6 @@ public class FlatFileHelper implements NoteDataStore {
 
     LinkedHashMap<String, String> fields = FrontMatterUtils.buildNoteFields(
         note.getTitle(), creation, lastModification,
-        Boolean.TRUE.equals(note.isArchived()),
-        Boolean.TRUE.equals(note.isTrashed()),
         note.getAlarm(),
         Boolean.TRUE.equals(note.isReminderFired()),
         note.getRecurrenceRule(),
@@ -229,27 +233,38 @@ public class FlatFileHelper implements NoteDataStore {
 
     String markdown = FrontMatterUtils.serialize(fields, note.getContent());
 
+    // Write to the correct directory based on state
+    File targetDir = directoryForNote(note);
     String slug = SlugUtils.slugify(note.getTitle(), creation);
-    File noteFile = resolveUniqueFile(slug, creation);
+    File noteFile = resolveUniqueFile(targetDir, slug, creation);
 
     writeFile(noteFile, markdown);
     updateNoteInCache(note);
-    LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteFile.getName());
+    LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteFile.getPath());
 
     return note;
+  }
+
+  /**
+   * Returns the directory a note should be stored in based on its
+   * archived/trashed state.
+   */
+  private File directoryForNote(Note note) {
+    if (Boolean.TRUE.equals(note.isTrashed())) {
+      return new File(TRASH_DIR);
+    } else if (Boolean.TRUE.equals(note.isArchived())) {
+      return new File(ARCHIVE_DIR);
+    }
+    return notesDir();
   }
 
 
   @Override
   public Note getNote(long id) {
-    File[] files = notesDir().listFiles((dir, name) -> name.endsWith(".md"));
-    if (files == null) {
-      return null;
-    }
-    for (File file : files) {
-      ParsedNote parsed = FrontMatterUtils.parse(file);
-      if (parsed != null && parsed.getLong("creation", 0) == id) {
-        return buildNoteFromParsed(parsed);
+    // Search all three directories
+    for (Note note : loadAllNotes()) {
+      if (note.getCreation() != null && note.getCreation() == id) {
+        return note;
       }
     }
     return null;
@@ -283,34 +298,36 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getNotesActive() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> !Boolean.TRUE.equals(n.isArchived()) && !Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(notesDir(), activeCache);
+    activeCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesArchived() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isArchived()) && !Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+    archiveCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesTrashed() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(new File(TRASH_DIR), trashCache);
+    trashCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesUncategorized() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> !Boolean.TRUE.equals(n.isTrashed())
-            && (n.getCategory() == null || n.getCategory().getId() == null
-            || n.getCategory().getId() == 0))
+    return getNotesActive().stream()
+        .filter(n -> n.getCategory() == null || n.getCategory().getId() == null
+            || n.getCategory().getId() == 0)
         .collect(toList());
   }
 
@@ -369,9 +386,10 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public boolean deleteNote(long noteId, boolean keepAttachments) {
-    // Delete the note markdown file
-    File[] files = notesDir().listFiles((dir, name) -> name.endsWith(".md"));
-    if (files != null) {
+    // Delete the note markdown file from whichever directory it's in
+    for (File dir : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
+      if (files == null) continue;
       for (File file : files) {
         ParsedNote parsed = FrontMatterUtils.parse(file);
         if (parsed != null && parsed.getLong("creation", 0) == noteId) {
@@ -931,26 +949,58 @@ public class FlatFileHelper implements NoteDataStore {
    * into a {@link Note}. Results are cached; subsequent calls return the
    * cached list until the cache is invalidated by a write operation.
    */
+  /**
+   * Loads notes from all three directories (active, archive, trash).
+   * The archived/trashed state is set based on which directory the
+   * note was found in.
+   */
   private List<Note> loadAllNotes() {
-    if (notesCache != null) {
-      return new ArrayList<>(notesCache);
+    List<Note> all = new ArrayList<>();
+    all.addAll(loadActiveNotes());
+    all.addAll(loadArchivedNotes());
+    all.addAll(loadTrashedNotes());
+    return all;
+  }
+
+  private List<Note> loadActiveNotes() {
+    return loadNotesFromDir(notesDir(), activeCache);
+  }
+
+  private List<Note> loadArchivedNotes() {
+    return loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+  }
+
+  private List<Note> loadTrashedNotes() {
+    return loadNotesFromDir(new File(TRASH_DIR), trashCache);
+  }
+
+  /**
+   * Loads notes from a single directory. Returns the cached list if
+   * available, otherwise scans the directory.
+   * Sets archived/trashed flags based on which directory is being read.
+   */
+  private List<Note> loadNotesFromDir(File dir, List<Note> cache) {
+    if (cache != null) {
+      return new ArrayList<>(cache);
     }
     List<Note> notes = new ArrayList<>();
-    File[] files = notesDir().listFiles((dir, name) -> name.endsWith(".md"));
+    File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
     if (files == null || files.length == 0) {
-      notesCache = new ArrayList<>();
       return notes;
     }
+    boolean isArchive = dir.getAbsolutePath().equals(new File(ARCHIVE_DIR).getAbsolutePath());
+    boolean isTrash = dir.getAbsolutePath().equals(new File(TRASH_DIR).getAbsolutePath());
     for (File file : files) {
       ParsedNote parsed = FrontMatterUtils.parse(file);
       if (parsed != null) {
         Note note = buildNoteFromParsed(parsed);
         if (note != null) {
+          note.setArchived(isArchive);
+          note.setTrashed(isTrash);
           notes.add(note);
         }
       }
     }
-    notesCache = new ArrayList<>(notes);
     return notes;
   }
 
@@ -963,25 +1013,42 @@ public class FlatFileHelper implements NoteDataStore {
     return notes;
   }
 
+  /**
+   * Updates a note in the correct per-directory cache.
+   */
   private void updateNoteInCache(Note note) {
-    if (notesCache == null) return;
-    boolean found = false;
-    for (int i = 0; i < notesCache.size(); i++) {
-      if (notesCache.get(i).getCreation() != null
-          && notesCache.get(i).getCreation().equals(note.getCreation())) {
-        notesCache.set(i, note);
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      notesCache.add(note);
+    // Remove from all caches first
+    long id = note.getCreation() != null ? note.getCreation() : 0;
+    if (id == 0) return;
+    removeFromList(activeCache, id);
+    removeFromList(archiveCache, id);
+    removeFromList(trashCache, id);
+
+    // Add to the correct cache
+    if (Boolean.TRUE.equals(note.isTrashed())) {
+      if (trashCache != null) trashCache.add(note);
+    } else if (Boolean.TRUE.equals(note.isArchived())) {
+      if (archiveCache != null) archiveCache.add(note);
+    } else {
+      if (activeCache != null) activeCache.add(note);
     }
   }
 
   private void removeNoteFromCache(long noteId) {
-    if (notesCache == null) return;
-    notesCache.removeIf(n -> n.getCreation() != null && n.getCreation() == noteId);
+    removeFromList(activeCache, noteId);
+    removeFromList(archiveCache, noteId);
+    removeFromList(trashCache, noteId);
+  }
+
+  private void removeFromList(List<Note> list, long noteId) {
+    if (list == null) return;
+    list.removeIf(n -> n.getCreation() != null && n.getCreation() == noteId);
+  }
+
+  private void invalidateAllNoteCaches() {
+    activeCache = null;
+    archiveCache = null;
+    trashCache = null;
   }
 
   private void invalidateCategoriesCache() {
@@ -1049,8 +1116,6 @@ public class FlatFileHelper implements NoteDataStore {
     note.setLastModification(parsed.getLong("last_modification", creation));
     note.setTitle(parsed.get("title", ""));
     note.setContent(parsed.body());
-    note.setArchived(parsed.getBoolean("archived"));
-    note.setTrashed(parsed.getBoolean("trashed"));
     note.setAlarm(emptyToNull(parsed.get("alarm")));
     note.setReminderFired(parsed.getBoolean("reminder_fired") ? 1 : 0);
     note.setRecurrenceRule(emptyToNull(parsed.get("recurrence_rule")));
@@ -1081,23 +1146,25 @@ public class FlatFileHelper implements NoteDataStore {
    * rewritten with a potentially different slug.
    */
   private void removeOldFileForNote(long creation) {
-    File[] files = notesDir().listFiles((dir, name) -> name.endsWith(".md"));
-    if (files == null) return;
-    for (File file : files) {
-      ParsedNote parsed = FrontMatterUtils.parse(file);
-      if (parsed != null && parsed.getLong("creation", 0) == creation) {
-        file.delete();
-        return;
+    for (File dir : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
+      if (files == null) continue;
+      for (File file : files) {
+        ParsedNote parsed = FrontMatterUtils.parse(file);
+        if (parsed != null && parsed.getLong("creation", 0) == creation) {
+          file.delete();
+          return;
+        }
       }
     }
   }
 
   /**
-   * Returns a unique file in the notes directory, appending a numeric suffix
+   * Returns a unique file in the given directory, appending a numeric suffix
    * if a file with the same slug but different note already exists.
    */
-  private File resolveUniqueFile(String slug, long creation) {
-    File candidate = new File(NOTES_DIR, slug + ".md");
+  private File resolveUniqueFile(File dir, String slug, long creation) {
+    File candidate = new File(dir, slug + ".md");
 
     // If the file doesn't exist or belongs to this same note, use it
     if (!candidate.exists()) {
@@ -1111,7 +1178,7 @@ public class FlatFileHelper implements NoteDataStore {
     // Slug collision with a different note - add numeric suffix
     int suffix = 1;
     while (true) {
-      candidate = new File(NOTES_DIR, slug + "-" + suffix + ".md");
+      candidate = new File(dir, slug + "-" + suffix + ".md");
       if (!candidate.exists()) {
         return candidate;
       }
