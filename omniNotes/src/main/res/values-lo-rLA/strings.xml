@@ -184,7 +184,6 @@
     <string name="settings_checked_items_behavior">ລາຍການເລືອກ</string>
     <string name="settings_checked_items_behavior_summary">ຈະເຮັດຫຍັງເມື່ອລາຍການຖືກເລືອກ?</string>
     <string name="settings_category_preferences">ການອ້າງອີງ</string>
-    <string name="settings_category_beta">ເວີຊັນທົດລອງ</string>
     <string name="settings_category_about">ກ່ຽວກັບ</string>
     <string name="donate">ບໍລິຈາກ</string>
     <string name="settings_choose_language">ເລືອກພາ​ສາ</string>

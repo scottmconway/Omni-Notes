@@ -187,7 +187,6 @@
     <string name="empty_trash">Buida la paperera</string>
     <string name="empty_trash_confirmation">Esteu segur de suprimir totes les notes de la paperera?</string>
     <string name="help">Ajuda</string>
-    <string name="online_manual">Manual en línia</string>
     <string name="tags_added">S\'han afegit etiquetes</string>
     <string name="working">S\'hi està treballant...</string>
     <string name="imported">importades</string>
@@ -290,10 +289,7 @@
     <string name="settings_checked_items_behavior">Llistes de comprovació</string>
     <string name="settings_checked_items_behavior_summary">Què cal fer en marcar un element?</string>
     <string name="settings_category_preferences">Preferències</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Quant a</string>
-    <string name="settings_beta">Participació</string>
-    <string name="settings_beta_summary">Subscriviu-vos al programa beta per a estar al dia de les darreres característiques</string>
     <string name="donate">Feu un donatiu</string>
     <string name="donate_summary">Doneu suport al desenvolupament d\'aquesta aplicació amb un donatiu sense afany de lucre</string>
     <string name="settings_choose_language">Llengua</string>
@@ -350,9 +346,6 @@
     <string name="settings_prettified_dates_summary_on">Les dates es mostren en un format més bàsic</string>
     <string name="settings_prettified_dates_summary_off">Les dates es mostren en un format més detallat</string>
     <string name="settings_screen_privacy">Privadesa</string>
-    <string name="settings_error_reporting">Informe d\'errors</string>
-    <string name="settings_error_reporting_summary_on">Si l\'aplicació dóna un error s\'informarà al desenvolupador per a poder-vos ajudar</string>
-    <string name="settings_error_reporting_summary_off">No s\'enviarà cap informe d\'error. No us queixeu si quelcom va malament!</string>
     <string name="settings_send_analytics">Comparteix dades anònimes</string>
     <string name="settings_send_analytics_summary">Ajudeu al desenvolupador enviant informació no sensible, com ara el model del dispositiu, idioma i programari d\'ús freqüent. Aquesta informació s\'utilitza només per millorar l\'aplicació.</string>
     <string name="settings_enable_file_logging">Desa els registres a un fitxer</string>

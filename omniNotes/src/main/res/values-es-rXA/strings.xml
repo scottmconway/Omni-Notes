@@ -175,7 +175,6 @@
     <string name="empty_trash">Vaciar papelera</string>
     <string name="empty_trash_confirmation">Quies desaniciar toles notes de la papelera?</string>
     <string name="help">Ayuda</string>
-    <string name="online_manual">Manual en llinia</string>
     <string name="tags_added">Etiquetes amestaes</string>
     <string name="working">Trabayando...</string>
     <string name="imported">importaes</string>
@@ -259,9 +258,7 @@
     <string name="settings_checked_items_behavior">Llistes de verificación</string>
     <string name="settings_checked_items_behavior_summary">¿Qué quies facer cuando s\'esbille un elementu?</string>
     <string name="settings_category_preferences">Preferencies</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Tocante a</string>
-    <string name="settings_beta_summary">Soscribise al programa beta pa caltenese al día coles caberes carauterístiques</string>
     <string name="donate">Fai un donativu</string>
     <string name="donate_summary">Sofita\'l desendolcu d\'esta app con un donativu ensin ánimu de llucru</string>
     <string name="settings_choose_language">Llingua</string>
@@ -318,9 +315,6 @@
     <string name="settings_prettified_dates_summary_on">Les dates amuésense nun formatu más básicu</string>
     <string name="settings_prettified_dates_summary_off">Les dates amuésense nun formatu más detalláu</string>
     <string name="settings_screen_privacy">Privacidá</string>
-    <string name="settings_error_reporting">Fallu al informar</string>
-    <string name="settings_error_reporting_summary_on">Cuando l\'app nun funcione, va avisase al desendolcador</string>
-    <string name="settings_error_reporting_summary_off">Nun s\'unviaron informes de fallu. Nun te quexes si dalgo va mal!</string>
     <string name="settings_send_analytics">Compartir datos anónimos</string>
     <string name="settings_send_analytics_summary">Ayudar a los desendolcadoes unviando datos non sensibles como modelu, llingua, carauterístiques de l\'aplicación frecuentemente usaes. Estos datos úsense namái p\'ameyorar l\'app de códigu abiertu.</string>
     <string name="settings_statistics">Estadístiques</string>

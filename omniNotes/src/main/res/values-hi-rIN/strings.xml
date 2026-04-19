@@ -177,7 +177,6 @@
     <string name="empty_trash">Empty Trash</string>
     <string name="empty_trash_confirmation">सभी ट्रैश किए गए नोट को हटाने की पुष्टि करें?</string>
     <string name="help">मदद</string>
-    <string name="online_manual">ऑनलाइन मैनुअल</string>
     <string name="tags_added">सम्मिलत टैग</string>
     <string name="working">काम कर रहे...</string>
     <string name="imported">आयातित</string>
@@ -265,9 +264,7 @@
     <string name="settings_checked_items_behavior">जाँच सूची</string>
     <string name="settings_checked_items_behavior_summary">क्या करें जब किसी आइटम को चेक कियस गया है?</string>
     <string name="settings_category_preferences">पसंद</string>
-    <string name="settings_category_beta">बीटा</string>
     <string name="settings_category_about">के बारे में</string>
-    <string name="settings_beta_summary">बीटा प्रोग्राम को सब्सक्राइब करे और एड दम नए फीचर्स से आधुनिक रहें</string>
     <string name="donate">दान करें</string>
     <string name="donate_summary">इस डेवलपमेंट को सपोर्ट करे कुछ गैर लाभ डोनेशन से </string>
     <string name="settings_choose_language">भाषा</string>
@@ -324,9 +321,6 @@
     <string name="settings_prettified_dates_summary_on">तारीखे आसान प्रारूप मे दिखाए गए है</string>
     <string name="settings_prettified_dates_summary_off">तारीखे आसान प्रारूप मे दिखाए गए है</string>
     <string name="settings_screen_privacy">प्राइवसी</string>
-    <string name="settings_error_reporting">त्रुटि रिपोर्टिंग</string>
-    <string name="settings_error_reporting_summary_on">जब एप क्रैश होगा डेवलपर को आप की मदद करने के लिए बोला जायेगा</string>
-    <string name="settings_error_reporting_summary_off">कोई क्रैश रिपोर्ट नहीं भेजी जाएगी । अगर कुछ गलत हो जाता है तो शिकायत मत करो!</string>
     <string name="settings_send_analytics">अनाम डेटा साझा करें</string>
     <string name="settings_send_analytics_summary">गैर-संवेदनशील डेटा जैसे डिवाइस मॉडल, भाषा, बार-बार ऐप की विशेषताओं को भेजकर डेवलपर को सहायता करें यह डेटा केवल ओपन-सोर्स ऐप को बेहतर बनाने के लिए उपयोग किया जाता है</string>
     <string name="settings_statistics">सांख्यिकी</string>

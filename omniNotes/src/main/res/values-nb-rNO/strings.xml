@@ -187,7 +187,6 @@
     <string name="empty_trash">Tøm papirkurv</string>
     <string name="empty_trash_confirmation">Bekreft sletting av notater i papirkurven?</string>
     <string name="help">Hjelp</string>
-    <string name="online_manual">Online manual</string>
     <string name="tags_added">Etiketter lagt til</string>
     <string name="working">Arbeider...</string>
     <string name="imported">importert</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Sjekklister</string>
     <string name="settings_checked_items_behavior_summary">Hva skal gjøres når et element er merket?</string>
     <string name="settings_category_preferences">Innstillinger</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Om</string>
-    <string name="settings_beta">Melde deg på</string>
-    <string name="settings_beta_summary">Ta del i beta-programmet for å holde deg oppdatert med de nyeste funksjonene</string>
     <string name="donate">Doner</string>
     <string name="donate_summary">Støtt utviklingen av denne appen med en ideell donasjon</string>
     <string name="settings_choose_language">Spåk</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Datoer vises i et enklere format</string>
     <string name="settings_prettified_dates_summary_off">Datoer vises i et mer detaljert format</string>
     <string name="settings_screen_privacy">Personvern</string>
-    <string name="settings_error_reporting">Feilrapportering</string>
-    <string name="settings_error_reporting_summary_on">Når appen krasjer vil utvikler bli informert for å hjelpe deg</string>
-    <string name="settings_error_reporting_summary_off">Ikke send krasjrapporter. Ikke klag om noe går feil!</string>
     <string name="settings_send_analytics">Del anonyme data</string>
     <string name="settings_send_analytics_summary">Hjelp utvikleren ved å sende ikke-sensitive data som enhetsmodell, språk, ofte brukte app-funksjoner. Disse dataene brukes kun til å forbedre denne appen med åpen kildekode.</string>
     <string name="settings_enable_file_logging">Lagre logger til fil</string>

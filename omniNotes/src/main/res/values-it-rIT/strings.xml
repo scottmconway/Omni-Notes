@@ -188,7 +188,6 @@ Vuoi inviare una segnalazione allo sviluppatore?</string>
     <string name="empty_trash">Svuota il cestino</string>
     <string name="empty_trash_confirmation">Confermi la cancellazione di tutte le note nel cestino?</string>
     <string name="help">Guida</string>
-    <string name="online_manual">Manuale on-line</string>
     <string name="tags_added">Tag aggiunti</string>
     <string name="working">Sto lavorando...</string>
     <string name="imported">importate</string>
@@ -291,10 +290,7 @@ Vuoi inviare una segnalazione allo sviluppatore?</string>
     <string name="settings_checked_items_behavior">Liste di controllo</string>
     <string name="settings_checked_items_behavior_summary">Cosa fare quando un elemento delle liste di controllo viene selezionato?</string>
     <string name="settings_category_preferences">Preferenze</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Informazioni</string>
-    <string name="settings_beta">Opt-In</string>
-    <string name="settings_beta_summary">Iscriviti al programma beta per ricevere sempre gli aggiornamenti con le ultimissime modifiche</string>
     <string name="donate">Dona</string>
     <string name="donate_summary">Supporta lo sviluppo dell\'applicazione con una donazione senza fini di lucro</string>
     <string name="settings_choose_language">Lingua</string>
@@ -351,9 +347,6 @@ Vuoi inviare una segnalazione allo sviluppatore?</string>
     <string name="settings_prettified_dates_summary_on">Le date sono mostrate in un formato semplificato</string>
     <string name="settings_prettified_dates_summary_off">Le date sono mostrate in un formato più dettagliato</string>
     <string name="settings_screen_privacy">Privacy</string>
-    <string name="settings_error_reporting">Segnalazione errori</string>
-    <string name="settings_error_reporting_summary_on">Quando l\'applicazione ha un problema verrà inviata una segnalazione allo sviluppatore</string>
-    <string name="settings_error_reporting_summary_off">Non verranno inviate segnalazioni per i problemi dell\'applicazione. Non lamentarti poi se qualcosa va storto!</string>
     <string name="settings_send_analytics">Condivisione dati anonimi</string>
     <string name="settings_send_analytics_summary">Aiuta lo sviluppatore inviando informazioni non sensibili come il modello del dispositivo, la lingua, le funzionalità più usate nell\'applicazione. Questi dati sono usati esclusivamente per migliorare l\'app open-source.</string>
     <string name="settings_enable_file_logging">Salva i log nel file</string>

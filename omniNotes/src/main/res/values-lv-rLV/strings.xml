@@ -173,7 +173,6 @@
     <string name="empty_trash">Iztukšot miskasti</string>
     <string name="empty_trash_confirmation">Apstiprināt visu miskastes piezīmju dzēšanu?</string>
     <string name="help">Palīdzība</string>
-    <string name="online_manual">Tiešsaistes rokasgrāmata</string>
     <string name="tags_added">Pievienotās birkas</string>
     <string name="working">Strādā...</string>
     <string name="imported">importētas</string>
@@ -272,9 +271,6 @@
     <string name="settings_attachments_on_bottom_summary_on">Rāda pielikumus zem piezīmes satura</string>
     <string name="settings_attachments_on_bottom_summary_off">Rāda pielikumus virs piezīmes satura</string>
     <string name="settings_screen_privacy">Privātums</string>
-    <string name="settings_error_reporting">Kļūdu ziņojumu sūtīšana</string>
-    <string name="settings_error_reporting_summary_on">Kad lietotne avarē, izstrādātājam tas tiks paziņots, lai varētu Jums palīdzēt</string>
-    <string name="settings_error_reporting_summary_off">Kļūdu ziņojumi netiks sūtīti. Nesūdzieties, ja kaut kas noiet greizi!</string>
     <string name="settings_send_analytics">Kopīgot anonīmus datus</string>
     <string name="settings_send_analytics_summary">Palīdzēt izstrādātājam, sūtot tādus nesensitīvus datus kā ierīces modelis, valoda, bieži lietotas lietotnes iespējas. Šī informācija tiks lietota tikai, lai uzlabotu šo atvērtā koda lietotni.</string>
     <string name="settings_statistics">Statistika</string>

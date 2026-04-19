@@ -173,7 +173,6 @@
     <string name="empty_trash">Isprazni smeće</string>
     <string name="empty_trash_confirmation">Potvrdite brisanje svih bilježaka u smeću?</string>
     <string name="help">Pomoć</string>
-    <string name="online_manual">Online upute</string>
     <string name="tags_added">Tagovi dodani</string>
     <string name="working">Obrada...</string>
     <string name="imported">uvezeno</string>
@@ -257,9 +256,7 @@
     <string name="settings_checked_items_behavior">Check liste</string>
     <string name="settings_checked_items_behavior_summary">Što želite učiniti kada je stavka odabrana?</string>
     <string name="settings_category_preferences">Osobne postavke</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Više o</string>
-    <string name="settings_beta_summary">Pridruži se beta programu za pristup najnovijim značajkama</string>
     <string name="donate">Donirajte</string>
     <string name="donate_summary">Podržite razvoj ove aplikacije neprofitnom donacijom</string>
     <string name="settings_choose_language">Jezik</string>
@@ -312,9 +309,6 @@
     <string name="settings_attachments_on_bottom_summary_on">Prikaži privitke ispod sadržaja bilješke</string>
     <string name="settings_attachments_on_bottom_summary_off">Prikaži privitke iznad sadržaja bilješke</string>
     <string name="settings_screen_privacy">Privatnost</string>
-    <string name="settings_error_reporting">Izvještavanje o pogreškama</string>
-    <string name="settings_error_reporting_summary_on">Kada se aplikacija sruši razvojni programer bit će obaviješten kako bi vam mogao pomoći</string>
-    <string name="settings_error_reporting_summary_off">Izvješća o rušenju aplikacije neće biti poslana. Nemojte se žaliti ako nešto pođe po zlu!</string>
     <string name="settings_send_analytics">Podijeli anonimne podatke</string>
     <string name="settings_send_analytics_summary">Pomozite razvojnim programerima slanjem anonimnih podataka o modelu uređaja, jeziku, često korištenim značajkama aplikacije. Ti podaci se koriste samo za poboljšanje aplikacije otvorenog koda.</string>
     <string name="settings_statistics">Statistika</string>

@@ -187,7 +187,6 @@
     <string name="empty_trash">Спорожнити смітник</string>
     <string name="empty_trash_confirmation">Підтверджуєте видалення усіх нотаток зі смітника?</string>
     <string name="help">Довідка</string>
-    <string name="online_manual">Онлайн допомога</string>
     <string name="tags_added">Теги додано</string>
     <string name="working">Працюємо...</string>
     <string name="imported">імпортовано</string>
@@ -291,10 +290,7 @@
     <string name="settings_checked_items_behavior">Контрольні списки</string>
     <string name="settings_checked_items_behavior_summary">Що виконувати, коли елемент позначений?</string>
     <string name="settings_category_preferences">Параметри</string>
-    <string name="settings_category_beta">Бета-тестування</string>
     <string name="settings_category_about">Про програму</string>
-    <string name="settings_beta">За заявкою</string>
-    <string name="settings_beta_summary">Підпишіться на бета-програму, щоб бути в курсі останніх можливостей</string>
     <string name="donate">Підтримати</string>
     <string name="donate_summary">Підтримайте розробку цієї програми некомерційною пожертвою</string>
     <string name="settings_choose_language">Вибір мови</string>
@@ -351,9 +347,6 @@
     <string name="settings_prettified_dates_summary_on">Показувати дати в простішому форматі</string>
     <string name="settings_prettified_dates_summary_off">Показувати дати в більш детальному форматі</string>
     <string name="settings_screen_privacy">Приватність</string>
-    <string name="settings_error_reporting">Звітувати про помилки</string>
-    <string name="settings_error_reporting_summary_on">Коли програма видасть помилку розробник про це дізнається</string>
-    <string name="settings_error_reporting_summary_off">Ніякі дані про помилки не будуть надсилатися</string>
     <string name="settings_send_analytics">Надсилати анонімні дані</string>
     <string name="settings_send_analytics_summary">Допоможіть розробникові шляхом відправлення неконфіденційних даних, таких як модель пристроїв, мова, часто використовуваних функцій додатка. Ці дані використовуються лише для покращення програми з відкритим вихідним кодом.</string>
     <string name="settings_enable_file_logging">Зберегти журнали у файл</string>

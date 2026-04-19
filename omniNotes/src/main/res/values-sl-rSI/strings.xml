@@ -180,7 +180,6 @@
     <string name="empty_trash">Izprazni smeti</string>
     <string name="empty_trash_confirmation">Potrdite brisanje vseh smetnjaku ugotavlja?</string>
     <string name="help">Pomoč</string>
-    <string name="online_manual">Na črto priročnik</string>
     <string name="tags_added">Oznake dodaj</string>
     <string name="working">Dela,...</string>
     <string name="imported">uvožena</string>
@@ -274,10 +273,7 @@
     <string name="settings_checked_items_behavior">Seznami</string>
     <string name="settings_checked_items_behavior_summary">Kaj se zgodi, kadar je postavka označena?</string>
     <string name="settings_category_preferences">Nastavitve</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">O aplikaciji</string>
-    <string name="settings_beta">Sodeluj</string>
-    <string name="settings_beta_summary">Naročite se na beta program za uporabo najnovejših funkcij</string>
     <string name="donate">Doniraj</string>
     <string name="donate_summary">Podpirati razvoj te vloge z neprofitno darovanja</string>
     <string name="settings_choose_language">Jezik</string>
@@ -334,9 +330,6 @@
     <string name="settings_prettified_dates_summary_on">Datumi so prikazani v preprostejši obliki</string>
     <string name="settings_prettified_dates_summary_off">Datumi so prikazani v bolj podrobni obliki</string>
     <string name="settings_screen_privacy">Zasebnost</string>
-    <string name="settings_error_reporting">Poročanje o napakah</string>
-    <string name="settings_error_reporting_summary_on">Čas uporaba tresk razvijalec boste obveščeni, da vam pomaga</string>
-    <string name="settings_error_reporting_summary_off">Poročila ne tresk hoteti obstati odposlati. Se ne pritožujejo, če gre kaj narobe!</string>
     <string name="settings_send_analytics">Deli anonimne podatke</string>
     <string name="settings_send_analytics_summary">Pomagajte razvijalcem s pošiljanjem neobčutljivih podatkov kot na primer model naprave, jezik, pogosto uporabljene funkcije. Ti podatki so uporabljeni izključno za izboljšanje odprtokodne aplikacije.</string>
     <string name="settings_enable_file_logging">Shrani dnevniške zapise v datoteko</string>

@@ -191,7 +191,6 @@
     <string name="empty_trash_confirmation">အမှိုက်ပုံးထဲရှိမှတ်စုအားလုံးဖျက်
 ပစ်ခြင်းကိုအတည်ပြုပါသလား?</string>
     <string name="help">အကူအညီ</string>
-    <string name="online_manual">အွန်လိုင်း လက်စွဲ</string>
     <string name="tags_added">အညွှန်းများ ထည့်ပြီး</string>
     <string name="working">လုပ်ဆောင်နေသည်...</string>
     <string name="imported">တင်သွင်းရယူပြီး</string>
@@ -309,12 +308,7 @@
     <string name="settings_checked_items_behavior">အမှန်ခြစ် စာရင်းများ</string>
     <string name="settings_checked_items_behavior_summary">အမျိုးအမည်တစ်ခုကိုအမှန်ခြစ်ထားလျှင်ဘာလုပ်ရမည်နည်း?</string>
     <string name="settings_category_preferences">စိတ်ကြိုက်ပြင်ဆင်စရာများ</string>
-    <string name="settings_category_beta">စမ်းသပ်မူ</string>
     <string name="settings_category_about">အကြောင်း</string>
-    <string name="settings_beta">ပါဝင်မည်။</string>
-    <string name="settings_beta_summary">နောက်ဆုံးပေါ်အင်္ဂါရပ်များကိုမျက်ခြေမပြတ်စေရန်စမ်းသပ်မူအစီအ
-စဉ်တွင်ပါဝင်ပါမည်။</string>
-    <string name="donate">လှူမည်။</string>
     <string name="donate_summary">ဤအက်ပ်တိုးတက်စေရန်အကျိုးအမြတ်ရှေးမရှုသောလှူဒါန်းမှုဖြင့်
 ထောက်ပံ့နိုင်ပါသည်။</string>
     <string name="settings_choose_language">ဘာသာစကား</string>
@@ -377,10 +371,6 @@
 မည်။</string>
     <string name="settings_prettified_dates_summary_off">ရက်စွဲကိုအသေးစိတ်ပြသစေမည်။</string>
     <string name="settings_screen_privacy">ကိုယ်ရေးကိုယ်တာ</string>
-    <string name="settings_error_reporting">အစီရင်ခံစဉ်အမှားအယွင်း</string>
-    <string name="settings_error_reporting_summary_on">အက်ပ်ရပ်သွားလျှင်သင့်ကိုကူညီ
-နိုင်ရန်အက်ပ်တီထွင်သူထံအသိပေးမည်။</string>
-    <string name="settings_error_reporting_summary_off">ပျက်ယွင်းမှုအစီရင်ခံစာပို့လိမ့်မည်မဟုတ်ပါ။တစ်ခုခုမှားသွားလျှင်အပြစ်မတင်ပါနှင့်!</string>
     <string name="settings_send_analytics">အမည်မဖော်ပြဘဲအချက်အလက်ဝေမျှခြင်း</string>
     <string name="settings_send_analytics_summary">မကြာခဏသုံးသောအက်ပ်၏လုပ်ဆောင်ချက်များ၊ဘာသာစကား၊
 စက်မော်ဒယ်လ်အမျိုးအစား၊မထိခိုက်လွယ်သောအချက်အလက်မျာပေးပို့ခြင်းဖြင့်အက်ပ်တီထွင်သူကိုကူညီပါ။အချက်အလက်များကို

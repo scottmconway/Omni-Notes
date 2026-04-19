@@ -187,7 +187,6 @@
     <string name="empty_trash">ごみ箱を空にする</string>
     <string name="empty_trash_confirmation">ごみ箱のノートをすべて削除してもよろしいですか?</string>
     <string name="help">ヘルプ</string>
-    <string name="online_manual">オンライン マニュアル</string>
     <string name="tags_added">タグを追加しました</string>
     <string name="working">処理中...</string>
     <string name="imported">インポートしました</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">チェックリスト</string>
     <string name="settings_checked_items_behavior_summary">項目がチェックされたときにどうしますか?</string>
     <string name="settings_category_preferences">プリファレンス</string>
-    <string name="settings_category_beta">ベータ</string>
     <string name="settings_category_about">...について</string>
-    <string name="settings_beta">オプトイン</string>
-    <string name="settings_beta_summary">最新の機能に保つためにベータプログラムに登録します</string>
     <string name="donate">寄付</string>
     <string name="donate_summary">非営利の寄付でこのアプリの開発をサポートします</string>
     <string name="settings_choose_language">言語</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">シンプルな形式で日付を表示します</string>
     <string name="settings_prettified_dates_summary_off">詳細な形式で日付を表示します</string>
     <string name="settings_screen_privacy">プライバシー</string>
-    <string name="settings_error_reporting">エラー報告</string>
-    <string name="settings_error_reporting_summary_on">アプリがクラッシュした時に、あなたの役に立つように開発者に通知されます</string>
-    <string name="settings_error_reporting_summary_off">クラッシュ レポートは送信されません。何か問題があっても文句を言わないでくださいね!</string>
     <string name="settings_send_analytics">匿名データを共有</string>
     <string name="settings_send_analytics_summary">デバイスのモデル、言語、よく使われるアプリの機能など、機密ではないデータを送信することで開発者を支援します。このデータはオープンソース アプリの改善にのみ使用されます。</string>
     <string name="settings_enable_file_logging">ログをファイルに保存</string>

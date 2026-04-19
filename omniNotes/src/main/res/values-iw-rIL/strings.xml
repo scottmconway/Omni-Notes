@@ -169,7 +169,6 @@
     <string name="empty_trash">ריקון אשפה</string>
     <string name="empty_trash_confirmation">האם לרוקן את כל ההערות מהאשפה?</string>
     <string name="help">עזרה</string>
-    <string name="online_manual">מדריך מקוון</string>
     <string name="tags_added">תגיות התווספו</string>
     <string name="working">עובד...</string>
     <string name="imported">מיובאים</string>
@@ -241,7 +240,6 @@
     <string name="settings_checked_items_behavior">רשימות סימון</string>
     <string name="settings_checked_items_behavior_summary">מה לעשות כאשר פריט מסומן?</string>
     <string name="settings_category_preferences">העדפות</string>
-    <string name="settings_category_beta">בטא</string>
     <string name="settings_category_about">אודות</string>
     <string name="donate">תרומה</string>
     <string name="settings_choose_language">שפה</string>

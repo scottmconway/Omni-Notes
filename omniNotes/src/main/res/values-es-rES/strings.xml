@@ -188,7 +188,6 @@
     <string name="empty_trash">Vaciar papelera</string>
     <string name="empty_trash_confirmation">¿Vaciar la papelera?</string>
     <string name="help">Ayuda</string>
-    <string name="online_manual">Manual en línea</string>
     <string name="tags_added">Etiquetas añadidas</string>
     <string name="working">Trabajando...</string>
     <string name="imported">importados</string>
@@ -290,10 +289,7 @@
     <string name="settings_checked_items_behavior">Listas de comprobación</string>
     <string name="settings_checked_items_behavior_summary">¿Qué desea hacer cuando se selecciona un elemento?</string>
     <string name="settings_category_preferences">Preferencias</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Sobre</string>
-    <string name="settings_beta">Opt-In</string>
-    <string name="settings_beta_summary">Suscribirse al beta program para mantenerse al día con las últimas características</string>
     <string name="donate">Donar</string>
     <string name="donate_summary">Contribuye al desarrollo de la aplicación con una donación sin ánimo de lucro</string>
     <string name="settings_choose_language">Idioma</string>
@@ -350,9 +346,6 @@
     <string name="settings_prettified_dates_summary_on">Las fechas se muestran en formato simple</string>
     <string name="settings_prettified_dates_summary_off">Las fechas se muestran en formato detallado</string>
     <string name="settings_screen_privacy">Privacidad</string>
-    <string name="settings_error_reporting">Informe de errores</string>
-    <string name="settings_error_reporting_summary_on">Cuando se cierra la aplicación el desarrollador será informado para ayudarle</string>
-    <string name="settings_error_reporting_summary_off">No informes de crash serán enviados ¡No quejes si algo sale mal!</string>
     <string name="settings_send_analytics">Compartir datos anónimos</string>
     <string name="settings_send_analytics_summary">Ayudar a los desarrolladores enviando datos no sensibles como modelo, idioma, características de la aplicación frecuentemente usadas. Estos datos se utilizan sólo para mejorar la aplicación de código abierto.</string>
     <string name="settings_enable_file_logging">Guardar registros en archivo</string>

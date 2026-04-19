@@ -180,7 +180,6 @@
     <string name="empty_trash">Hustu zakarrontzia</string>
     <string name="empty_trash_confirmation">Berretsi zakarrontziko ohar guztiak ezabatzea?</string>
     <string name="help">Laguntza</string>
-    <string name="online_manual">Sareko eskuliburua</string>
     <string name="tags_added">Etiketa gehituta</string>
     <string name="working">Lanean...</string>
     <string name="imported">inportatuta</string>
@@ -274,10 +273,7 @@
     <string name="settings_checked_items_behavior">Egiaztapen-zerrendak</string>
     <string name="settings_checked_items_behavior_summary">Zer egin elementu bat markatzean?</string>
     <string name="settings_category_preferences">Hobespenak</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Honi buruz</string>
-    <string name="settings_beta">Onartu</string>
-    <string name="settings_beta_summary">Harpidetu beta programara azken ezaugarriak eskuratzeko</string>
     <string name="donate">Dohaintza</string>
     <string name="donate_summary">Babestu aplikazio honen garapena irabazi asmorik gabeko dohaintza batekin</string>
     <string name="settings_choose_language">Hizkuntza</string>
@@ -334,9 +330,6 @@
     <string name="settings_prettified_dates_summary_on">Datak formatu sinpleagoan erakusten dira</string>
     <string name="settings_prettified_dates_summary_off">Datak formatu xehetsuagoan erakusten dira</string>
     <string name="settings_screen_privacy">Pribatutasuna</string>
-    <string name="settings_error_reporting">Erroreen berri-ematea</string>
-    <string name="settings_error_reporting_summary_on">Aplikazioa kraskatzen denean garatzaileari jakinaraziko zaio zu laguntzeko</string>
-    <string name="settings_error_reporting_summary_off">Ez da kraskatze txostenik bidaliko. Ez kexatu zerbait gaizki badabil gero!</string>
     <string name="settings_send_analytics">Partekatu datu anonimoak</string>
     <string name="settings_send_analytics_summary">Lagundu garatzailea kontuzkoa ez den informazioa bidaliz, adibidez gailuaren modeloa, hizkuntza, maiz erabilitako aplikazioaren ezaugarriak. Datu hauek kode irekiko aplikazioa hobetzeko besterik ez dira erabiltzen.</string>
     <string name="settings_enable_file_logging">Gorde egunkariak fitxategian</string>

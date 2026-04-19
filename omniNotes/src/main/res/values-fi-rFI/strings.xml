@@ -187,7 +187,6 @@
     <string name="empty_trash">Tyhjennä roskakori</string>
     <string name="empty_trash_confirmation">Poistetaanko kaikki roskakorissa olevat merkinnät?</string>
     <string name="help">Ohjeet</string>
-    <string name="online_manual">Online-ohjeet</string>
     <string name="tags_added">Tunnisteet lisätty</string>
     <string name="working">Työstetään...</string>
     <string name="imported">tuotu</string>
@@ -290,10 +289,7 @@
     <string name="settings_checked_items_behavior">Muistilistat</string>
     <string name="settings_checked_items_behavior_summary">Mitä tehdä, kun kohde on valittu?</string>
     <string name="settings_category_preferences">Ominaisuudet</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Tietoja</string>
-    <string name="settings_beta">Osallistu</string>
-    <string name="settings_beta_summary">Tilaa beta-ohjelma, jotta voit pysyä ajan tasalla uusimmista ominaisuuksista</string>
     <string name="donate">Lahjoita</string>
     <string name="donate_summary">Tue tämän sovelluksen kehittämistä voittoa tavoittelemattomalla lahjoituksella</string>
     <string name="settings_choose_language">Kieli</string>
@@ -350,9 +346,6 @@
     <string name="settings_prettified_dates_summary_on">Päivämäärät näkyvät yksinkertaisemmassa muodossa</string>
     <string name="settings_prettified_dates_summary_off">Päivämäärät näkyvät yksityiskohtaisemmassa muodossa</string>
     <string name="settings_screen_privacy">Yksityisyys</string>
-    <string name="settings_error_reporting">Virheiden raportointi</string>
-    <string name="settings_error_reporting_summary_on">Kun sovellus kaatuu, ilmoitetaan asiasta kehittäjälle</string>
-    <string name="settings_error_reporting_summary_off">Kaatumisraportteja ei lähetetä. Älä valita, jos jokin menee pieleen!</string>
     <string name="settings_send_analytics">Jaa nimettömiä tietoja</string>
     <string name="settings_send_analytics_summary">Auta kehittäjää lähettämällä muita kuin arkaluonteisia tietoja, kuten laitteen malli, kieli ja usein käytettyjä sovelluksen ominaisuuksia. Näitä tietoja käytetään vain parantamaan avoimen lähdekoodin sovellusta.</string>
     <string name="settings_enable_file_logging">Tallenna lokit tiedostoon</string>

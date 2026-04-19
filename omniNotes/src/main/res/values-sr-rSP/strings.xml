@@ -186,7 +186,6 @@
     <string name="empty_trash">Испразни смеће</string>
     <string name="empty_trash_confirmation">Потврђујете брисање свих белешки из смећа?</string>
     <string name="help">Помоћ</string>
-    <string name="online_manual">Приручник на мрежи</string>
     <string name="tags_added">Ознаке додате</string>
     <string name="working">Радим...</string>
     <string name="imported">увезено</string>
@@ -283,10 +282,7 @@
     <string name="settings_checked_items_behavior">Спискови</string>
     <string name="settings_checked_items_behavior_summary">Шта урадити кад је ставка откачена?</string>
     <string name="settings_category_preferences">Подешавања</string>
-    <string name="settings_category_beta">Бета</string>
     <string name="settings_category_about">О програму</string>
-    <string name="settings_beta">Опциони улаз</string>
-    <string name="settings_beta_summary">Пријавите се на бета програм да будете у току са најновијим могућностима</string>
     <string name="donate">Донирајтe</string>
     <string name="donate_summary">Подржите развој ове апликације са непрофитном донацијом</string>
     <string name="settings_choose_language">Језик</string>
@@ -343,9 +339,6 @@
     <string name="settings_prettified_dates_summary_on">Датуми су приказани у једноставном облику</string>
     <string name="settings_prettified_dates_summary_off">Датуми су приказани у детаљнијем облику</string>
     <string name="settings_screen_privacy">Приватност</string>
-    <string name="settings_error_reporting">Пријављање грешака</string>
-    <string name="settings_error_reporting_summary_on">Када се апликација сруши, програмер ће бити обавештен</string>
-    <string name="settings_error_reporting_summary_off">Извештаји се неће слати. Немојте се жалити ако нешто не ради!</string>
     <string name="settings_send_analytics">Дели анонимне податке</string>
     <string name="settings_send_analytics_summary">Помаже програмеру слањем безличних података попут модела телефона, језика, често коришћених могућности апликације. Ово се користи како би се апликација побољшала.</string>
     <string name="settings_enable_file_logging">Сачувај дневнике у фајл</string>

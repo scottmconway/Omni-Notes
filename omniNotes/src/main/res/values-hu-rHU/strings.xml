@@ -184,7 +184,6 @@
     <string name="empty_trash">Lomtár ürítése</string>
     <string name="empty_trash_confirmation">Megerősíti a Lomtárban lévő összes jegyzet törlését?</string>
     <string name="help">Súgó</string>
-    <string name="online_manual">Online kézikönyv</string>
     <string name="tags_added">Címkék hozzáadva</string>
     <string name="working">Folyamatban...</string>
     <string name="imported">Importált</string>
@@ -280,10 +279,7 @@
     <string name="settings_checked_items_behavior">Ellenőrzőlisták</string>
     <string name="settings_checked_items_behavior_summary">Mi a teendő, ha az elem be van jelölve?</string>
     <string name="settings_category_preferences">Beállítások</string>
-    <string name="settings_category_beta">Béta</string>
     <string name="settings_category_about">Névjegy</string>
-    <string name="settings_beta">Részvétel</string>
-    <string name="settings_beta_summary">Iratkozzon fel a bétára, hogy naprakész legyen a legújabb funkciókkal</string>
     <string name="donate">Támogatás</string>
     <string name="donate_summary">Támogassa ennek az alkalmazásnak a fejlesztését egy non-profit adománnyal</string>
     <string name="settings_choose_language">Nyelv</string>
@@ -340,9 +336,6 @@
     <string name="settings_prettified_dates_summary_on">Dátumok megjelenítése egyszerűbb formátumban</string>
     <string name="settings_prettified_dates_summary_off">Dátumok megjelenítése részletesebb formátumban</string>
     <string name="settings_screen_privacy">Adatvédelem</string>
-    <string name="settings_error_reporting">Hibajelentés</string>
-    <string name="settings_error_reporting_summary_on">Amikor az alkalmazás összeomlik, a fejlesztő értesítést kap, hogy segíthessen önnek</string>
-    <string name="settings_error_reporting_summary_off">Összeomlási jelentések nem kerülnek küldésre. Ne panaszkodjon, ha valami balul sül el!</string>
     <string name="settings_send_analytics">Névtelen adatok megosztása</string>
     <string name="settings_send_analytics_summary">Segítse a fejlesztőt olyan nem személyes adatok elküldésével, mint az eszköz típusa, a nyelv, a gyakran használt funkciók. Ezeket az adatokat csak ennek a nyílt forráskódú alkalmazásnak a javításához használjuk fel.</string>
     <string name="settings_enable_file_logging">Naplófájlok mentése fáljba</string>

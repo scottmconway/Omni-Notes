@@ -177,7 +177,6 @@
     <string name="empty_trash">Çöp kutusunu boşalt</string>
     <string name="empty_trash_confirmation">Çöp kutusundaki notlar tamamen silinsin mi?</string>
     <string name="help">Yardım Merkezi</string>
-    <string name="online_manual">Çevrimiçi kılavuz</string>
     <string name="tags_added">Etiketler eklendi</string>
     <string name="working">İşleniyor...</string>
     <string name="imported">içe aktarıldı</string>
@@ -267,9 +266,7 @@
     <string name="settings_checked_items_behavior">Yapılacaklar listesi</string>
     <string name="settings_checked_items_behavior_summary">Öğe işaretlendiğinde ne yapılacağını seç</string>
     <string name="settings_category_preferences">Tercihler</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Hakkında</string>
-    <string name="settings_beta_summary">En son özellikleri ile güncel tutmak için beta programına abone ol</string>
     <string name="donate">Bağış Yap</string>
     <string name="donate_summary">Kar amacı gütmeyen bu uygulamayı bağış ile gelişimini destekle</string>
     <string name="settings_choose_language">Dil seç</string>
@@ -326,9 +323,6 @@
     <string name="settings_prettified_dates_summary_on">Tarihler daha kolay bir biçimde gösterilir</string>
     <string name="settings_prettified_dates_summary_off">Tarihler daha detaylı bir biçimde gösterilir</string>
     <string name="settings_screen_privacy">Gizlilik</string>
-    <string name="settings_error_reporting">Hata bildirimi</string>
-    <string name="settings_error_reporting_summary_on">Uygulama çökerse, geliştiricinin yardımcı olabilmesi için çökme rapor edilir</string>
-    <string name="settings_error_reporting_summary_off">Çökme olmayan raporlar gönderilecek . Birşeyler yanlış giderse şikayet etmeyin!</string>
     <string name="settings_send_analytics">İsimsiz veri paylaş</string>
     <string name="settings_send_analytics_summary">Aygıt modeli, dili, sık kullanılan uygulama özellikleri gibi hassas olamayan bilgileri göndererek geliştiriciye yardım edin. Bu veriler yalnızca açık kaynaklı uygulamayı iyileştirmek için kullanılır.</string>
     <string name="settings_statistics">İstatistikler</string>

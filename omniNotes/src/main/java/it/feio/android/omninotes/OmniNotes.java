@@ -30,11 +30,6 @@ import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LanguageHelper;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
-import org.acra.ACRA;
-import org.acra.config.CoreConfigurationBuilder;
-import org.acra.config.HttpSenderConfigurationBuilder;
-import org.acra.config.ToastConfigurationBuilder;
-import org.acra.sender.HttpSender.Method;
 
 
 public class OmniNotes extends Application {

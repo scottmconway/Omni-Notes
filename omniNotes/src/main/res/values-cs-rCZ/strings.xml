@@ -187,7 +187,6 @@
     <string name="empty_trash">Vysypat koš</string>
     <string name="empty_trash_confirmation">Opravdu chcete odstranít všechny poznámky v koši?</string>
     <string name="help">Nápověda</string>
-    <string name="online_manual">Manuál online</string>
     <string name="tags_added">Značky přidány</string>
     <string name="working">Zpracovávám...</string>
     <string name="imported">importované</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Seznamy</string>
     <string name="settings_checked_items_behavior_summary">Co dělat, když je položka zaškrtnuta?</string>
     <string name="settings_category_preferences">Vlastnosti</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">O aplikaci</string>
-    <string name="settings_beta">Přihlásit se</string>
-    <string name="settings_beta_summary">Přihlásit se k programu beta a držet tak krok s novinkami</string>
     <string name="donate">Přispět</string>
     <string name="donate_summary">Podpořte vývojáře této aplikace neziskovým příspěvkem</string>
     <string name="settings_choose_language">Jazyk</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Data jsou uvedeny v jednodušším formátu</string>
     <string name="settings_prettified_dates_summary_off">Data jsou uvedeny v podrobné podobě</string>
     <string name="settings_screen_privacy">Soukromí</string>
-    <string name="settings_error_reporting">Hlášení chyb</string>
-    <string name="settings_error_reporting_summary_on">Když dojde k chybě aplikace, bude informován vývojář, aby vám mohl pomoci</string>
-    <string name="settings_error_reporting_summary_off">Nebudou odesílány žádné zprávy o selháních programu. Nestěžute si pak, pokud aplikace nebude fungovat správně!</string>
     <string name="settings_send_analytics">Sdílet anonymní údaje</string>
     <string name="settings_send_analytics_summary">Pomoc vývojáři odesíláním dat bez citlivého obsahu jako je model zařízení, jazyk, často používané funkce aplikace. Tyto údaje se používají pouze pro zlepšení open-source aplikace.</string>
     <string name="settings_enable_file_logging">Uložit logy do souboru</string>

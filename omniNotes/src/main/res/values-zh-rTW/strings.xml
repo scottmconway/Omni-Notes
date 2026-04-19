@@ -180,7 +180,6 @@
     <string name="empty_trash">清空回收桶</string>
     <string name="empty_trash_confirmation">確認刪除回收桶所有筆記？</string>
     <string name="help">說明</string>
-    <string name="online_manual">線上手冊</string>
     <string name="tags_added">標籤已添加</string>
     <string name="working">處理中...</string>
     <string name="imported">已匯入</string>
@@ -271,9 +270,7 @@
     <string name="settings_checked_items_behavior">核對清單</string>
     <string name="settings_checked_items_behavior_summary">在點選後如何操作？</string>
     <string name="settings_category_preferences">偏好設定</string>
-    <string name="settings_category_beta">測試版</string>
     <string name="settings_category_about">關於</string>
-    <string name="settings_beta_summary">參與Beta測試以便獲得最新功能</string>
     <string name="donate">捐款</string>
     <string name="donate_summary">通過非營利性捐贈來支持此程式的開發</string>
     <string name="settings_choose_language">語系</string>
@@ -330,9 +327,6 @@
     <string name="settings_prettified_dates_summary_on">日期以簡單格式顯示</string>
     <string name="settings_prettified_dates_summary_off">日期以詳細格式顯示</string>
     <string name="settings_screen_privacy">隱私</string>
-    <string name="settings_error_reporting">錯誤報告</string>
-    <string name="settings_error_reporting_summary_on">當應用程式崩潰時，將通知開發者來幫助你</string>
-    <string name="settings_error_reporting_summary_off">錯誤報告將不會被發送，問題可能不會被解決！</string>
     <string name="settings_send_analytics">分享匿名資料</string>
     <string name="settings_send_analytics_summary">傳送非敏感資料以協助開發者，例如裝置型號、語言、常用應用程式功能等。這些資料僅用來改善開源應用程式。</string>
     <string name="settings_statistics">統計</string>

@@ -177,7 +177,6 @@
     <string name="empty_trash">Baleirar a papeleira</string>
     <string name="empty_trash_confirmation">Realmente queres eliminar todas as notas desbotadas?</string>
     <string name="help">Axuda</string>
-    <string name="online_manual">Manual en liña</string>
     <string name="tags_added">Etiquetas engadidas</string>
     <string name="working">A traballar...</string>
     <string name="imported">importadas</string>
@@ -267,9 +266,7 @@
     <string name="settings_checked_items_behavior">Listaxes de verificación</string>
     <string name="settings_checked_items_behavior_summary">Que facer cando se selecciona un elemento?</string>
     <string name="settings_category_preferences">Preferencias</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Acerca de</string>
-    <string name="settings_beta_summary">Subscribirse ao programa beta para estar ao tanto das últimas actualizacións</string>
     <string name="donate">Doar</string>
     <string name="donate_summary">Apoia o desenvolvemento deste aplicativo cunha doazón sen fins lucrativos</string>
     <string name="settings_choose_language">Idioma</string>
@@ -326,9 +323,6 @@
     <string name="settings_prettified_dates_summary_on">As datas móstranse nun formato máis simple</string>
     <string name="settings_prettified_dates_summary_off">As datas móstranse nun formato con máis detalles</string>
     <string name="settings_screen_privacy">Privacidade</string>
-    <string name="settings_error_reporting">Erro ao enviar o informe</string>
-    <string name="settings_error_reporting_summary_on">Cando o aplicativo se bloquee, o desenvolvedor será informado para poder axudarche</string>
-    <string name="settings_error_reporting_summary_off">Non se enviarán informes de erros. Non te queixes se algo falla!</string>
     <string name="settings_send_analytics">Compartir datos anónimos</string>
     <string name="settings_send_analytics_summary">Axuda o desenvolvedor enviándolle datos non sensibles como o modelo de dispositivo, o idioma ou as funcionalidades máis empregadas. Estes datos usaranse unicamente para mellorar o aplicativo.</string>
     <string name="settings_statistics">Estatísticas</string>

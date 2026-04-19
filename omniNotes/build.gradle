@@ -133,8 +133,6 @@ dependencies {
     implementation 'com.larswerkman:HoloColorPicker:1.5'
     implementation 'de.keyboardsurfer.android.widget:crouton:1.8.5@aar'
     implementation 'com.google.android.apps.dashclock:dashclock-api:2.0.0'
-    implementation 'ch.acra:acra-http:5.11.2'
-    implementation 'ch.acra:acra-toast:5.11.2'
     implementation 'commons-io:commons-io:2.16.1'
     implementation 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
     implementation 'com.github.vikramkakkar:SublimePicker:8c4de22db1'
@@ -195,13 +193,10 @@ configurations.configureEach {
     }
 }
 
-android.productFlavors.each { flavor ->
-    String analyticsUrl = flavor.name == 'foss' && ANALYTICS_PARAMS_FOSS?.trim() ? ANALYTICS_PARAMS_FOSS : ANALYTICS_PARAMS
-    flavor.buildConfigField 'String', 'ANALYTICS_PARAMS', '"' + analyticsUrl + '"'
-    flavor.buildConfigField 'String', 'CRASH_REPORTING_URL', '"' + CRASH_REPORTING_URL + '"'
-    flavor.buildConfigField 'String', 'CRASH_REPORTING_LOGIN', '"' + CRASH_REPORTING_LOGIN + '"'
-    flavor.buildConfigField 'String', 'CRASH_REPORTING_PASSWORD', '"' + CRASH_REPORTING_PASSWORD + '"'
-    flavor.buildConfigField 'String', 'VERSION_CHECK_URL', '"' + VERSION_CHECK_URL + '"'
+android.buildTypes.each { type ->
+    String analyticsUrl = ANALYTICS_PARAMS?.trim() ? ANALYTICS_PARAMS : ''
+    type.buildConfigField 'String', 'ANALYTICS_PARAMS', '"' + analyticsUrl + '"'
+    type.buildConfigField 'String', 'VERSION_CHECK_URL', '"' + VERSION_CHECK_URL + '"'
 }
 
 apply plugin: 'jacoco'

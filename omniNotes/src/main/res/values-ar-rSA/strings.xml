@@ -187,7 +187,6 @@
     <string name="empty_trash">سلة المهملات فارغة</string>
     <string name="empty_trash_confirmation">تأكيد حذف كافة الملاحظات في الحاوية؟</string>
     <string name="help">مساعدة</string>
-    <string name="online_manual">الدليل علي الانترنت</string>
     <string name="tags_added">أضافت العلامات</string>
     <string name="working">جاري العمل...</string>
     <string name="imported">استيراد</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">قوائم مرجعية</string>
     <string name="settings_checked_items_behavior_summary">ماهو السلوك عندما يتم إختيار عنصر؟</string>
     <string name="settings_category_preferences">خيارات</string>
-    <string name="settings_category_beta">الإصدار بيتا</string>
     <string name="settings_category_about">حول</string>
-    <string name="settings_beta">الاشتراك في</string>
-    <string name="settings_beta_summary">الاشتراك في البرنامج التجريبي ومواكبة أحدث الميزات</string>
     <string name="donate">تبرع</string>
     <string name="donate_summary">دعم تطوير هذا التطبيق الغير ربحي بالتبرع</string>
     <string name="settings_choose_language">اختر اللغة</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">تعرض التواريخ بطريقة موجزة</string>
     <string name="settings_prettified_dates_summary_off">تعرض التواريخ بطريقة أكثر تفصيلاً</string>
     <string name="settings_screen_privacy">الخصوصية</string>
-    <string name="settings_error_reporting">الإبلاغ عن الأخطاء</string>
-    <string name="settings_error_reporting_summary_on">عندما يتوقف التطبيق سيتم إشعار المطوّر ليتمكن من مساعدتك</string>
-    <string name="settings_error_reporting_summary_off">لن يتم إرسال تقارير الانهيار.  لا تشتكِ إذا حدث خطأ!</string>
     <string name="settings_send_analytics">مشاركة البيانات مُغفَلَة المصدر</string>
     <string name="settings_send_analytics_summary">ساعد المطوّر بإرسال البيانات غير الحسّاسة كنوع الجهاز واللغة و ميزات التطبيق متكررة الاستخدام. ستستخدم هذه البيانات لتحسين التطبيق مفتوح المصدر ليس إلا.</string>
     <string name="settings_enable_file_logging">حفظ السجلات في ملف</string>

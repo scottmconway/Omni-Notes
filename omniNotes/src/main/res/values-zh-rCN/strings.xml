@@ -187,7 +187,6 @@
     <string name="empty_trash">清空回收站</string>
     <string name="empty_trash_confirmation">确定要删除回收站中的所有笔记吗？</string>
     <string name="help">帮助</string>
-    <string name="online_manual">在线用户手册</string>
     <string name="tags_added">标签已添加</string>
     <string name="working">工作中...</string>
     <string name="imported">已导入</string>
@@ -290,10 +289,7 @@
     <string name="settings_checked_items_behavior">待办事项列表</string>
     <string name="settings_checked_items_behavior_summary">选中一条事项时进行何种操作？</string>
     <string name="settings_category_preferences">首选项</string>
-    <string name="settings_category_beta">测试版</string>
     <string name="settings_category_about">关于 </string>
-    <string name="settings_beta">选择加入</string>
-    <string name="settings_beta_summary">参与Beta测试以便及早获取最新功能</string>
     <string name="donate">捐赠</string>
     <string name="donate_summary">请考虑为我们提供非盈利性捐赠以支持本应用后续开发</string>
     <string name="settings_choose_language">选择语言</string>
@@ -350,9 +346,6 @@
     <string name="settings_prettified_dates_summary_on">使用更简洁的格式显示日期</string>
     <string name="settings_prettified_dates_summary_off">使用更详细的格式显示日期</string>
     <string name="settings_screen_privacy">隐私</string>
-    <string name="settings_error_reporting">错误报告</string>
-    <string name="settings_error_reporting_summary_on">当应用崩溃时，将告知开发者以便解决问题</string>
-    <string name="settings_error_reporting_summary_off">不会发送崩溃报告。如果发生错误，请主动反馈！</string>
     <string name="settings_send_analytics">共享匿名数据</string>
     <string name="settings_send_analytics_summary">向开发者发送设备型号、语言设置、常用功能等非敏感信息。这些数据仅用于改进此开源应用。</string>
     <string name="settings_enable_file_logging">保存日志到文件</string>

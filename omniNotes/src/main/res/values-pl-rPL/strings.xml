@@ -187,7 +187,6 @@
     <string name="empty_trash">Opróżnij kosz</string>
     <string name="empty_trash_confirmation">Potwierdź usunięcie wszystkich notatek do kosza?</string>
     <string name="help">Pomoc</string>
-    <string name="online_manual">Podręcznik użytkownika</string>
     <string name="tags_added">Znaczniki dodane</string>
     <string name="working">Pracuję...</string>
     <string name="imported">importowany</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Lista zadań</string>
     <string name="settings_checked_items_behavior_summary">Co zrobić, gdy dany element jest zaznaczony?</string>
     <string name="settings_category_preferences">Ustawienia</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">O aplikacji</string>
-    <string name="settings_beta">Wyłączony</string>
-    <string name="settings_beta_summary">Zapisz się do wspólnoty i bądź na bieżąco z najnowszymi funkcjami</string>
     <string name="donate">Dotacja</string>
     <string name="donate_summary">Wsparcie rozwoju tej aplikacji z darowizny non-profit</string>
     <string name="settings_choose_language">Język</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Daty są wyświetlane w prostszym formacie</string>
     <string name="settings_prettified_dates_summary_off">Daty są wyświetlane w bardziej szczegółowym formacie</string>
     <string name="settings_screen_privacy">Prywatność</string>
-    <string name="settings_error_reporting">Raportowanie błędów</string>
-    <string name="settings_error_reporting_summary_on">Gdy wystąpi błąd w aplikacji autor zostanie powiadomiony, żeby pomóc</string>
-    <string name="settings_error_reporting_summary_off">Raporty awarii nie będą wysyłane. Nie narzekam, jeśli coś pójdzie nie tak!</string>
     <string name="settings_send_analytics">Udostępniaj anonimowe dane</string>
     <string name="settings_send_analytics_summary">Pomóż autorowi poprzez wysyłanie danych niewrażliwych, takich jak model urządzenia, język, często używane funkcje aplikacji. Dane te są używane tylko po to, aby poprawić aplikację open source.</string>
     <string name="settings_enable_file_logging">Zapisz logi do pliku</string>

@@ -187,7 +187,6 @@
     <string name="empty_trash">Άδειασμα κάδου διεγραμμένων</string>
     <string name="empty_trash_confirmation">Επιβεβαίωση διαγραφής όλων των σημειώσεων;</string>
     <string name="help">Βοήθεια</string>
-    <string name="online_manual">Online Ηλεκτρονικό εγχειρίδιο</string>
     <string name="tags_added">Οι ετικέτες προστέθηκαν</string>
     <string name="working">Απασχολημένο...</string>
     <string name="imported">εισαγόμενα</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Λίστες ελέγχου</string>
     <string name="settings_checked_items_behavior_summary">Τι να γίνεται όταν ένα στοιχείο είναι επιλεγμένο;</string>
     <string name="settings_category_preferences">Προτιμήσεις</string>
-    <string name="settings_category_beta">Beta (Δοκιμαστική)</string>
     <string name="settings_category_about">Σχετικά</string>
-    <string name="settings_beta">Συγκατάθεση</string>
-    <string name="settings_beta_summary">Εγγραφείτε στο πρόγραμμα δοκιμών για να είστε ενημερωμένοι για τις τελευταίες δυνατότητες</string>
     <string name="donate">Κάντε δωρεά</string>
     <string name="donate_summary">Υποστήριξη της ανάπτυξης, αυτό της εφαρμογής με μια μη κερδοσκοπική δωρεά</string>
     <string name="settings_choose_language">Γλώσσα</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Οι ημερομηνίες εμφανίζονται σε μια πιο απλή μορφή</string>
     <string name="settings_prettified_dates_summary_off">Οι ημερομηνίες εμφανίζονται σε λεπτομερή μορφή</string>
     <string name="settings_screen_privacy">Ιδιωτικότητα</string>
-    <string name="settings_error_reporting">Αναφορά σφάλματος</string>
-    <string name="settings_error_reporting_summary_on">Όταν η εφαρμογή καταρεύσει, θα είδοποιηθεί ο προγραμματιστής για να σας βοηθήσει</string>
-    <string name="settings_error_reporting_summary_off">Δε θα σταλεί καμία αναφορά κατάρευσης. Μην παραπονεθείτε αν κάτι πάει στραβά!</string>
     <string name="settings_send_analytics">Διαμοιρασμός ανώνυμων δεδομένων</string>
     <string name="settings_send_analytics_summary">Βοηθήστε τον προγραμματιστή με την αποστολή μη-ευαίσθητων δεδομένων όπως μοντέλο συσκευής, γλώσσα, λειτουργίες της εφαρμογής που χρησιμοποιούνται συχνά. Αυτά τα δεδομένα χρησιμοποιούνται μόνο για την βελτίωση της εφαρμογής ανοιχτού κώδικα.</string>
     <string name="settings_enable_file_logging">Αποθήκευση αρχείων καταγραφής σε ένα αρχείο</string>

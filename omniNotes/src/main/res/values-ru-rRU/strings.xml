@@ -187,7 +187,6 @@
     <string name="empty_trash">Очистить корзину</string>
     <string name="empty_trash_confirmation">Вы согласны безвозвратно удалить все заметки из корзины?</string>
     <string name="help">Справка</string>
-    <string name="online_manual">Онлайн руководство (на англ.)</string>
     <string name="tags_added">Метки добавлены</string>
     <string name="working">Обработка...</string>
     <string name="imported">импортировано</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Поведение выбранных пунктов</string>
     <string name="settings_checked_items_behavior_summary">При выборе пункта</string>
     <string name="settings_category_preferences">Параметры</string>
-    <string name="settings_category_beta">Бета-тестирование</string>
     <string name="settings_category_about">О приложении</string>
-    <string name="settings_beta">Подписка на бета-версию</string>
-    <string name="settings_beta_summary">Участвуйте в программе бета-тестирования и получайте новые возможности первыми</string>
     <string name="donate">Пожертвования</string>
     <string name="donate_summary">Поддержать развитие приложения бескорыстным пожертвованием</string>
     <string name="settings_choose_language">Язык</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Даты указываются в упрощённом формате</string>
     <string name="settings_prettified_dates_summary_off">Даты указываются более подробно</string>
     <string name="settings_screen_privacy">Конфиденциальность</string>
-    <string name="settings_error_reporting">Отправка отчетов</string>
-    <string name="settings_error_reporting_summary_on">Разработчик будет осведомлен, если в приложении произойдёт сбой и сможет его исправить</string>
-    <string name="settings_error_reporting_summary_off">Отчеты не отправляются. Случится сбой - виноваты сами!</string>
     <string name="settings_send_analytics">Отправка статистики</string>
     <string name="settings_send_analytics_summary">Помочь разработчику путем отправки анонимных данных, таких как модель устройства, язык, наиболее используемые функции. Личные данные не собираются</string>
     <string name="settings_enable_file_logging">Записывать логи в файл</string>

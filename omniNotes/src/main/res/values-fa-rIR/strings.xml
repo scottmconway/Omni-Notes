@@ -187,7 +187,6 @@
     <string name="empty_trash">خالی کردن زباله‌دان</string>
     <string name="empty_trash_confirmation">حذف تمام یادداشت‌های زباله‌دان را تایید می‌کنید؟</string>
     <string name="help">راهنما</string>
-    <string name="online_manual">راهنمای کاربر آنلاین</string>
     <string name="tags_added">برچسب‌ها اضافه شدند</string>
     <string name="working">درحال کار...</string>
     <string name="imported">وارد شدند</string>
@@ -290,10 +289,7 @@
     <string name="settings_checked_items_behavior">چک‌لیست‌ها</string>
     <string name="settings_checked_items_behavior_summary">چه اتفاقی با علامت زدن یک مورد رخ دهد؟</string>
     <string name="settings_category_preferences">ترجیحات</string>
-    <string name="settings_category_beta">بتا</string>
     <string name="settings_category_about">درباره</string>
-    <string name="settings_beta">موافقم</string>
-    <string name="settings_beta_summary">مشترک شدن در برنامه بتا برای بروز بودن با آخرین امکانات</string>
     <string name="donate">کمک مالی</string>
     <string name="donate_summary">حمایت از توسعه این برنامه با کمک مالی غیر انتفاعی</string>
     <string name="settings_choose_language">زبان</string>
@@ -350,9 +346,6 @@
     <string name="settings_prettified_dates_summary_on">تاریخ‌ها در قالب ساده‌تری نمایش داده شوند</string>
     <string name="settings_prettified_dates_summary_off">تاریخ‌ها در قالبی با جزئیات بیشتر نمایش داده شوند</string>
     <string name="settings_screen_privacy">حریم خصوصی</string>
-    <string name="settings_error_reporting">گزارش خطا</string>
-    <string name="settings_error_reporting_summary_on">وقتی برنامه فروبپاشد، به توسعه‌دهنده اطلاع داده می‌شود تا بتواند به شما کمک کند</string>
-    <string name="settings_error_reporting_summary_off">هیچ گزارشی از خطاهای برنامه فرستاده نمی‌شود. اگر مشکلی پیش می‌آید، گلایه نکنید!</string>
     <string name="settings_send_analytics">هم‌رسانی داده به صورت ناشناس</string>
     <string name="settings_send_analytics_summary">با فرستادن اطلاعات غیر حساس مانند مدل دستگاه، زبان و امکانتی در برنامه که اغلب استفاده می‌شود، به توسعه‌دهنده کمک کنید. این داده‌ها فقط برای بهبود این برنامهٔ آزاد و متن‌باز استفاده می‌شوند.</string>
     <string name="settings_enable_file_logging">ذخیره لاگ‌ها در یک پرونده</string>

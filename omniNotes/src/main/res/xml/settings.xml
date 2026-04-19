@@ -62,33 +62,10 @@
   </PreferenceCategory>
 
 
-  <PreferenceCategory
-    android:title="@string/settings_category_beta"
-    app:iconSpaceReserved="false">
-    <Preference
-      android:key="settings_beta"
-      android:summary="@string/settings_beta_summary"
-      android:title="@string/settings_beta"
-      app:iconSpaceReserved="false">
-      <intent
-        android:action="android.intent.action.VIEW"
-        android:data="@string/beta_link" />
-    </Preference>
-  </PreferenceCategory>
-
 
   <PreferenceCategory
     android:title="@string/help"
     app:iconSpaceReserved="false">
-
-    <Preference
-      android:key="settings_online_manual"
-      android:title="@string/online_manual"
-      app:iconSpaceReserved="false">
-      <intent
-        android:action="android.intent.action.VIEW"
-        android:data="@string/help_online_url" />
-    </Preference>
 
     <Preference
       android:key="settings_tour_show_again"

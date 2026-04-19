@@ -187,7 +187,6 @@
     <string name="empty_trash">Esvaziar Lixeira</string>
     <string name="empty_trash_confirmation">Remover todas as notas na lixeira?</string>
     <string name="help">Ajuda</string>
-    <string name="online_manual">Manual online</string>
     <string name="tags_added">Marcas adicionadas</string>
     <string name="working">Processando...</string>
     <string name="imported">importadas</string>
@@ -286,10 +285,7 @@
     <string name="settings_checked_items_behavior">Listas</string>
     <string name="settings_checked_items_behavior_summary">O que fazer quando um item é marcado?</string>
     <string name="settings_category_preferences">Preferências</string>
-    <string name="settings_category_beta">Beta</string>
     <string name="settings_category_about">Sobre</string>
-    <string name="settings_beta">Optar</string>
-    <string name="settings_beta_summary">Inscreva-se no programa beta para se manter a par das últimas novidades</string>
     <string name="donate">Doar</string>
     <string name="donate_summary">Apoiar o desenvolvimento deste app com uma doação sem fins lucrativos</string>
     <string name="settings_choose_language">Idioma</string>
@@ -346,9 +342,6 @@
     <string name="settings_prettified_dates_summary_on">Datas são mostradas em um formato mais simples</string>
     <string name="settings_prettified_dates_summary_off">Datas são mostradas em um formato mais detalhado</string>
     <string name="settings_screen_privacy">Privacidade</string>
-    <string name="settings_error_reporting">Relatório de erros</string>
-    <string name="settings_error_reporting_summary_on">Quando o aplicativo travar, o desenvolvedor será informado para lhe ajudar</string>
-    <string name="settings_error_reporting_summary_off">Não serão enviados relatórios de erro. Depois não se queixe quando algo correr mal!</string>
     <string name="settings_send_analytics">Compartilhar dados anônimos</string>
     <string name="settings_send_analytics_summary">Ajude o desenvolvedor enviando dados não sensíveis, como modelo do dispositivo, idioma, recursos frequentemente utilizados do aplicativo. Esses dados são utilizados somente para melhorar o aplicativo de código-aberto.</string>
     <string name="settings_enable_file_logging">Salvar logs para arquivo</string>
