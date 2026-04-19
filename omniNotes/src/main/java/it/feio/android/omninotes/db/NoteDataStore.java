@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2013-2025 Federico Iosue (developer@omninotes.app)
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +26,7 @@ import java.util.List;
 
 
 /**
- * Abstraction over note persistence. Implementations may use SQLite ({@link FlatFileHelper})
+ * Abstraction over note persistence. Implementations may use SQLite ({@link DbHelper})
  * or flat markdown files ({@link FlatFileHelper}).
  */
 public interface NoteDataStore {

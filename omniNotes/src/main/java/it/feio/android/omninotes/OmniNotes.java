@@ -27,6 +27,7 @@ import android.os.StrictMode;
 import android.text.TextUtils;
 import android.app.Application;
 import com.pixplicity.easyprefs.library.Prefs;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LanguageHelper;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
 import org.acra.ACRA;
@@ -57,6 +58,9 @@ public class OmniNotes extends Application {
     initSharedPreferences();
     enableStrictMode();
     new NotificationsHelper(this).initNotificationChannels();
+    // Warm the flat-file cache on a background thread
+    new Thread(() -> FlatFileHelper.getInstance().getNotesActive(),
+        "notes-preload").start();
   }
 
   private void initAcra() {

@@ -29,10 +29,8 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import com.pixplicity.easyprefs.library.Prefs;
 import java.util.Locale;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class LanguageHelper {
 
   /**

@@ -21,9 +21,7 @@ import android.content.Intent
 import android.net.Uri
 import it.feio.android.omninotes.exceptions.checked.UnhandledIntentException
 import it.feio.android.omninotes.utils.IntentChecker
-import lombok.experimental.UtilityClass
 
-@UtilityClass
 class TagOpenerHelper {
 
     companion object {

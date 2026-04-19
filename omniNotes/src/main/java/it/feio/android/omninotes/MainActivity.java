@@ -81,8 +81,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import lombok.Getter;
-import lombok.Setter;
+
 
 
 public class MainActivity extends BaseActivity implements
@@ -93,21 +92,25 @@ public class MainActivity extends BaseActivity implements
   public static final String FRAGMENT_LIST_TAG = "fragment_list";
   public static final String FRAGMENT_DETAIL_TAG = "fragment_detail";
   public static final String FRAGMENT_SKETCH_TAG = "fragment_sketch";
-  @Getter @Setter
   private Uri sketchUri;
+
+  public Uri getSketchUri() {
+    return this.sketchUri;
+  }
+
+  public void setSketchUri(Uri sketchUri) {
+    this.sketchUri = sketchUri;
+  }
   boolean prefsChanged = false;
   private FragmentManager mFragmentManager;
 
-  private ActivityResultLauncher<Uri> directoryPickerLauncher;
+  long startupTimeMs;
 
   ActivityMainBinding binding;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    directoryPickerLauncher = registerForActivityResult(
-        new ActivityResultContracts.OpenDocumentTree(),
-        this::onDirectoryPicked);
-
+    startupTimeMs = android.os.SystemClock.elapsedRealtime();
     super.onCreate(savedInstanceState);
     setTheme(R.style.OmniNotesTheme_ApiSpec);
 
@@ -158,20 +161,10 @@ public class MainActivity extends BaseActivity implements
   }
 
   private void promptForStorageAccess() {
-    Toast.makeText(this, R.string.storage_permission_required, Toast.LENGTH_LONG).show();
-    directoryPickerLauncher.launch(null);
-  }
-
-  private void onDirectoryPicked(Uri uri) {
-    if (uri != null) {
-      FlatFileHelper.setTreeUri(this, uri);
-      if (isPasswordAccepted) {
-        init();
-      } else {
-        checkPassword();
-      }
-    } else {
+    Intent intent = FlatFileHelper.getAllFilesAccessIntent(this);
+    if (intent != null) {
       Toast.makeText(this, R.string.storage_permission_required, Toast.LENGTH_LONG).show();
+      startActivity(intent);
     }
   }
 

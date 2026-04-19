@@ -25,9 +25,7 @@ import androidx.annotation.Nullable;
 import it.feio.android.omninotes.models.Attachment;
 import java.io.File;
 import java.io.FileNotFoundException;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class FileProviderHelper {
 
   /**

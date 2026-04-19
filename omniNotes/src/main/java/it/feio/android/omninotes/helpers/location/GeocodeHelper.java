@@ -24,10 +24,8 @@ import android.location.Geocoder;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class GeocodeHelper {
 
   public String getAddressFromCoordinates(Context mContext, double latitude,

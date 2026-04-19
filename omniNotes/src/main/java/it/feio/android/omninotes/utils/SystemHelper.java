@@ -24,12 +24,10 @@ import android.content.Context;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import java.io.Closeable;
 import java.io.IOException;
-import lombok.experimental.UtilityClass;
 
 /**
  * Various utility methods
  */
-@UtilityClass
 public class SystemHelper {
 
   /**

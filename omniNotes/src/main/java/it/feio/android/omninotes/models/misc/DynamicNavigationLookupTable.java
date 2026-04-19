@@ -27,10 +27,8 @@ import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.models.Note;
 import java.util.List;
-import lombok.Getter;
 
 
-@Getter
 public class DynamicNavigationLookupTable {
 
   private static DynamicNavigationLookupTable instance;
@@ -38,6 +36,22 @@ public class DynamicNavigationLookupTable {
   private int trashed;
   private int uncategorized;
   private int reminders;
+
+  public int getArchived() {
+    return this.archived;
+  }
+
+  public int getTrashed() {
+    return this.trashed;
+  }
+
+  public int getUncategorized() {
+    return this.uncategorized;
+  }
+
+  public int getReminders() {
+    return this.reminders;
+  }
 
 
   private DynamicNavigationLookupTable() {

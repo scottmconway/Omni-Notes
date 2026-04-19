@@ -50,12 +50,10 @@ import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 
-@UtilityClass
 public class StorageHelper {
 
   public static boolean checkStorage() {

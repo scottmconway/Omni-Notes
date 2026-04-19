@@ -29,9 +29,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import it.feio.android.omninotes.models.Note;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class IntentHelper {
 
   public static Intent getNoteIntent(@NonNull Context context, @NonNull Class target, String action,

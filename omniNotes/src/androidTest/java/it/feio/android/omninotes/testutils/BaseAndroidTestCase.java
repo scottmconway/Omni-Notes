@@ -115,41 +115,32 @@ public class BaseAndroidTestCase {
   }
 
   private static void prepareDatabase() {
-    // Use a file-backed root in app-private storage for tests
-    File testNotesDir = new File(testContext.getExternalFilesDir(null), "test_notes");
-    FlatFileHelper.setRootDirForTesting(testContext, testNotesDir);
-    dbHelper = FlatFileHelper.getInstance();
-
     // Clean all flat files for a fresh test state
-    cleanDirectory(testNotesDir, ".md");
-    File categoriesDir = new File(testNotesDir, "categories");
-    cleanDirectory(categoriesDir, ".md");
-    File attachmentsDir = new File(testNotesDir, "attachments");
-    if (attachmentsDir.exists()) {
-      File[] children = attachmentsDir.listFiles();
-      if (children != null) {
-        for (File child : children) {
-          if (child.isDirectory()) {
-            File[] grandchildren = child.listFiles();
-            if (grandchildren != null) {
-              for (File gc : grandchildren) {
-                gc.delete();
-              }
-            }
-            child.delete();
-          }
+    File notesDir = new File(FlatFileHelper.NOTES_DIR);
+    if (notesDir.exists()) {
+      for (File f : notesDir.listFiles()) {
+        if (f.isFile() && f.getName().endsWith(".md")) {
+          f.delete();
         }
       }
     }
-  }
-
-  private static void cleanDirectory(File dir, String extension) {
-    if (dir == null || !dir.exists()) return;
-    File[] files = dir.listFiles();
-    if (files == null) return;
-    for (File f : files) {
-      if (f.isFile() && f.getName().endsWith(extension)) {
-        f.delete();
+    File categoriesDir = new File(FlatFileHelper.CATEGORIES_DIR);
+    if (categoriesDir.exists()) {
+      for (File f : categoriesDir.listFiles()) {
+        if (f.isFile() && f.getName().endsWith(".md")) {
+          f.delete();
+        }
+      }
+    }
+    File attachmentsDir = new File(FlatFileHelper.ATTACHMENTS_DIR);
+    if (attachmentsDir.exists()) {
+      for (File f : attachmentsDir.listFiles()) {
+        if (f.isDirectory()) {
+          for (File child : f.listFiles()) {
+            child.delete();
+          }
+          f.delete();
+        }
       }
     }
   }
@@ -263,7 +254,7 @@ public class BaseAndroidTestCase {
     testContext = ApplicationProvider.getApplicationContext();
   }
 
-  private static void setFlatFileHelperForTests() {
+  private static void setDbHelperForTests() {
     dbHelper = FlatFileHelper.getInstance(testContext);
   }
 

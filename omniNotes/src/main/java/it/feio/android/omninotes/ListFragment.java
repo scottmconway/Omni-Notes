@@ -68,6 +68,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.ActionMode;
@@ -1155,6 +1156,12 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
     animateListView();
 
     closeFab();
+
+    if (isDebugBuild() && mainActivity != null && mainActivity.startupTimeMs > 0) {
+      long elapsed = android.os.SystemClock.elapsedRealtime() - mainActivity.startupTimeMs;
+      Toast.makeText(mainActivity, "Startup: " + elapsed + "ms", Toast.LENGTH_SHORT).show();
+      mainActivity.startupTimeMs = 0;
+    }
   }
 
   public void onEvent(NotesUpdatedEvent notesUpdatedEvent) {

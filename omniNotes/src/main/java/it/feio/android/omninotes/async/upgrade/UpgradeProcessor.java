@@ -46,7 +46,8 @@ import org.apache.commons.io.FilenameUtils;
 /**
  * Processor used to perform asynchronous tasks on database upgrade. It's not intended to be used to
  * perform actions strictly related to DB (for this
- * {@link it.feio.android.omninotes.db.FlatFileHelper} is used
+ * {@link it.feio.android.omninotes.db.DbHelper#onUpgrade(android.database.sqlite.SQLiteDatabase,
+ * int, int)} FlatFileHelper.onUpgrade()} is used
  */
 public class UpgradeProcessor {
 
@@ -162,7 +163,7 @@ public class UpgradeProcessor {
    * Ensures that no duplicates will be found during the creation-to-ID transition.
    * Note: This upgrade step was SQLite-specific. With flat-file storage the
    * creation timestamp is embedded in each file's front matter, so duplicates
-   * are handled at write-time by {@code FlatFileHelper.getOrCreateNoteFile}.
+   * are handled at write-time by {@code FlatFileHelper.resolveUniqueFile}.
    */
   private void onUpgradeTo501() {
     // No-op under flat-file storage

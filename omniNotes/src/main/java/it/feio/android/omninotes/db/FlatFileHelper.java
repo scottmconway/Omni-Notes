@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2013-2025 Federico Iosue (developer@omninotes.app)
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,10 +26,10 @@ import static java.util.stream.Collectors.toList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.UriPermission;
 import android.net.Uri;
-import androidx.annotation.VisibleForTesting;
-import androidx.documentfile.provider.DocumentFile;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.db.FrontMatterUtils.ParsedNote;
@@ -40,13 +42,10 @@ import it.feio.android.omninotes.models.Stats;
 import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.utils.Navigation;
 import it.feio.android.omninotes.utils.TagsHelper;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,29 +59,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
- * Flat-file backed implementation of {@link NoteDataStore} using the
- * Storage Access Framework (SAF).
+ * Flat-file backed implementation of {@link NoteDataStore}.
  *
- * <p>The user selects a directory via {@code ACTION_OPEN_DOCUMENT_TREE}.
- * Notes are stored as markdown files with YAML front matter in that
- * directory. Categories live in a {@code categories/} subdirectory, and
- * attachments in {@code attachments/{noteCreation}/}.</p>
- *
- * <p>All file I/O goes through {@link DocumentFile} and
- * {@link android.content.ContentResolver}, so no broad filesystem
- * permissions are needed.</p>
+ * <p>Notes are stored as markdown files with YAML front matter in
+ * {@code /sdcard/omni_notes/}. Categories live in a {@code categories/}
+ * subdirectory, and attachments in {@code attachments/{noteCreation}/}.</p>
  */
 public class FlatFileHelper implements NoteDataStore {
 
-  public static final String PREF_NOTES_TREE_URI = "pref_notes_tree_uri";
+  public static final String NOTES_DIR = "/sdcard/omni_notes";
+  public static final String ACTIVE_DIR = NOTES_DIR + "/notes";
+  public static final String ARCHIVE_DIR = NOTES_DIR + "/archive";
+  public static final String TRASH_DIR = NOTES_DIR + "/trash";
+  public static final String CATEGORIES_DIR = NOTES_DIR + "/categories";
+  public static final String NOTE_FILENAME = "note.md";
 
-  // Re-export column key constants so callers that reference FlatFileHelper.KEY_* can migrate.
+  // Re-export column key constants so callers that reference DbHelper.KEY_* can migrate.
   // NoteLoaderTask and sorting logic depend on these values.
   public static final String TABLE_NOTES = "notes";
   public static final String TABLE_ATTACHMENTS = "attachments";
@@ -121,10 +116,11 @@ public class FlatFileHelper implements NoteDataStore {
   private static FlatFileHelper instance = null;
   private final Context mContext;
 
-  // SAF directory handles
-  private DocumentFile rootDir;
-  private DocumentFile categoriesDir;
-  private DocumentFile attachmentsDir;
+  // In-memory caches - one per directory for lazy loading
+  private List<Note> activeCache;
+  private List<Note> archiveCache;
+  private List<Note> trashCache;
+  private ArrayList<Category> categoriesCache;
 
 
   // -------------------------------------------------------------------------
@@ -137,7 +133,7 @@ public class FlatFileHelper implements NoteDataStore {
 
   public static synchronized FlatFileHelper getInstance(Context context) {
     if (instance == null) {
-      instance = new FlatFileHelper(context.getApplicationContext());
+      instance = new FlatFileHelper(context);
     }
     return instance;
   }
@@ -147,100 +143,54 @@ public class FlatFileHelper implements NoteDataStore {
       Context context = (instance == null || instance.mContext == null)
           ? OmniNotes.getAppContext()
           : instance.mContext;
-      instance = new FlatFileHelper(context.getApplicationContext());
+      instance = new FlatFileHelper(context);
     }
     return instance;
   }
 
   private FlatFileHelper(Context context) {
     this.mContext = context;
-    initRoot();
+    ensureDirectories();
   }
 
 
   // -------------------------------------------------------------------------
-  // Directory setup (SAF)
+  // Directory setup
   // -------------------------------------------------------------------------
-
-  private void initRoot() {
-    String uriStr = Prefs.getString(PREF_NOTES_TREE_URI, null);
-    if (uriStr != null && !uriStr.isEmpty()) {
-      Uri treeUri = Uri.parse(uriStr);
-      rootDir = DocumentFile.fromTreeUri(mContext, treeUri);
-      if (rootDir != null && rootDir.exists()) {
-        ensureDirectories();
-      }
-    }
-  }
 
   private void ensureDirectories() {
-    if (rootDir == null) return;
-    categoriesDir = getOrCreateSubDir(rootDir, "categories");
-    attachmentsDir = getOrCreateSubDir(rootDir, "attachments");
-  }
-
-  private DocumentFile getOrCreateSubDir(DocumentFile parent, String name) {
-    DocumentFile child = parent.findFile(name);
-    if (child != null && child.isDirectory()) {
-      return child;
+    if (hasStorageAccess()) {
+      new File(NOTES_DIR).mkdirs();
+      new File(ACTIVE_DIR).mkdirs();
+      new File(ARCHIVE_DIR).mkdirs();
+      new File(TRASH_DIR).mkdirs();
+      new File(CATEGORIES_DIR).mkdirs();
     }
-    return parent.createDirectory(name);
   }
-
-
-  // -------------------------------------------------------------------------
-  // Storage access (SAF)
-  // -------------------------------------------------------------------------
 
   /**
-   * Returns {@code true} if the app has a persisted SAF tree URI with
-   * read and write permissions.
+   * Returns {@code true} if the app has permission to read/write
+   * {@link #NOTES_DIR} on external storage.  On Android 11+ this
+   * requires {@code MANAGE_EXTERNAL_STORAGE}.
    */
   public static boolean hasStorageAccess() {
-    String uriStr = Prefs.getString(PREF_NOTES_TREE_URI, null);
-    if (uriStr == null || uriStr.isEmpty()) return false;
-    Context context = OmniNotes.getAppContext();
-    Uri uri = Uri.parse(uriStr);
-    for (UriPermission perm : context.getContentResolver().getPersistedUriPermissions()) {
-      if (perm.getUri().equals(uri) && perm.isReadPermission() && perm.isWritePermission()) {
-        return true;
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      return Environment.isExternalStorageManager();
     }
-    return false;
+    return true;
   }
 
   /**
-   * Persists the tree URI chosen by the user and takes persistable
-   * read/write permissions. After calling this method, callers should
-   * discard any existing {@code FlatFileHelper} instance so the new root
-   * is picked up.
+   * Returns an intent that opens the system "All files access" settings
+   * page for this app (API 30+).  On older versions returns {@code null}.
    */
-  public static void setTreeUri(Context context, Uri treeUri) {
-    context.getContentResolver().takePersistableUriPermission(treeUri,
-        Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-    Prefs.edit().putString(PREF_NOTES_TREE_URI, treeUri.toString()).apply();
-    // Force re-initialisation on next getInstance() call
-    instance = null;
-  }
-
-  /**
-   * Returns an {@code ACTION_OPEN_DOCUMENT_TREE} intent for the SAF
-   * directory picker.
-   */
-  public static Intent getDirectoryPickerIntent() {
-    return new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-  }
-
-  /**
-   * For instrumented tests only - sets a file-backed root directory that
-   * does not require SAF permissions.
-   */
-  @VisibleForTesting
-  public static void setRootDirForTesting(Context context, java.io.File dir) {
-    dir.mkdirs();
-    instance = new FlatFileHelper(context.getApplicationContext());
-    instance.rootDir = DocumentFile.fromFile(dir);
-    instance.ensureDirectories();
+  public static Intent getAllFilesAccessIntent(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+      intent.setData(Uri.parse("package:" + context.getPackageName()));
+      return intent;
+    }
+    return null;
   }
 
 
@@ -260,13 +210,8 @@ public class FlatFileHelper implements NoteDataStore {
         : Calendar.getInstance().getTimeInMillis();
     note.setLastModification(lastModification);
 
-    // Serialize attachments to JSON
-    String attachmentsJson = serializeAttachments(note.getAttachmentsList(), creation);
-
     LinkedHashMap<String, String> fields = FrontMatterUtils.buildNoteFields(
         note.getTitle(), creation, lastModification,
-        Boolean.TRUE.equals(note.isArchived()),
-        Boolean.TRUE.equals(note.isTrashed()),
         note.getAlarm(),
         Boolean.TRUE.equals(note.isReminderFired()),
         note.getRecurrenceRule(),
@@ -275,33 +220,168 @@ public class FlatFileHelper implements NoteDataStore {
         note.getAddress(),
         note.getCategory() != null ? note.getCategory().getId() : null,
         Boolean.TRUE.equals(note.isLocked()),
-        Boolean.TRUE.equals(note.isChecklist()),
-        attachmentsJson);
+        Boolean.TRUE.equals(note.isChecklist()));
 
     String markdown = FrontMatterUtils.serialize(fields, note.getContent());
 
+    File parentDir = directoryForNote(note);
     String slug = SlugUtils.slugify(note.getTitle(), creation);
-    DocumentFile noteFile = getOrCreateNoteFile(slug, creation);
 
-    if (noteFile != null) {
-      writeDocumentFile(noteFile, markdown);
-      LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteFile.getName());
-    } else {
-      LogDelegate.e("Failed to create file for note '" + note.getTitle() + "'");
-    }
+    // Find and handle existing note directory (may need rename or move)
+    File noteDir = resolveNoteDir(parentDir, slug, creation);
+    noteDir.mkdirs();
+
+    File noteFile = new File(noteDir, NOTE_FILENAME);
+    writeFile(noteFile, markdown);
+    // Copy any attachments that aren't already in the note directory
+    copyAttachmentsToNoteDir(note, noteDir);
+
+    updateNoteInCache(note);
+    LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteDir.getPath());
 
     return note;
+  }
+
+  /**
+   * Copies attachment files into the note directory if they don't already
+   * reside there. Updates the attachment URIs to point to the local copies.
+   */
+  private void copyAttachmentsToNoteDir(Note note, File noteDir) {
+    if (note.getAttachmentsList() == null || note.getAttachmentsList().isEmpty()) return;
+    for (Attachment attachment : note.getAttachmentsList()) {
+      if (attachment.getUri() == null || Uri.EMPTY.equals(attachment.getUri())) continue;
+
+      File sourceFile = null;
+      String scheme = attachment.getUri().getScheme();
+      if ("file".equals(scheme)) {
+        sourceFile = new File(attachment.getUri().getPath());
+      }
+
+      if (sourceFile == null || !sourceFile.exists()) continue;
+
+      // Already in the note directory?
+      if (sourceFile.getParentFile() != null
+          && sourceFile.getParentFile().getAbsolutePath().equals(noteDir.getAbsolutePath())) {
+        continue;
+      }
+
+      // Copy to note directory, preserving the original filename
+      String fileName = attachment.getName() != null && !attachment.getName().isEmpty()
+          ? attachment.getName()
+          : sourceFile.getName();
+      File dest = new File(noteDir, fileName);
+
+      // Avoid collisions
+      if (dest.exists() && !dest.getAbsolutePath().equals(sourceFile.getAbsolutePath())) {
+        String base = fileName.contains(".")
+            ? fileName.substring(0, fileName.lastIndexOf('.'))
+            : fileName;
+        String ext = fileName.contains(".")
+            ? fileName.substring(fileName.lastIndexOf('.'))
+            : "";
+        int suffix = 1;
+        while (dest.exists()) {
+          dest = new File(noteDir, base + "-" + suffix + ext);
+          suffix++;
+        }
+      }
+
+      try {
+        org.apache.commons.io.FileUtils.moveFile(sourceFile, dest);
+        attachment.setUri(Uri.fromFile(dest));
+        attachment.setName(dest.getName());
+        attachment.setSize(dest.length());
+      } catch (IOException e) {
+        LogDelegate.e("Failed to copy attachment to note dir: " + sourceFile.getName(), e);
+      }
+    }
+  }
+
+  /**
+   * Returns the parent directory (active/archive/trash) for a note.
+   */
+  private File directoryForNote(Note note) {
+    if (Boolean.TRUE.equals(note.isTrashed())) {
+      return new File(TRASH_DIR);
+    } else if (Boolean.TRUE.equals(note.isArchived())) {
+      return new File(ARCHIVE_DIR);
+    }
+    return notesDir();
+  }
+
+  /**
+   * Finds the slug directory for a note by creation ID across all parent
+   * directories. If found, renames/moves it to the target parent + slug.
+   * If not found, returns a new directory path.
+   */
+  private File resolveNoteDir(File targetParent, String slug, long creation) {
+    File target = resolveUniqueDirName(targetParent, slug, creation);
+
+    // Search all directories for an existing note dir with this creation ID
+    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File[] dirs = parent.listFiles(File::isDirectory);
+      if (dirs == null) continue;
+      for (File dir : dirs) {
+        // Skip non-note directories
+        if (dir.getName().equals("archive") || dir.getName().equals("trash")
+            || dir.getName().equals("categories")) continue;
+        File md = new File(dir, NOTE_FILENAME);
+        if (!md.exists()) continue;
+        ParsedNote parsed = FrontMatterUtils.parse(md);
+        if (parsed != null && parsed.getLong("creation", 0) == creation) {
+          // Found existing - if it's already at the right path, return it
+          if (dir.getAbsolutePath().equals(target.getAbsolutePath())) {
+            return dir;
+          }
+          // Move/rename the directory
+          dir.renameTo(target);
+          return target;
+        }
+      }
+    }
+    return target;
+  }
+
+  /**
+   * Returns a unique directory name under the parent, appending a numeric
+   * suffix if the slug collides with a different note.
+   */
+  private File resolveUniqueDirName(File parent, String slug, long creation) {
+    File candidate = new File(parent, slug);
+    if (!candidate.exists()) return candidate;
+
+    // Check if it belongs to this note
+    File md = new File(candidate, NOTE_FILENAME);
+    if (md.exists()) {
+      ParsedNote parsed = FrontMatterUtils.parse(md);
+      if (parsed != null && parsed.getLong("creation", 0) == creation) {
+        return candidate;
+      }
+    }
+
+    // Slug collision - add numeric suffix
+    int suffix = 1;
+    while (true) {
+      candidate = new File(parent, slug + "-" + suffix);
+      if (!candidate.exists()) return candidate;
+      md = new File(candidate, NOTE_FILENAME);
+      if (md.exists()) {
+        ParsedNote parsed = FrontMatterUtils.parse(md);
+        if (parsed != null && parsed.getLong("creation", 0) == creation) {
+          return candidate;
+        }
+      }
+      suffix++;
+    }
   }
 
 
   @Override
   public Note getNote(long id) {
-    for (DocumentFile file : listMdFiles(rootDir)) {
-      String content = readDocumentFile(file);
-      if (content == null) continue;
-      ParsedNote parsed = FrontMatterUtils.parseString(content);
-      if (parsed != null && parsed.getLong("creation", 0) == id) {
-        return buildNoteFromParsed(parsed);
+    // Search all three directories
+    for (Note note : loadAllNotes()) {
+      if (note.getCreation() != null && note.getCreation() == id) {
+        return note;
       }
     }
     return null;
@@ -335,34 +415,36 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getNotesActive() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> !Boolean.TRUE.equals(n.isArchived()) && !Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(notesDir(), activeCache);
+    activeCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesArchived() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isArchived()) && !Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+    archiveCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesTrashed() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isTrashed()))
-        .collect(toList());
+    List<Note> notes = loadNotesFromDir(new File(TRASH_DIR), trashCache);
+    trashCache = new ArrayList<>(notes);
+    sortNotes(notes);
+    return notes;
   }
 
 
   @Override
   public List<Note> getNotesUncategorized() {
-    return loadAllNotesSorted().stream()
-        .filter(n -> !Boolean.TRUE.equals(n.isTrashed())
-            && (n.getCategory() == null || n.getCategory().getId() == null
-            || n.getCategory().getId() == 0))
+    return getNotesActive().stream()
+        .filter(n -> n.getCategory() == null || n.getCategory().getId() == null
+            || n.getCategory().getId() == 0)
         .collect(toList());
   }
 
@@ -421,25 +503,46 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public boolean deleteNote(long noteId, boolean keepAttachments) {
-    // Delete the note markdown file
-    for (DocumentFile file : listMdFiles(rootDir)) {
-      String content = readDocumentFile(file);
-      if (content == null) continue;
-      ParsedNote parsed = FrontMatterUtils.parseString(content);
-      if (parsed != null && parsed.getLong("creation", 0) == noteId) {
-        file.delete();
+    // Find and delete the note directory from whichever parent it's in
+    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File noteDir = findNoteDirByCreation(parent, noteId);
+      if (noteDir != null) {
+        if (keepAttachments) {
+          // Only delete note.md, keep other files
+          new File(noteDir, NOTE_FILENAME).delete();
+          // Remove dir only if now empty
+          String[] remaining = noteDir.list();
+          if (remaining == null || remaining.length == 0) {
+            noteDir.delete();
+          }
+        } else {
+          deleteDirectory(noteDir);
+        }
         break;
       }
     }
+    removeNoteFromCache(noteId);
+    return true;
+  }
 
-    // Delete attachments directory for this note
-    if (!keepAttachments && attachmentsDir != null) {
-      DocumentFile attachDir = attachmentsDir.findFile(String.valueOf(noteId));
-      if (attachDir != null && attachDir.isDirectory()) {
-        deleteDocumentTree(attachDir);
+  /**
+   * Finds a note's slug directory by scanning for a {@code note.md}
+   * with the given creation ID.
+   */
+  private File findNoteDirByCreation(File parent, long creation) {
+    File[] dirs = parent.listFiles(File::isDirectory);
+    if (dirs == null) return null;
+    for (File dir : dirs) {
+      String name = dir.getName();
+      if ("archive".equals(name) || "trash".equals(name) || "categories".equals(name)) continue;
+      File md = new File(dir, NOTE_FILENAME);
+      if (!md.exists()) continue;
+      ParsedNote parsed = FrontMatterUtils.parse(md);
+      if (parsed != null && parsed.getLong("creation", 0) == creation) {
+        return dir;
       }
     }
-    return true;
+    return null;
   }
 
 
@@ -607,7 +710,7 @@ public class FlatFileHelper implements NoteDataStore {
           }
           return Arrays.stream(tags).allMatch(tag -> searchText.contains(tag));
         })
-        // Refine with word-boundary matching (same as FlatFileHelper)
+        // Refine with word-boundary matching (same as DbHelper)
         .filter(n -> {
           String text = (n.getTitle() != null ? n.getTitle() : "") + " "
               + (n.getContent() != null ? n.getContent() : "");
@@ -668,6 +771,9 @@ public class FlatFileHelper implements NoteDataStore {
     if (note == null || note.get_id() == null) {
       return new ArrayList<>();
     }
+    // Attachments are embedded in the note's front matter; just return what's
+    // already loaded on the Note object.  If the caller needs a fresh read,
+    // they should call getNote() first.
     return note.getAttachmentsList() != null
         ? note.getAttachmentsList()
         : new ArrayList<>();
@@ -705,10 +811,17 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public ArrayList<Category> getCategories() {
+    if (categoriesCache != null) {
+      return new ArrayList<>(categoriesCache);
+    }
     ArrayList<Category> categories = new ArrayList<>();
-    if (categoriesDir == null) return categories;
+    File catDir = new File(CATEGORIES_DIR);
+    File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
+    if (files == null) {
+      return categories;
+    }
 
-    for (DocumentFile file : listMdFiles(categoriesDir)) {
+    for (File file : files) {
       Category cat = parseCategoryFile(file);
       if (cat != null) {
         cat.setCount(getCategorizedCount(cat));
@@ -718,6 +831,7 @@ public class FlatFileHelper implements NoteDataStore {
 
     categories.sort(Comparator.comparing(
         c -> c.getName() != null ? c.getName().toLowerCase(Locale.ROOT) : "zzzzzzzz"));
+    categoriesCache = new ArrayList<>(categories);
     return categories;
   }
 
@@ -739,14 +853,10 @@ public class FlatFileHelper implements NoteDataStore {
 
     String markdown = FrontMatterUtils.serialize(fields, "");
     String slug = SlugUtils.slugify(category.getName(), category.getId());
-    String filename = slug + ".md";
+    File catFile = new File(CATEGORIES_DIR, slug + ".md");
+    writeFile(catFile, markdown);
 
-    if (categoriesDir == null) return category;
-    DocumentFile catFile = categoriesDir.createFile("application/octet-stream", filename);
-    if (catFile != null) {
-      writeDocumentFile(catFile, markdown);
-    }
-
+    invalidateCategoriesCache();
     return category;
   }
 
@@ -764,16 +874,22 @@ public class FlatFileHelper implements NoteDataStore {
 
     // Delete category file
     removeOldCategoryFile(category.getId());
+    invalidateCategoriesCache();
     return 1;
   }
 
 
   @Override
   public Category getCategory(Long id) {
-    if (id == null || categoriesDir == null) {
+    if (id == null) {
       return null;
     }
-    for (DocumentFile file : listMdFiles(categoriesDir)) {
+    File catDir = new File(CATEGORIES_DIR);
+    File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
+    if (files == null) {
+      return null;
+    }
+    for (File file : files) {
       Category cat = parseCategoryFile(file);
       if (cat != null && id.equals(cat.getId())) {
         return cat;
@@ -957,25 +1073,173 @@ public class FlatFileHelper implements NoteDataStore {
   // Internal helpers - note I/O
   // -------------------------------------------------------------------------
 
+  private File notesDir() {
+    return new File(ACTIVE_DIR);
+  }
+
   /**
-   * Loads every {@code .md} file from the root directory and converts each
+   * Loads every {@code .md} file from the notes directory and converts each
    * into a {@link Note}.
    */
+  /**
+   * Loads every {@code .md} file from the notes directory and converts each
+   * into a {@link Note}. Results are cached; subsequent calls return the
+   * cached list until the cache is invalidated by a write operation.
+   */
+  /**
+   * Loads notes from all three directories (active, archive, trash).
+   * The archived/trashed state is set based on which directory the
+   * note was found in.
+   */
   private List<Note> loadAllNotes() {
+    List<Note> all = new ArrayList<>();
+    all.addAll(loadActiveNotes());
+    all.addAll(loadArchivedNotes());
+    all.addAll(loadTrashedNotes());
+    return all;
+  }
+
+  private List<Note> loadActiveNotes() {
+    return loadNotesFromDir(notesDir(), activeCache);
+  }
+
+  private List<Note> loadArchivedNotes() {
+    return loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+  }
+
+  private List<Note> loadTrashedNotes() {
+    return loadNotesFromDir(new File(TRASH_DIR), trashCache);
+  }
+
+  /**
+   * Loads notes from a parent directory by scanning subdirectories for
+   * {@code note.md}. Attachments are discovered as sibling files.
+   */
+  private List<Note> loadNotesFromDir(File dir, List<Note> cache) {
+    if (cache != null) {
+      return new ArrayList<>(cache);
+    }
     List<Note> notes = new ArrayList<>();
-    if (rootDir == null || !rootDir.exists()) return notes;
-    for (DocumentFile file : listMdFiles(rootDir)) {
-      String content = readDocumentFile(file);
-      if (content == null) continue;
-      ParsedNote parsed = FrontMatterUtils.parseString(content);
+    File[] subdirs = dir.listFiles(File::isDirectory);
+    if (subdirs == null || subdirs.length == 0) {
+      return notes;
+    }
+    boolean isArchive = dir.getAbsolutePath().equals(new File(ARCHIVE_DIR).getAbsolutePath());
+    boolean isTrash = dir.getAbsolutePath().equals(new File(TRASH_DIR).getAbsolutePath());
+    for (File noteDir : subdirs) {
+      // Skip special directories
+      String name = noteDir.getName();
+      if ("archive".equals(name) || "trash".equals(name) || "categories".equals(name)) continue;
+
+      File mdFile = new File(noteDir, NOTE_FILENAME);
+      if (!mdFile.exists()) continue;
+
+      ParsedNote parsed = FrontMatterUtils.parse(mdFile);
       if (parsed != null) {
         Note note = buildNoteFromParsed(parsed);
         if (note != null) {
+          note.setArchived(isArchive);
+          note.setTrashed(isTrash);
+          note.setAttachmentsList(discoverAttachments(noteDir, note.getCreation()));
           notes.add(note);
         }
       }
     }
     return notes;
+  }
+
+  /**
+   * Discovers attachments by listing all files in a note directory
+   * that are not {@code note.md}. Returns them in lexicographic order.
+   * MIME types are detected from file headers.
+   */
+  private ArrayList<Attachment> discoverAttachments(File noteDir, Long noteCreation) {
+    ArrayList<Attachment> attachments = new ArrayList<>();
+    File[] files = noteDir.listFiles(f -> f.isFile() && !NOTE_FILENAME.equals(f.getName()));
+    if (files == null || files.length == 0) return attachments;
+
+    Arrays.sort(files, Comparator.comparing(File::getName));
+    for (File file : files) {
+      String mime = detectMimeType(file);
+      Attachment attachment = new Attachment(
+          file.lastModified(),
+          Uri.fromFile(file),
+          file.getName(),
+          file.length(),
+          0,
+          mime != null ? mime : "application/octet-stream");
+      if (noteCreation != null) {
+        attachment.setNoteId(noteCreation);
+      }
+      attachments.add(attachment);
+    }
+    return attachments;
+  }
+
+  /**
+   * Detects MIME type by reading the file's magic bytes.
+   */
+  private String detectMimeType(File file) {
+    try (java.io.InputStream is = new java.io.FileInputStream(file)) {
+      byte[] header = new byte[12];
+      int read = is.read(header);
+      if (read < 4) return null;
+
+      // JPEG: FF D8 FF
+      if (header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 && header[2] == (byte) 0xFF) {
+        return "image/jpeg";
+      }
+      // PNG: 89 50 4E 47
+      if (header[0] == (byte) 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) {
+        return "image/png";
+      }
+      // GIF: 47 49 46 38
+      if (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) {
+        return "image/gif";
+      }
+      // WebP: RIFF....WEBP
+      if (read >= 12 && header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46
+          && header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50) {
+        return "image/webp";
+      }
+      // MP4/MOV: ....ftyp
+      if (read >= 8 && header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70) {
+        return "video/mp4";
+      }
+      // PDF: 25 50 44 46
+      if (header[0] == 0x25 && header[1] == 0x50 && header[2] == 0x44 && header[3] == 0x46) {
+        return "application/pdf";
+      }
+      // AMR: 23 21 41 4D 52
+      if (read >= 5 && header[0] == 0x23 && header[1] == 0x21 && header[2] == 0x41
+          && header[3] == 0x4D && header[4] == 0x52) {
+        return "audio/amr";
+      }
+      // OGG: 4F 67 67 53
+      if (header[0] == 0x4F && header[1] == 0x67 && header[2] == 0x67 && header[3] == 0x53) {
+        return "audio/ogg";
+      }
+      // Try filename extension as fallback
+      return mimeFromExtension(file.getName());
+    } catch (IOException e) {
+      return mimeFromExtension(file.getName());
+    }
+  }
+
+  private String mimeFromExtension(String name) {
+    if (name == null) return null;
+    String lower = name.toLowerCase(Locale.ROOT);
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".gif")) return "image/gif";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".mp4")) return "video/mp4";
+    if (lower.endsWith(".3gp") || lower.endsWith(".3gpp")) return "video/3gpp";
+    if (lower.endsWith(".amr")) return "audio/amr";
+    if (lower.endsWith(".ogg")) return "audio/ogg";
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".txt")) return "text/plain";
+    return null;
   }
 
   /**
@@ -988,7 +1252,49 @@ public class FlatFileHelper implements NoteDataStore {
   }
 
   /**
-   * Applies the user's preferred sort order (mirroring FlatFileHelper's ORDER BY).
+   * Updates a note in the correct per-directory cache.
+   */
+  private void updateNoteInCache(Note note) {
+    // Remove from all caches first
+    long id = note.getCreation() != null ? note.getCreation() : 0;
+    if (id == 0) return;
+    removeFromList(activeCache, id);
+    removeFromList(archiveCache, id);
+    removeFromList(trashCache, id);
+
+    // Add to the correct cache
+    if (Boolean.TRUE.equals(note.isTrashed())) {
+      if (trashCache != null) trashCache.add(note);
+    } else if (Boolean.TRUE.equals(note.isArchived())) {
+      if (archiveCache != null) archiveCache.add(note);
+    } else {
+      if (activeCache != null) activeCache.add(note);
+    }
+  }
+
+  private void removeNoteFromCache(long noteId) {
+    removeFromList(activeCache, noteId);
+    removeFromList(archiveCache, noteId);
+    removeFromList(trashCache, noteId);
+  }
+
+  private void removeFromList(List<Note> list, long noteId) {
+    if (list == null) return;
+    list.removeIf(n -> n.getCreation() != null && n.getCreation() == noteId);
+  }
+
+  private void invalidateAllNoteCaches() {
+    activeCache = null;
+    archiveCache = null;
+    trashCache = null;
+  }
+
+  private void invalidateCategoriesCache() {
+    categoriesCache = null;
+  }
+
+  /**
+   * Applies the user's preferred sort order (mirroring DbHelper's ORDER BY).
    */
   private void sortNotes(List<Note> notes) {
     String sortColumn = checkNavigation(Navigation.REMINDERS)
@@ -1048,8 +1354,6 @@ public class FlatFileHelper implements NoteDataStore {
     note.setLastModification(parsed.getLong("last_modification", creation));
     note.setTitle(parsed.get("title", ""));
     note.setContent(parsed.body());
-    note.setArchived(parsed.getBoolean("archived"));
-    note.setTrashed(parsed.getBoolean("trashed"));
     note.setAlarm(emptyToNull(parsed.get("alarm")));
     note.setReminderFired(parsed.getBoolean("reminder_fired") ? 1 : 0);
     note.setRecurrenceRule(emptyToNull(parsed.get("recurrence_rule")));
@@ -1066,77 +1370,24 @@ public class FlatFileHelper implements NoteDataStore {
       note.setCategory(cat);
     }
 
-    // Attachments from JSON
-    String attachmentsJson = parsed.get("attachments_json");
-    if (attachmentsJson != null && !attachmentsJson.isEmpty()) {
-      note.setAttachmentsList(deserializeAttachments(attachmentsJson));
-    }
+    // Attachments are discovered from the note directory, not front matter
 
     return note;
   }
-
-  /**
-   * Returns a DocumentFile in the root directory for the given slug and
-   * creation ID.  If an existing file with this creation ID already exists
-   * (regardless of filename), it is reused when the slug matches or
-   * deleted-and-recreated when the slug changed.  Only creates a brand new
-   * file if no file for this creation ID exists at all.
-   */
-  private DocumentFile getOrCreateNoteFile(String slug, long creation) {
-    if (rootDir == null) return null;
-    String filename = slug + ".md";
-
-    // First check if there's already a file for this creation ID
-    DocumentFile existingByCreation = null;
-    for (DocumentFile f : listMdFiles(rootDir)) {
-      String content = readDocumentFile(f);
-      if (content == null) continue;
-      ParsedNote parsed = FrontMatterUtils.parseString(content);
-      if (parsed != null && parsed.getLong("creation", 0) == creation) {
-        existingByCreation = f;
-        break;
-      }
-    }
-
-    if (existingByCreation != null) {
-      // Same slug - reuse the file (overwrite in place)
-      if (filename.equals(existingByCreation.getName())) {
-        return existingByCreation;
-      }
-      // Slug changed - delete old file, create new one
-      existingByCreation.delete();
-    }
-
-    // Resolve slug collisions with other notes
-    DocumentFile candidate = rootDir.findFile(filename);
-    if (candidate == null) {
-      return rootDir.createFile("application/octet-stream", filename);
-    }
-
-    // File with this name exists but belongs to a different note
-    int suffix = 1;
-    while (true) {
-      filename = slug + "-" + suffix + ".md";
-      candidate = rootDir.findFile(filename);
-      if (candidate == null) {
-        return rootDir.createFile("application/octet-stream", filename);
-      }
-      suffix++;
-    }
-  }
-
 
   // -------------------------------------------------------------------------
   // Internal helpers - category I/O
   // -------------------------------------------------------------------------
 
-  private Category parseCategoryFile(DocumentFile file) {
-    String content = readDocumentFile(file);
-    if (content == null) return null;
-    ParsedNote parsed = FrontMatterUtils.parseString(content);
-    if (parsed == null) return null;
+  private Category parseCategoryFile(File file) {
+    ParsedNote parsed = FrontMatterUtils.parse(file);
+    if (parsed == null) {
+      return null;
+    }
     long id = parsed.getLong("id", 0);
-    if (id == 0) return null;
+    if (id == 0) {
+      return null;
+    }
     return new Category(
         id,
         parsed.get("name", ""),
@@ -1145,8 +1396,10 @@ public class FlatFileHelper implements NoteDataStore {
   }
 
   private void removeOldCategoryFile(long categoryId) {
-    if (categoriesDir == null) return;
-    for (DocumentFile file : listMdFiles(categoriesDir)) {
+    File catDir = new File(CATEGORIES_DIR);
+    File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
+    if (files == null) return;
+    for (File file : files) {
       Category cat = parseCategoryFile(file);
       if (cat != null && cat.getId() == categoryId) {
         file.delete();
@@ -1160,128 +1413,33 @@ public class FlatFileHelper implements NoteDataStore {
   // Internal helpers - attachment serialization
   // -------------------------------------------------------------------------
 
-  /**
-   * Serializes a note's attachments list to a JSON array string for storage
-   * in the YAML front matter.
-   */
-  private String serializeAttachments(List<? extends Attachment> attachments, long noteCreation) {
-    if (attachments == null || attachments.isEmpty()) {
-      return "";
-    }
-    try {
-      JSONArray arr = new JSONArray();
-      for (Attachment a : attachments) {
-        JSONObject obj = new JSONObject();
-        obj.put("id", a.getId() != null ? a.getId() : Calendar.getInstance().getTimeInMillis());
-        obj.put("uri", a.getUri() != null ? a.getUri().toString() : "");
-        obj.put("name", a.getName() != null ? a.getName() : "");
-        obj.put("size", a.getSize());
-        obj.put("length", a.getLength());
-        obj.put("mime_type", a.getMime_type() != null ? a.getMime_type() : "");
-        arr.put(obj);
-      }
-      return arr.toString();
-    } catch (JSONException e) {
-      LogDelegate.e("Error serializing attachments", e);
-      return "";
-    }
-  }
-
-  /**
-   * Deserializes a JSON array string from front matter into an attachments list.
-   */
-  private ArrayList<Attachment> deserializeAttachments(String json) {
-    ArrayList<Attachment> list = new ArrayList<>();
-    if (json == null || json.isEmpty()) {
-      return list;
-    }
-    try {
-      JSONArray arr = new JSONArray(json);
-      for (int i = 0; i < arr.length(); i++) {
-        JSONObject obj = arr.getJSONObject(i);
-        long id = obj.optLong("id", Calendar.getInstance().getTimeInMillis());
-        String uriStr = obj.optString("uri", "");
-        String name = obj.optString("name", "");
-        long size = obj.optLong("size", 0);
-        long length = obj.optLong("length", 0);
-        String mimeType = obj.optString("mime_type", "");
-
-        Uri uri = uriStr.isEmpty() ? Uri.EMPTY : Uri.parse(uriStr);
-        Attachment attachment = new Attachment(id, uri, name, size, length, mimeType);
-        list.add(attachment);
-      }
-    } catch (JSONException e) {
-      LogDelegate.e("Error deserializing attachments", e);
-    }
-    return list;
-  }
 
 
   // -------------------------------------------------------------------------
-  // Internal helpers - DocumentFile I/O
+  // Internal helpers - file I/O
   // -------------------------------------------------------------------------
 
-  /**
-   * Lists only {@code .md} files in the given directory.
-   */
-  private DocumentFile[] listMdFiles(DocumentFile dir) {
-    if (dir == null || !dir.exists()) return new DocumentFile[0];
-    DocumentFile[] all = dir.listFiles();
-    return Arrays.stream(all)
-        .filter(f -> f.isFile() && f.getName() != null && f.getName().endsWith(".md"))
-        .toArray(DocumentFile[]::new);
-  }
-
-  /**
-   * Reads the entire contents of a {@link DocumentFile} as a UTF-8 string.
-   */
-  private String readDocumentFile(DocumentFile file) {
-    if (file == null || !file.exists()) return null;
-    try (InputStream is = mContext.getContentResolver().openInputStream(file.getUri())) {
-      if (is == null) return null;
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-      StringBuilder sb = new StringBuilder();
-      char[] buf = new char[8192];
-      int read;
-      while ((read = reader.read(buf)) != -1) {
-        sb.append(buf, 0, read);
-      }
-      return sb.toString();
-    } catch (IOException e) {
-      LogDelegate.e("Error reading DocumentFile: " + file.getName(), e);
-      return null;
-    }
-  }
-
-  /**
-   * Writes UTF-8 content to a {@link DocumentFile}, truncating any existing
-   * content.
-   */
-  private void writeDocumentFile(DocumentFile file, String content) {
-    try (OutputStream os = mContext.getContentResolver().openOutputStream(file.getUri(), "wt")) {
-      if (os == null) {
-        LogDelegate.e("Failed to open output stream for: " + file.getName());
-        return;
-      }
-      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+  private void writeFile(File file, String content) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
       writer.write(content);
-      writer.flush();
     } catch (IOException e) {
-      LogDelegate.e("Error writing DocumentFile: " + file.getName(), e);
+      LogDelegate.e("Error writing file " + file.getAbsolutePath(), e);
     }
   }
 
-  /**
-   * Recursively deletes a {@link DocumentFile} tree.
-   */
-  private void deleteDocumentTree(DocumentFile doc) {
-    if (doc == null || !doc.exists()) return;
-    if (doc.isDirectory()) {
-      for (DocumentFile child : doc.listFiles()) {
-        deleteDocumentTree(child);
+  private void deleteDirectory(File dir) {
+    if (dir == null || !dir.exists()) return;
+    File[] files = dir.listFiles();
+    if (files != null) {
+      for (File f : files) {
+        if (f.isDirectory()) {
+          deleteDirectory(f);
+        } else {
+          f.delete();
+        }
       }
     }
-    doc.delete();
+    dir.delete();
   }
 
   private String emptyToNull(String value) {

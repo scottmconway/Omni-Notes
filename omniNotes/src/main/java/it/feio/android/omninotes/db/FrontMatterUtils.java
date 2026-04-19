@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2013-2025 Federico Iosue (developer@omninotes.app)
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14,6 +16,12 @@
  */
 package it.feio.android.omninotes.db;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -108,6 +116,22 @@ public final class FrontMatterUtils {
 
 
   /**
+   * Parses a markdown file with YAML front matter.
+   *
+   * @param file The markdown file to parse
+   * @return A {@link ParsedNote} containing front matter and body, or null if file cannot be read
+   */
+  public static ParsedNote parse(File file) {
+    try {
+      String content = readFile(file);
+      return parseString(content);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+
+  /**
    * Parses a markdown string with YAML front matter.
    */
   public static ParsedNote parseString(String content) {
@@ -192,18 +216,14 @@ public final class FrontMatterUtils {
    */
   public static LinkedHashMap<String, String> buildNoteFields(
       String title, long creation, long lastModification,
-      boolean archived, boolean trashed,
       String alarm, boolean reminderFired, String recurrenceRule,
       String latitude, String longitude, String address,
-      Long categoryId, boolean locked, boolean checklist,
-      String attachmentsJson) {
+      Long categoryId, boolean locked, boolean checklist) {
 
     LinkedHashMap<String, String> fields = new LinkedHashMap<>();
     fields.put("title", safe(title));
     fields.put("creation", String.valueOf(creation));
     fields.put("last_modification", String.valueOf(lastModification));
-    fields.put("archived", String.valueOf(archived));
-    fields.put("trashed", String.valueOf(trashed));
     fields.put("alarm", safe(alarm));
     fields.put("reminder_fired", String.valueOf(reminderFired));
     fields.put("recurrence_rule", safe(recurrenceRule));
@@ -213,7 +233,6 @@ public final class FrontMatterUtils {
     fields.put("category_id", categoryId != null ? String.valueOf(categoryId) : "");
     fields.put("locked", String.valueOf(locked));
     fields.put("checklist", String.valueOf(checklist));
-    fields.put("attachments_json", safe(attachmentsJson));
     return fields;
   }
 
@@ -244,5 +263,18 @@ public final class FrontMatterUtils {
    */
   private static String safeValue(String value) {
     return value != null ? value : "";
+  }
+
+
+  private static String readFile(File file) throws IOException {
+    try (RandomAccessFile raf = new RandomAccessFile(file, "r");
+         FileChannel channel = raf.getChannel()) {
+      long size = channel.size();
+      if (size == 0) return "";
+      MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+      byte[] bytes = new byte[(int) size];
+      buffer.get(bytes);
+      return new String(bytes, StandardCharsets.UTF_8);
+    }
   }
 }
