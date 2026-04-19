@@ -134,6 +134,7 @@ dependencies {
     implementation 'de.keyboardsurfer.android.widget:crouton:1.8.5@aar'
     implementation 'com.google.android.apps.dashclock:dashclock-api:2.0.0'
     implementation 'commons-io:commons-io:2.16.1'
+    implementation 'org.apache.commons:commons-compress:1.26.1'
     implementation 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
     implementation 'com.github.vikramkakkar:SublimePicker:8c4de22db1'
     implementation 'androidx.preference:preference-ktx:1.2.1'

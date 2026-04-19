@@ -1,6 +1,4 @@
 /*
- * Copyright (C) 2013-2025 Federico Iosue (developer@omninotes.app)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,303 +16,150 @@
 package it.feio.android.omninotes.helpers;
 
 
-import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 import static it.feio.android.omninotes.OmniNotes.getAppContext;
-import static it.feio.android.omninotes.utils.ConstantsBase.DATABASE_NAME;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_BACKUP_FOLDER_URI;
-import static java.util.stream.Collectors.toList;
 
-import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.webkit.MimeTypeMap;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.lazygeniouz.dfc.file.DocumentFileCompat;
 import com.pixplicity.easyprefs.library.Prefs;
-import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.DataBackupIntentService;
 import it.feio.android.omninotes.db.FlatFileHelper;
-import it.feio.android.omninotes.exceptions.checked.BackupAttachmentException;
-import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
-import it.feio.android.omninotes.models.Attachment;
-import it.feio.android.omninotes.models.Note;
-import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.StorageHelper;
-import it.feio.android.omninotes.utils.TextHelper;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.commons.io.FileUtils;
-import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
+
+/**
+ * Backup helper that creates/restores {@code .tar.gz} archives of the
+ * entire notes directory.
+ */
 public final class BackupHelper {
 
-  public static void exportNotes(DocumentFileCompat backupDir) {
-    backupDir.createFile("", ".nomedia");
-    for (Note note : FlatFileHelper.getInstance(true).getAllNotes(false)) {
-      exportNote(backupDir, note);
-    }
-  }
-
-  public static void exportNote(DocumentFileCompat backupDir, Note note) {
-    var noteFile = getBackupNoteFile(backupDir, note);
-    try {
-      DocumentFileHelper.write(getAppContext(), noteFile, note.toJSON());
-    } catch (IOException e) {
-      LogDelegate.e(String.format("Error on note %s backup: %s",  note.get_id(), e.getMessage()));
-    }
-  }
-
-  @NonNull
-  public static DocumentFileCompat getBackupNoteFile(DocumentFileCompat backupDir, Note note) {
-    String backupFileMimetype = "application/json";
-    String backupFileExtension = MimeTypeMap.getSingleton().hasMimeType(backupFileMimetype) ? "" : ".json";
-    return backupDir.createFile(backupFileMimetype, note.get_id() + backupFileExtension);
+  private BackupHelper() {
   }
 
   /**
-   * Export attachments to backup folder notifying for each attachment copied
-   */
-  public static void exportAttachments(DocumentFileCompat backupDir, NotificationsHelper notificationsHelper) {
-    DocumentFileCompat attachmentsDestinationDir = backupDir.createDirectory(StorageHelper.getAttachmentDir().getName());
-    List<Attachment> list = FlatFileHelper.getInstance().getAllAttachments();
-    exportAttachments(notificationsHelper, attachmentsDestinationDir, list, null);
-  }
-
-  public static boolean exportAttachments(NotificationsHelper notificationsHelper,
-      DocumentFileCompat destinationattachmentsDir, List<Attachment> list, List<Attachment> listOld) {
-    boolean result = true;
-    listOld = listOld == null ? Collections.emptyList() : listOld;
-    int exported = 0;
-    int failed = 0;
-    String failedString = "";
-
-    for (Attachment attachment : list) {
-      try {
-        exportAttachment(destinationattachmentsDir, attachment);
-        ++exported;
-      } catch (BackupAttachmentException e) {
-        ++failed;
-        result = false;
-        failedString = " (" + failed + " " + getAppContext().getString(R.string.failed) + ")";
-      }
-
-      notifyAttachmentBackup(notificationsHelper, list, exported, failedString);
-    }
-
-    listOld.stream()
-        .filter(attachment -> !list.contains(attachment))
-        .forEach(attachment -> destinationattachmentsDir.findFile(
-            attachment.getUri().getLastPathSegment()).delete());
-
-    return result;
-  }
-
-  private static void notifyAttachmentBackup(NotificationsHelper notificationsHelper,
-      List<Attachment> list, int exported, String failedString) {
-    if (notificationsHelper != null) {
-      String notificationMessage =
-          TextHelper.capitalize(getAppContext().getString(R.string.attachment)) + " "
-              + exported + "/" + list.size() + failedString;
-      notificationsHelper.updateMessage(notificationMessage);
-    }
-  }
-
-  private static void exportAttachment(DocumentFileCompat attachmentsDestination, Attachment attachment)
-      throws BackupAttachmentException {
-    try {
-      var destinationAttachment = attachmentsDestination.createFile("",
-          attachment.getUri().getLastPathSegment());
-      DocumentFileHelper.copyFileTo(getAppContext(), new File(attachment.getUri().getPath()),
-          destinationAttachment);
-    } catch (Exception e) {
-      LogDelegate.e("Error during attachment backup: " + attachment.getUriPath(), e);
-      throw new BackupAttachmentException(e);
-    }
-  }
-
-  public static List<Note> importNotes(DocumentFileCompat backupDir) {
-    return backupDir.listFiles().stream()
-        .filter(f -> f.getName().matches("\\d{13}.json"))
-        .map(BackupHelper::importNote)
-        .filter(Objects::nonNull)
-        .collect(toList());
-  }
-
-  @Nullable
-  public static Note importNote(DocumentFileCompat file) {
-    Note note = getImportNote(file);
-
-    if (note.getCategory() != null) {
-      FlatFileHelper.getInstance().updateCategory(note.getCategory());
-    }
-    FlatFileHelper.getInstance().updateNote(note, false);
-    return note;
-  }
-
-  public static Note getImportNote(DocumentFileCompat file) {
-    try {
-      Note note = new Note();
-      String jsonString = DocumentFileHelper.readContent(getAppContext(), file);
-      if (!TextUtils.isEmpty(jsonString)) {
-        note.buildFromJson(jsonString);
-      }
-      return note;
-    } catch (IOException e) {
-      LogDelegate.e("Error parsing note json");
-      return new Note();
-    }
-  }
-
-  /**
-   * Import attachments from backup folder notifying for each imported item
-   */
-  public static boolean importAttachments(DocumentFileCompat backupDir, NotificationsHelper notificationsHelper) {
-    AtomicBoolean result = new AtomicBoolean(true);
-    File attachmentsDir = StorageHelper.getAttachmentDir();
-    var backupAttachmentsDir = backupDir.findFile(attachmentsDir.getName());
-    if (!backupAttachmentsDir.exists()) {
-      return false;
-    }
-
-    AtomicInteger imported = new AtomicInteger();
-    ArrayList<Attachment> attachments = FlatFileHelper.getInstance().getAllAttachments();
-    var BackupedAttachments = backupAttachmentsDir.listFiles();
-    attachments.forEach(attachment -> {
-      try {
-        importAttachment(BackupedAttachments, attachmentsDir, attachment);
-        if (notificationsHelper != null) {
-          notificationsHelper.updateMessage(
-              TextHelper.capitalize(getAppContext().getString(R.string.attachment)) + " "
-                  + imported.incrementAndGet() + "/" + attachments.size());
-        }
-      } catch (BackupAttachmentException e) {
-        result.set(false);
-      }
-    });
-    return result.get();
-  }
-
-  static void importAttachment(List<DocumentFileCompat> backupedAttachments, File attachmentsDir,
-      Attachment attachment) throws BackupAttachmentException {
-    String attachmentName = attachment.getUri().getLastPathSegment();
-    try {
-      File destinationAttachment = new File(attachmentsDir, attachmentName);
-      var backupedAttachment = backupedAttachments.stream().filter(ba -> attachmentName.equals(ba.getName()))
-          .findFirst().get();
-      DocumentFileHelper.copyFileTo(getAppContext(), backupedAttachment, destinationAttachment);
-    } catch (Exception e) {
-      LogDelegate.e("Error importing the attachment " + attachment.getUri().getPath(), e);
-      throw new BackupAttachmentException(e);
-    }
-  }
-
-  /**
-   * Starts backup service
+   * Creates a {@code .tar.gz} archive of the notes directory.
    *
-   * @param backupFolderName subfolder of the app's external sd folder where notes will be stored
+   * @param destFile the output file (e.g. {@code /sdcard/backup.tar.gz})
    */
-  public static void startBackupService(String backupFolderName) {
+  public static void exportBackup(File destFile) throws IOException {
+    File notesRoot = new File(FlatFileHelper.NOTES_DIR);
+    try (FileOutputStream fos = new FileOutputStream(destFile);
+         BufferedOutputStream bos = new BufferedOutputStream(fos);
+         GZIPOutputStream gzos = new GZIPOutputStream(bos);
+         TarArchiveOutputStream tar = new TarArchiveOutputStream(gzos)) {
+      tar.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+      addDirectoryToTar(tar, notesRoot, "");
+    }
+  }
+
+  /**
+   * Restores a {@code .tar.gz} archive by extracting it to the notes
+   * directory, replacing existing content.
+   *
+   * @param archiveFile the backup archive to restore
+   */
+  public static void importBackup(File archiveFile) throws IOException {
+    File notesRoot = new File(FlatFileHelper.NOTES_DIR);
+    deleteDirectoryContents(notesRoot);
+
+    try (FileInputStream fis = new FileInputStream(archiveFile);
+         BufferedInputStream bis = new BufferedInputStream(fis);
+         GZIPInputStream gzis = new GZIPInputStream(bis);
+         TarArchiveInputStream tar = new TarArchiveInputStream(gzis)) {
+      TarArchiveEntry entry;
+      while ((entry = tar.getNextEntry()) != null) {
+        File dest = new File(notesRoot, entry.getName());
+        if (entry.isDirectory()) {
+          dest.mkdirs();
+        } else {
+          dest.getParentFile().mkdirs();
+          try (FileOutputStream fos = new FileOutputStream(dest)) {
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = tar.read(buf)) != -1) {
+              fos.write(buf, 0, len);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Lists existing backup files in the backup folder.
+   */
+  public static File[] listBackups() {
+    String backupPath = Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
+    if (backupPath == null || backupPath.isEmpty()) return new File[0];
+    File backupDir = new File(backupPath);
+    if (!backupDir.exists()) return new File[0];
+    File[] files = backupDir.listFiles((dir, name) ->
+        name.endsWith(".tar.gz") || name.endsWith(".tgz"));
+    return files != null ? files : new File[0];
+  }
+
+  /**
+   * Starts the backup service.
+   */
+  public static void startBackupService(String backupName) {
     Intent service = new Intent(getAppContext(), DataBackupIntentService.class);
     service.setAction(DataBackupIntentService.ACTION_DATA_EXPORT);
-    service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupFolderName);
+    service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupName);
     getAppContext().startService(service);
   }
 
-  public static void deleteNote(File file) {
-    try {
-      Note note = new Note();
-      note.buildFromJson(FileUtils.readFileToString(file));
-      FlatFileHelper.getInstance().deleteNote(note);
-    } catch (IOException e) {
-      LogDelegate.e("Error parsing note json");
-    }
-  }
-
   /**
-   * Import database from backup folder. Used ONLY to restore legacy backup
-   *
-   * @deprecated {@link BackupHelper#importNotes(DocumentFileCompat)}
+   * Returns the configured backup folder path, or null.
    */
-  @Deprecated(forRemoval = true)
-  public static void importDB(Context context, File backupDir) throws IOException {
-    File database = context.getDatabasePath(DATABASE_NAME);
-    if (database.exists() && database.delete()) {
-      StorageHelper.copyFile(new File(backupDir, DATABASE_NAME), database, true);
-    }
-  }
-
-  public static DocumentFileCompat saveScopedStorageUriInPreferences(Intent intent) {
-    var context = getAppContext();
-    final int takeFlags = FLAG_GRANT_READ_URI_PERMISSION & FLAG_GRANT_WRITE_URI_PERMISSION;
-    context.getContentResolver().takePersistableUriPermission(intent.getData(), takeFlags);
-
-    var currentlySelected = DocumentFileCompat.Companion.fromTreeUri(getAppContext(),
-        intent.getData());
-
-    // Selected a folder already name "Omni Notes" (ex. from previous backups)
-    if(Constants.EXTERNAL_STORAGE_FOLDER.equals(currentlySelected.getName())) {
-      Prefs.putString(PREF_BACKUP_FOLDER_URI, currentlySelected.getUri().toString());
-      return currentlySelected;
-    } else {
-      var childFolder = currentlySelected.findFile(Constants.EXTERNAL_STORAGE_FOLDER);
-      if (childFolder == null || !childFolder.isDirectory()) {
-        childFolder = DocumentFileCompat.Companion.fromTreeUri(context, intent.getData())
-            .createDirectory(Constants.EXTERNAL_STORAGE_FOLDER);
-      }
-      Prefs.putString(PREF_BACKUP_FOLDER_URI, childFolder.getUri().toString());
-      return childFolder;
-    }
-  }
-
-//  public static List<LinkedList<DiffMatchPatch.Diff>> integrityCheck(File backupDir) {
-//    List<LinkedList<DiffMatchPatch.Diff>> errors = new ArrayList<>();
-//    for (Note note : FlatFileHelper.getInstance(true).getAllNotes(false)) {
-//      File noteFile = getBackupNoteFile(backupDir, note);
-//      try {
-//        String noteString = note.toJSON();
-//        String noteFileString = FileUtils.readFileToString(noteFile);
-//        if (noteString.equals(noteFileString)) {
-//          File backupAttachmentsDir = new File(backupDir,
-//              StorageHelper.getAttachmentDir().getName());
-//          for (Attachment attachment : note.getAttachmentsList()) {
-//            if (!new File(backupAttachmentsDir, FilenameUtils.getName(attachment.getUriPath()))
-//                .exists()) {
-//              addIntegrityCheckError(errors, new FileNotFoundException("Attachment " + attachment
-//                  .getUriPath() + " missing"));
-//            }
-//          }
-//        } else {
-//          errors.add(new DiffMatchPatch().diffMain(noteString, noteFileString));
-//        }
-//      } catch (IOException e) {
-//        LogDelegate.e(e.getMessage(), e);
-//        addIntegrityCheckError(errors, e);
-//      }
-//    }
-//    return errors;
-//  }
-
   public static String getBackupFolderPath() {
-    var backupFolder = Prefs.getString(PREF_BACKUP_FOLDER_URI, "");
-    var paths =URI.create(backupFolder).getPath().split(":");
-    return paths[paths.length - 1];
+    return Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
   }
 
-  private static void addIntegrityCheckError(List<LinkedList<DiffMatchPatch.Diff>> errors,
-      IOException e) {
-    LinkedList<DiffMatchPatch.Diff> l = new LinkedList<>();
-    l.add(new DiffMatchPatch.Diff(DiffMatchPatch.Operation.DELETE, e.getMessage()));
-    errors.add(l);
+  private static void addDirectoryToTar(TarArchiveOutputStream tar, File dir, String base)
+      throws IOException {
+    File[] files = dir.listFiles();
+    if (files == null) return;
+    for (File file : files) {
+      String entryName = base.isEmpty() ? file.getName() : base + "/" + file.getName();
+      if (file.isDirectory()) {
+        TarArchiveEntry entry = new TarArchiveEntry(file, entryName + "/");
+        tar.putArchiveEntry(entry);
+        tar.closeArchiveEntry();
+        addDirectoryToTar(tar, file, entryName);
+      } else {
+        TarArchiveEntry entry = new TarArchiveEntry(file, entryName);
+        entry.setSize(file.length());
+        tar.putArchiveEntry(entry);
+        try (FileInputStream fis = new FileInputStream(file)) {
+          byte[] buf = new byte[8192];
+          int len;
+          while ((len = fis.read(buf)) != -1) {
+            tar.write(buf, 0, len);
+          }
+        }
+        tar.closeArchiveEntry();
+      }
+    }
   }
 
+  private static void deleteDirectoryContents(File dir) {
+    if (dir == null || !dir.exists()) return;
+    File[] files = dir.listFiles();
+    if (files == null) return;
+    for (File file : files) {
+      if (file.isDirectory()) {
+        deleteDirectoryContents(file);
+      }
+      file.delete();
+    }
+  }
 }

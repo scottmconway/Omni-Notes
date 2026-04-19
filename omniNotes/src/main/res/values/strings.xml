@@ -406,5 +406,6 @@
   <string name="channel_pinned_description">Notifications for pinned notes</string>
   <string name="location_not_enabled">Device location turned off</string>
   <string name="storage_permission_required">Please grant \"All files access\" so notes can be stored on your device.</string>
+  <string name="data_import_failed">Import failed</string>
 
 </resources>

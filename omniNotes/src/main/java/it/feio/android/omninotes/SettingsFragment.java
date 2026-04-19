@@ -57,10 +57,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.lazygeniouz.dfc.file.DocumentFileCompat;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.async.DataBackupIntentService;
-import it.feio.android.omninotes.exceptions.checked.ExternalStorageProviderException;
 import it.feio.android.omninotes.helpers.AppVersionHelper;
 import it.feio.android.omninotes.helpers.BackupHelper;
 import it.feio.android.omninotes.helpers.ChangelogHelper;
@@ -83,8 +81,6 @@ import org.apache.commons.lang3.ArrayUtils;
 public class SettingsFragment extends PreferenceFragmentCompat {
 
   private static final int RINGTONE_REQUEST_CODE = 100;
-  private static final int ACCESS_DATA_FOR_EXPORT = 200;
-  private static final int ACCESS_DATA_FOR_IMPORT = 210;
   public static final String XML_NAME = "xmlName";
 
 
@@ -144,12 +140,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     if (export != null) {
       export.setSummary(BackupHelper.getBackupFolderPath());
       export.setOnPreferenceClickListener(arg0 -> {
-        try {
-          scopedStorageFolderChoosen();
-          exportNotes();
-        } catch (ExternalStorageProviderException e) {
-          startIntentForScopedStorage(ACCESS_DATA_FOR_EXPORT);
-        }
+        exportNotes();
         return false;
       });
     }
@@ -158,12 +149,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     Preference importData = findPreference("settings_import_data");
     if (importData != null) {
       importData.setOnPreferenceClickListener(arg0 -> {
-        try {
-          var backupFolder = scopedStorageFolderChoosen();
-          importNotes(backupFolder);
-        } catch (ExternalStorageProviderException e) {
-          startIntentForScopedStorage(ACCESS_DATA_FOR_IMPORT);
-        }
+        importNotes();
         return false;
       });
     }
@@ -172,7 +158,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     if (changeBackupFolder != null) {
       changeBackupFolder.setVisible(true);
       changeBackupFolder.setOnPreferenceClickListener(arg0 -> {
-        startIntentForScopedStorage(ACCESS_DATA_FOR_IMPORT);
+        promptForBackupFolder();
         return false;
       });
     }
@@ -476,96 +462,78 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
   }
 
-  private void startIntentForScopedStorage(int intentRequestCode) {
-    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-    startActivityForResult(intent, intentRequestCode);
-  }
+  private void promptForBackupFolder() {
+    View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_backup_layout, null);
+    final EditText pathEditText = v.findViewById(R.id.export_file_name);
+    String currentPath = BackupHelper.getBackupFolderPath();
+    pathEditText.setHint(currentPath != null ? currentPath : "/sdcard/OmniNotesBackup");
 
-  @TargetApi(VERSION_CODES.O)
-  private DocumentFileCompat scopedStorageFolderChoosen() throws ExternalStorageProviderException {
-    var backupFolderUri = Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
-    try {
-      var backupFolder = DocumentFileCompat.Companion.fromTreeUri(getContext(),
-          Uri.parse(backupFolderUri));
-      if (backupFolder == null || !backupFolder.canWrite()) {
-        throw new ExternalStorageProviderException("Can't write into " + backupFolder);
-      }
-      return backupFolder;
-    } catch (SecurityException | NullPointerException | IllegalArgumentException e) {
-      throw new ExternalStorageProviderException(e);
-    }
+    new MaterialAlertDialogBuilder(getContext())
+        .setTitle(R.string.settings_change_backup_folder)
+        .setView(v)
+        .setPositiveButton(R.string.confirm, (dialog, which) -> {
+          String path = TextUtils.isEmpty(pathEditText.getText().toString()) ?
+              pathEditText.getHint().toString() : pathEditText.getText().toString();
+          new File(path).mkdirs();
+          Prefs.edit().putString(PREF_BACKUP_FOLDER_URI, path).apply();
+          Preference export = findPreference("settings_export_data");
+          if (export != null) export.setSummary(path);
+        }).show();
   }
 
   private void importNotes() {
-    importNotes(null);
-  }
+    File[] backups = BackupHelper.listBackups();
 
-  private void importNotes(DocumentFileCompat documentFile) {
-    String[] backupsArray;
-    if (documentFile != null) {
-      backupsArray = documentFile.listFiles().stream().map(DocumentFileCompat::getName)
-          .collect(toList()).toArray(new String[0]);
-    } else {
-      backupsArray = StorageHelper.getOrCreateExternalStoragePublicDir().list();
-    }
-
-    if (ArrayUtils.isEmpty(backupsArray)) {
+    if (backups.length == 0) {
       ((SettingsActivity) getActivity()).showMessage(R.string.no_backups_available, ONStyle.WARN);
-    } else {
-      final List<String> backups = asList(backupsArray);
-      reverse(backups);
-
-      MaterialAlertDialogBuilder importDialog = new MaterialAlertDialogBuilder(getActivity())
-          .setTitle(R.string.settings_import)
-          .setSingleChoiceItems(backupsArray, -1, (dialog, position) -> {
-          })
-          .setPositiveButton(R.string.data_import_message, (dialog, which) -> {
-            int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-
-            if (position == -1) {
-              Toast.makeText(getContext(), R.string.nothing_selected, Toast.LENGTH_LONG).show();
-              return;
-            }
-
-            String backupSelected = backups.get(position);
-
-            new MaterialAlertDialogBuilder(getActivity())
-                .setTitle(R.string.confirm_restoring_backup)
-                .setMessage(backupSelected)
-                .setPositiveButton(R.string.confirm, (dialog1, which1) -> {
-                  // An IntentService will be launched to accomplish the import task
-                  Intent service = new Intent(getActivity(),
-                      DataBackupIntentService.class);
-                  service.setAction(DataBackupIntentService.ACTION_DATA_IMPORT);
-                  service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupSelected);
-                  getActivity().startService(service);
-                }).show();
-          })
-          .setNegativeButton(R.string.delete, (dialog, which) -> {
-            int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-
-            if (position == -1) {
-              Toast.makeText(getContext(), R.string.nothing_selected, Toast.LENGTH_LONG).show();
-              return;
-            }
-
-            String backupSelected = backups.get(position);
-
-            new MaterialDialog.Builder(getActivity())
-                .title(R.string.confirm_removing_backup)
-                .content(backupSelected)
-                .positiveText(R.string.confirm)
-                .onPositive((dialog12, which1) -> {
-                  Intent service = new Intent(getActivity(),
-                      DataBackupIntentService.class);
-                  service.setAction(DataBackupIntentService.ACTION_DATA_DELETE);
-                  service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupSelected);
-                  getActivity().startService(service);
-                }).build().show();
-          });
-
-      importDialog.show();
+      return;
     }
+
+    String[] backupNames = new String[backups.length];
+    for (int i = 0; i < backups.length; i++) {
+      backupNames[i] = backups[i].getName();
+    }
+
+    MaterialAlertDialogBuilder importDialog = new MaterialAlertDialogBuilder(getActivity())
+        .setTitle(R.string.settings_import)
+        .setSingleChoiceItems(backupNames, -1, (dialog, position) -> {
+        })
+        .setPositiveButton(R.string.data_import_message, (dialog, which) -> {
+          int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+          if (position == -1) {
+            Toast.makeText(getContext(), R.string.nothing_selected, Toast.LENGTH_LONG).show();
+            return;
+          }
+          String backupSelected = backupNames[position];
+          new MaterialAlertDialogBuilder(getActivity())
+              .setTitle(R.string.confirm_restoring_backup)
+              .setMessage(backupSelected)
+              .setPositiveButton(R.string.confirm, (dialog1, which1) -> {
+                Intent service = new Intent(getActivity(), DataBackupIntentService.class);
+                service.setAction(DataBackupIntentService.ACTION_DATA_IMPORT);
+                service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupSelected);
+                getActivity().startService(service);
+              }).show();
+        })
+        .setNegativeButton(R.string.delete, (dialog, which) -> {
+          int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+          if (position == -1) {
+            Toast.makeText(getContext(), R.string.nothing_selected, Toast.LENGTH_LONG).show();
+            return;
+          }
+          String backupSelected = backupNames[position];
+          new MaterialAlertDialogBuilder(getActivity())
+              .setTitle(R.string.confirm_removing_backup)
+              .setMessage(backupSelected)
+              .setPositiveButton(R.string.confirm, (dialog12, which1) -> {
+                Intent service = new Intent(getActivity(), DataBackupIntentService.class);
+                service.setAction(DataBackupIntentService.ACTION_DATA_DELETE);
+                service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupSelected);
+                getActivity().startService(service);
+              }).show();
+        });
+
+    importDialog.show();
   }
 
 
@@ -618,29 +586,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     if (resultCode == Activity.RESULT_OK) {
-      switch (requestCode) {
-        case RINGTONE_REQUEST_CODE:
-          Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-          String notificationSound = uri == null ? null : uri.toString();
-          Prefs.edit().putString("settings_notification_ringtone", notificationSound).apply();
-          break;
-
-        case ACCESS_DATA_FOR_EXPORT:
-          BackupHelper.saveScopedStorageUriInPreferences(intent);
-          exportNotes();
-          break;
-
-        case ACCESS_DATA_FOR_IMPORT:
-          var backupDocumentFile = BackupHelper.saveScopedStorageUriInPreferences(intent);
-          importNotes(backupDocumentFile);
-          break;
-
-        default:
-          LogDelegate.e("Wrong element choosen: " + requestCode);
+      if (requestCode == RINGTONE_REQUEST_CODE) {
+        Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+        String notificationSound = uri == null ? null : uri.toString();
+        Prefs.edit().putString("settings_notification_ringtone", notificationSound).apply();
+      } else {
+        LogDelegate.e("Wrong element choosen: " + requestCode);
       }
     }
   }
-
 
 
 }
