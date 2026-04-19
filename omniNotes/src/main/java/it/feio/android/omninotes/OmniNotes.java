@@ -48,7 +48,6 @@ public class OmniNotes extends Application {
   @Override
   protected void attachBaseContext(Context base) {
     super.attachBaseContext(base);
-    initAcra();
   }
 
   @Override
@@ -61,27 +60,6 @@ public class OmniNotes extends Application {
     // Warm the flat-file cache on a background thread
     new Thread(() -> FlatFileHelper.getInstance().getNotesActive(),
         "notes-preload").start();
-  }
-
-  private void initAcra() {
-    if (!TextUtils.isEmpty(BuildConfig.CRASH_REPORTING_URL)) {
-      HttpSenderConfigurationBuilder httpBuilder = new HttpSenderConfigurationBuilder()
-          .withUri(BuildConfig.CRASH_REPORTING_URL)
-          .withBasicAuthLogin(BuildConfig.CRASH_REPORTING_LOGIN)
-          .withBasicAuthPassword(BuildConfig.CRASH_REPORTING_PASSWORD)
-          .withHttpMethod(Method.POST)
-          .withEnabled(true);
-
-      ToastConfigurationBuilder toastBuilder = new ToastConfigurationBuilder()
-          .withText(this.getString(R.string.crash_toast))
-          .withEnabled(true);
-
-      CoreConfigurationBuilder builder = new CoreConfigurationBuilder()
-          .withPluginConfigurations(httpBuilder.build(), toastBuilder.build());
-
-      ACRA.init(this, builder);
-      ACRA.getErrorReporter().putCustomData("TRACEPOT_DEVELOP_MODE", isDebugBuild() ? "1" : "0");
-    }
   }
 
   private void initSharedPreferences() {

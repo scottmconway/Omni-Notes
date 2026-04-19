@@ -85,13 +85,6 @@ android {
         }
     }
 
-    flavorDimensions = ["standard"]
-    productFlavors {
-        foss {
-            dimension "standard"
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -184,10 +177,7 @@ dependencies {
     implementation('com.github.federicoiosue:checklistview:4.1.0') {
         transitive = false
     }
-    implementation 'com.github.federicoiosue:pixlui:3.0.1'
-
-    // Flavors specific dependencies
-//    fossImplementation 'com.jakewharton.timber:timber:5.0.1'
+        implementation 'com.github.federicoiosue:pixlui:3.0.1'
 }
 
 def jacocoVersion = "0.8.7"
@@ -218,7 +208,7 @@ apply plugin: 'jacoco'
 jacoco {
     toolVersion = jacocoVersion
 }
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testFossDebugUnitTest', 'createFossDebugCoverageReport', 'connectedFossDebugAndroidTest']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport', 'connectedDebugAndroidTest']) {
     reports {
         xml.required = true
         html.required = true
@@ -231,8 +221,8 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testFossDebugUnitTest', '
     sourceDirectories.from = files([mainSrc])
     classDirectories.from = files([debugTree])
     executionData.from = fileTree(dir: "$buildDir", includes: [
-            "jacoco/testFossDebugUnitTest.exec",
-            "outputs/code_coverage/fossDebugAndroidTest/connected/*coverage.ec"
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code_coverage/debugAndroidTest/connected/*coverage.ec"
     ])
 }
 
