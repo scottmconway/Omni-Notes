@@ -96,10 +96,13 @@ public class MainActivity extends BaseActivity implements
   boolean prefsChanged = false;
   private FragmentManager mFragmentManager;
 
+  long startupTimeMs;
+
   ActivityMainBinding binding;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    startupTimeMs = android.os.SystemClock.elapsedRealtime();
     super.onCreate(savedInstanceState);
     setTheme(R.style.OmniNotesTheme_ApiSpec);
 
