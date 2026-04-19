@@ -234,8 +234,6 @@
     <string name="settings_change_backup_folder">Canvia la carpeta de còpies de seguretat</string>
     <string name="settings_import_legacy">Restaura una còpia de seguretat</string>
     <string name="settings_import_legacy_summary">Permet restaurar còpies antigues realitzades amb versions anteriors a la 6 de l\'Omni Notes</string>
-    <string name="settings_sync_drive">Sincronitza amb el Google Drive</string>
-    <string name="settings_sync_drive_summary">Registra l\'aplicació per a sincronitzar dades al servei d\'emmagatzematge Google Drive</string>
     <string name="export_success">El fitxer s\'ha exportat correctament a la carpeta</string>
     <string name="export_fail">Ha fallat l\'exportació del fitxer</string>
     <string name="import_success">S\'ha importat el fitxer correctament</string>

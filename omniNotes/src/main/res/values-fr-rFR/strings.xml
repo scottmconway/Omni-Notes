@@ -232,8 +232,6 @@
     <string name="settings_change_backup_folder">Changer le dossier de sauvegarde</string>
     <string name="settings_import_legacy">Restaurer une ancienne sauvegarde</string>
     <string name="settings_import_legacy_summary">Permet de restaurer les anciennes sauvegardes effectuées avec les versions d\'Omni Notes antérieures à la version 6</string>
-    <string name="settings_sync_drive">Synchroniser avec Google Drive</string>
-    <string name="settings_sync_drive_summary">Enregistrer l\'application pour synchroniser les données sur le service de stockage Google Drive</string>
     <string name="export_success">Fichier exporté avec succès dans le dossier</string>
     <string name="export_fail">Exportation du fichier échouée</string>
     <string name="import_success">Fichier importé avec succès</string>

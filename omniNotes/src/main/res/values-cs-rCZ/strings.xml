@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Změnit složku zálohy</string>
     <string name="settings_import_legacy">Obnovit starší zálohu</string>
     <string name="settings_import_legacy_summary">Umožňuje obnovit staré zálohy vytvořené s verzemi Omni Notes před verzí 6</string>
-    <string name="settings_sync_drive">Synchronizovat s Google Drive</string>
-    <string name="settings_sync_drive_summary">Registrovat aplikaci k synchronizaci dat na Google Drive</string>
     <string name="export_success">Soubor byl úspěšně exportován do složky</string>
     <string name="export_fail">Export souboru se nezdařil</string>
     <string name="import_success">Soubor byl úspěšně importován</string>

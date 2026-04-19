@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Змінити папку з резервними копіями</string>
     <string name="settings_import_legacy">Відновити збережену резервну копію</string>
     <string name="settings_import_legacy_summary">Дозволяє відновити старі резервні копії, зроблені за допомогою версій Omni Notes перед версії 6</string>
-    <string name="settings_sync_drive">Синхр. з Google Drive</string>
-    <string name="settings_sync_drive_summary">Зарєєструвати програму для синхроніхації з Google Drive</string>
     <string name="export_success">Файл експортовано успішно в папку</string>
     <string name="export_fail">Не вдалося експортувати файл</string>
     <string name="import_success">Файл успішно імпортовано</string>

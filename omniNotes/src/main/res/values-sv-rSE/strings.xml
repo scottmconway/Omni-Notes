@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Ändra säkerhetskopieringsmapp</string>
     <string name="settings_import_legacy">Återställ äldre säkerhetskopior</string>
     <string name="settings_import_legacy_summary">Tillåter att återställa gamla säkerhetskopior gjorda med versioner av Omni Notes före version 6</string>
-    <string name="settings_sync_drive">Synka med Google Drive</string>
-    <string name="settings_sync_drive_summary">Registrera appen för att synkronisera data till Google Drive</string>
     <string name="export_success">Fil exporterades framgångsrikt till mappen</string>
     <string name="export_fail">Fil exportering misslyckades</string>
     <string name="import_success">Importering lyckades</string>

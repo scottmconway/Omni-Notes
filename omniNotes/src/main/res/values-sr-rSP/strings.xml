@@ -229,8 +229,6 @@
     <string name="settings_import_summary">УПОЗОРЕЊЕ: лозинка није подешена. Заштићене белешке неће бити враћене из резерве из безбедносних разлога</string>
     <string name="settings_import_legacy">Враћање старијих резерви</string>
     <string name="settings_import_legacy_summary">Омогућава враћање резервних копија направљених пре верзије 6</string>
-    <string name="settings_sync_drive">Синхронизуј са Гугл диском</string>
-    <string name="settings_sync_drive_summary">Региструјте апликацију за синхронизацију са услугом Гугл диска</string>
     <string name="export_success">Фајл успешно извезен у фасциклу</string>
     <string name="export_fail">Извоз фајла неуспешан</string>
     <string name="import_success">Фајл успешно увезен</string>

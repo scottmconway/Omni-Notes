@@ -196,7 +196,6 @@
     <string name="settings_export">גיבוי</string>
     <string name="settings_sync_import_export">סנכרון וגיבויים</string>
     <string name="settings_import">שחזר או מחק גיבויים</string>
-    <string name="settings_sync_drive">סנכרן עם Google Drive</string>
     <string name="export_success">קובץ יוצא בהצלחה אל תיקייה</string>
     <string name="export_fail">יצוא הקובץ נכשל</string>
     <string name="import_success">קובץ יובא בהצלחה</string>

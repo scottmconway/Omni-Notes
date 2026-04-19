@@ -209,8 +209,6 @@
     <string name="settings_export">Copies de seguranza</string>
     <string name="settings_sync_import_export">Sincronización y copies de seguranza</string>
     <string name="settings_import">Restaura o desanicia copies de seguranza</string>
-    <string name="settings_sync_drive">Sincronizar con Google Drive</string>
-    <string name="settings_sync_drive_summary">Rexistrar l\'aplicación pa sincronizar los datos col serviciu d\'almacenamentu de Google Drive</string>
     <string name="export_success">Esportóse correchamente\'l ficheru a la carpeta</string>
     <string name="export_fail">Falló al esportar</string>
     <string name="import_success">Importóse correutamente\'l ficheru</string>

@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">تغيير مجلد النسخ الاحتياطي</string>
     <string name="settings_import_legacy">استعادة النسخ الاحتياطي القديم </string>
     <string name="settings_import_legacy_summary">السماح باستعادة النسخ الاحتياطية القديمة التي تم إنشاؤها مع إصدارات Omni Notes قبل الإصدار 6</string>
-    <string name="settings_sync_drive">مزامنة مع محرك جوجل</string>
-    <string name="settings_sync_drive_summary">سجل التطبيق لمزامنة البيانات على محرك جوجل خدمة تخزين</string>
     <string name="export_success">تم تصدير الملف الى المجلد بنجاح</string>
     <string name="export_fail">فشل تصدير الملف</string>
     <string name="import_success">تم استيراد الملف بنجاح</string>

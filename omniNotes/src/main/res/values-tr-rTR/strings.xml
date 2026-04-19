@@ -216,8 +216,6 @@
     <string name="settings_sync_import_export">Senkronize et ve Yedekle</string>
     <string name="settings_import">Geri yükle veya yedekleri sil</string>
     <string name="settings_import_legacy">Eski sürüm yedeğinden geri yükle</string>
-    <string name="settings_sync_drive">Google Drive ile senkronize et</string>
-    <string name="settings_sync_drive_summary">Google Drive depolama hizmetine bağlı verileri senkronize etmek için uygulamayı kayıt edin</string>
     <string name="export_success">Dosya başarıyla dışa aktarıldı</string>
     <string name="export_fail">Dışa aktarma başarısız</string>
     <string name="import_success">Başarıyla içe aktarıldı</string>

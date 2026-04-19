@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Alterar pasta de backup</string>
     <string name="settings_import_legacy">Restaurar backup legado</string>
     <string name="settings_import_legacy_summary">Permite restaurar backups antigos feitos com versões do Omni Notes antes da versão 6</string>
-    <string name="settings_sync_drive">Sincronizar com Google Drive</string>
-    <string name="settings_sync_drive_summary">Registre o aplicativo para sincronizar dados no serviço de armazenamento do Google Drive</string>
     <string name="export_success">Arquivo exportado com sucesso para a pasta</string>
     <string name="export_fail">Exportação do arquivo falhou</string>
     <string name="import_success">Arquivo importado com sucesso</string>

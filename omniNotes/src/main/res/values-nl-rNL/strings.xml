@@ -232,8 +232,6 @@
     <string name="settings_change_backup_folder">Back-up map wijzigen</string>
     <string name="settings_import_legacy">Herstel voorgaande backup</string>
     <string name="settings_import_legacy_summary">Maakt het mogelijk om oude backups van Omni notes van voor versie 6 te herstellen</string>
-    <string name="settings_sync_drive">Synchroniseer met Google Drive</string>
-    <string name="settings_sync_drive_summary">Registreer de applicatie om data te synchroniseren op Google Drive</string>
     <string name="export_success">Bestand succesvol geexporteerd naar de map</string>
     <string name="export_fail">&gt;Bestand exporteren mislukt</string>
     <string name="import_success">Bestand succesvol geimporteerd</string>

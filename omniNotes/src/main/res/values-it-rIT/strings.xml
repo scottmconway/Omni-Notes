@@ -235,8 +235,6 @@ Vuoi inviare una segnalazione allo sviluppatore?</string>
     <string name="settings_change_backup_folder">Cambia cartella di backup</string>
     <string name="settings_import_legacy">Ripristino vecchio backup</string>
     <string name="settings_import_legacy_summary">Consente il ripristino di backup effettuati con versioni di Omni Notes precedenti la 6</string>
-    <string name="settings_sync_drive">Sincronizzazione con Google Drive</string>
-    <string name="settings_sync_drive_summary">Registrare l\'applicazione per sincronizzare i dati sul servizio di storage di Google Drive</string>
     <string name="export_success">File esportato con successo nella cartella</string>
     <string name="export_fail">Esportazione file non riuscita</string>
     <string name="import_success">File importato con successo</string>

@@ -229,8 +229,6 @@
     <string name="settings_import_summary">UPOZORNENIE: Heslo nie je nastavené, heslom chránené poznámky nebudú obnovené kôli bezpečnosti.</string>
     <string name="settings_import_legacy">Obnoviť zálohu vytvorenú zastaranou metódou</string>
     <string name="settings_import_legacy_summary">Umožňuje obnoviť staré zálohy vytvorené verziami Omni Notes staršími ako verzia 6</string>
-    <string name="settings_sync_drive">Synchronizovať s Diskom Google</string>
-    <string name="settings_sync_drive_summary">Synchronizovať údaje na Disk Google</string>
     <string name="export_success">Súbor bol úspešne exportovaný do priečinka</string>
     <string name="export_fail">Nepodarilo sa exportovať súbor</string>
     <string name="import_success">Súbor bol úspešne importovaný</string>

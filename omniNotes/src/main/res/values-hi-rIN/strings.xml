@@ -214,8 +214,6 @@
     <string name="settings_export">बैकअप</string>
     <string name="settings_sync_import_export">सिंक और बैकअप</string>
     <string name="settings_import">बैकअप पुनर्स्थापित करें या हटाएं</string>
-    <string name="settings_sync_drive">गूगल ड्राइव से सिंक करे</string>
-    <string name="settings_sync_drive_summary">गूगल ड्राइव भंडारण सेवा पर डेटा सिंक्रनाइज़ करने के लिए आवेदन रजिस्टर</string>
     <string name="export_success">फ़ाइल सफलतापूर्वक फ़ोल्डर में निर्यात</string>
     <string name="export_fail">फ़ाइल निर्यात विफल रहा</string>
     <string name="import_success">फ़ाइल सफलतापूर्वक आयात</string>

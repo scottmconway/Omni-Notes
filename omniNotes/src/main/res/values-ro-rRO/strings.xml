@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Schimbă dosarul de rezervă</string>
     <string name="settings_import_legacy">Restaurează o copie de rezervă de tip vechi</string>
     <string name="settings_import_legacy_summary">Permite restaurarea copiilor de rezervă create cu o versiune Omni Notes mai veche de 6</string>
-    <string name="settings_sync_drive">Sincronizare cu Google Drive</string>
-    <string name="settings_sync_drive_summary">Înregistrează aplicația pentru a putea sincroniza datele cu serviciul Google Drive</string>
     <string name="export_success">Fișier exportat cu succes in directorul indicat</string>
     <string name="export_fail">Exportul fișierului a eșuat</string>
     <string name="import_success">Fișier importat cu succes</string>
