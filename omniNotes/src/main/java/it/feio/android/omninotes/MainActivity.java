@@ -33,6 +33,7 @@ import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_GOOGLE_NOW;
 import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_KEY;
 import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_NOTE;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
+import static it.feio.android.omninotes.utils.ConstantsBase.PREF_NAVIGATION;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -111,6 +112,7 @@ public class MainActivity extends BaseActivity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     startupTimeMs = android.os.SystemClock.elapsedRealtime();
+    Prefs.edit().remove(PREF_NAVIGATION).apply();
     super.onCreate(savedInstanceState);
     setTheme(R.style.OmniNotesTheme_ApiSpec);
 
