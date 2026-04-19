@@ -59,9 +59,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
@@ -74,10 +71,11 @@ import org.json.JSONObject;
 public class FlatFileHelper implements NoteDataStore {
 
   public static final String NOTES_DIR = "/sdcard/omni_notes";
+  public static final String ACTIVE_DIR = NOTES_DIR + "/notes";
   public static final String ARCHIVE_DIR = NOTES_DIR + "/archive";
   public static final String TRASH_DIR = NOTES_DIR + "/trash";
   public static final String CATEGORIES_DIR = NOTES_DIR + "/categories";
-  public static final String ATTACHMENTS_DIR = NOTES_DIR + "/attachments";
+  public static final String NOTE_FILENAME = "note.md";
 
   // Re-export column key constants so callers that reference DbHelper.KEY_* can migrate.
   // NoteLoaderTask and sorting logic depend on these values.
@@ -163,10 +161,10 @@ public class FlatFileHelper implements NoteDataStore {
   private void ensureDirectories() {
     if (hasStorageAccess()) {
       new File(NOTES_DIR).mkdirs();
+      new File(ACTIVE_DIR).mkdirs();
       new File(ARCHIVE_DIR).mkdirs();
       new File(TRASH_DIR).mkdirs();
       new File(CATEGORIES_DIR).mkdirs();
-      new File(ATTACHMENTS_DIR).mkdirs();
     }
   }
 
@@ -212,12 +210,6 @@ public class FlatFileHelper implements NoteDataStore {
         : Calendar.getInstance().getTimeInMillis();
     note.setLastModification(lastModification);
 
-    // Remove old file from any directory (slug may differ or note may have moved)
-    removeOldFileForNote(creation);
-
-    // Serialize attachments to JSON
-    String attachmentsJson = serializeAttachments(note.getAttachmentsList(), creation);
-
     LinkedHashMap<String, String> fields = FrontMatterUtils.buildNoteFields(
         note.getTitle(), creation, lastModification,
         note.getAlarm(),
@@ -228,26 +220,85 @@ public class FlatFileHelper implements NoteDataStore {
         note.getAddress(),
         note.getCategory() != null ? note.getCategory().getId() : null,
         Boolean.TRUE.equals(note.isLocked()),
-        Boolean.TRUE.equals(note.isChecklist()),
-        attachmentsJson);
+        Boolean.TRUE.equals(note.isChecklist()));
 
     String markdown = FrontMatterUtils.serialize(fields, note.getContent());
 
-    // Write to the correct directory based on state
-    File targetDir = directoryForNote(note);
+    File parentDir = directoryForNote(note);
     String slug = SlugUtils.slugify(note.getTitle(), creation);
-    File noteFile = resolveUniqueFile(targetDir, slug, creation);
 
+    // Find and handle existing note directory (may need rename or move)
+    File noteDir = resolveNoteDir(parentDir, slug, creation);
+    noteDir.mkdirs();
+
+    File noteFile = new File(noteDir, NOTE_FILENAME);
     writeFile(noteFile, markdown);
+    // Copy any attachments that aren't already in the note directory
+    copyAttachmentsToNoteDir(note, noteDir);
+
     updateNoteInCache(note);
-    LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteFile.getPath());
+    LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteDir.getPath());
 
     return note;
   }
 
   /**
-   * Returns the directory a note should be stored in based on its
-   * archived/trashed state.
+   * Copies attachment files into the note directory if they don't already
+   * reside there. Updates the attachment URIs to point to the local copies.
+   */
+  private void copyAttachmentsToNoteDir(Note note, File noteDir) {
+    if (note.getAttachmentsList() == null || note.getAttachmentsList().isEmpty()) return;
+    for (Attachment attachment : note.getAttachmentsList()) {
+      if (attachment.getUri() == null || Uri.EMPTY.equals(attachment.getUri())) continue;
+
+      File sourceFile = null;
+      String scheme = attachment.getUri().getScheme();
+      if ("file".equals(scheme)) {
+        sourceFile = new File(attachment.getUri().getPath());
+      }
+
+      if (sourceFile == null || !sourceFile.exists()) continue;
+
+      // Already in the note directory?
+      if (sourceFile.getParentFile() != null
+          && sourceFile.getParentFile().getAbsolutePath().equals(noteDir.getAbsolutePath())) {
+        continue;
+      }
+
+      // Copy to note directory, preserving the original filename
+      String fileName = attachment.getName() != null && !attachment.getName().isEmpty()
+          ? attachment.getName()
+          : sourceFile.getName();
+      File dest = new File(noteDir, fileName);
+
+      // Avoid collisions
+      if (dest.exists() && !dest.getAbsolutePath().equals(sourceFile.getAbsolutePath())) {
+        String base = fileName.contains(".")
+            ? fileName.substring(0, fileName.lastIndexOf('.'))
+            : fileName;
+        String ext = fileName.contains(".")
+            ? fileName.substring(fileName.lastIndexOf('.'))
+            : "";
+        int suffix = 1;
+        while (dest.exists()) {
+          dest = new File(noteDir, base + "-" + suffix + ext);
+          suffix++;
+        }
+      }
+
+      try {
+        org.apache.commons.io.FileUtils.moveFile(sourceFile, dest);
+        attachment.setUri(Uri.fromFile(dest));
+        attachment.setName(dest.getName());
+        attachment.setSize(dest.length());
+      } catch (IOException e) {
+        LogDelegate.e("Failed to copy attachment to note dir: " + sourceFile.getName(), e);
+      }
+    }
+  }
+
+  /**
+   * Returns the parent directory (active/archive/trash) for a note.
    */
   private File directoryForNote(Note note) {
     if (Boolean.TRUE.equals(note.isTrashed())) {
@@ -256,6 +307,72 @@ public class FlatFileHelper implements NoteDataStore {
       return new File(ARCHIVE_DIR);
     }
     return notesDir();
+  }
+
+  /**
+   * Finds the slug directory for a note by creation ID across all parent
+   * directories. If found, renames/moves it to the target parent + slug.
+   * If not found, returns a new directory path.
+   */
+  private File resolveNoteDir(File targetParent, String slug, long creation) {
+    File target = resolveUniqueDirName(targetParent, slug, creation);
+
+    // Search all directories for an existing note dir with this creation ID
+    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File[] dirs = parent.listFiles(File::isDirectory);
+      if (dirs == null) continue;
+      for (File dir : dirs) {
+        // Skip non-note directories
+        if (dir.getName().equals("archive") || dir.getName().equals("trash")
+            || dir.getName().equals("categories")) continue;
+        File md = new File(dir, NOTE_FILENAME);
+        if (!md.exists()) continue;
+        ParsedNote parsed = FrontMatterUtils.parse(md);
+        if (parsed != null && parsed.getLong("creation", 0) == creation) {
+          // Found existing - if it's already at the right path, return it
+          if (dir.getAbsolutePath().equals(target.getAbsolutePath())) {
+            return dir;
+          }
+          // Move/rename the directory
+          dir.renameTo(target);
+          return target;
+        }
+      }
+    }
+    return target;
+  }
+
+  /**
+   * Returns a unique directory name under the parent, appending a numeric
+   * suffix if the slug collides with a different note.
+   */
+  private File resolveUniqueDirName(File parent, String slug, long creation) {
+    File candidate = new File(parent, slug);
+    if (!candidate.exists()) return candidate;
+
+    // Check if it belongs to this note
+    File md = new File(candidate, NOTE_FILENAME);
+    if (md.exists()) {
+      ParsedNote parsed = FrontMatterUtils.parse(md);
+      if (parsed != null && parsed.getLong("creation", 0) == creation) {
+        return candidate;
+      }
+    }
+
+    // Slug collision - add numeric suffix
+    int suffix = 1;
+    while (true) {
+      candidate = new File(parent, slug + "-" + suffix);
+      if (!candidate.exists()) return candidate;
+      md = new File(candidate, NOTE_FILENAME);
+      if (md.exists()) {
+        ParsedNote parsed = FrontMatterUtils.parse(md);
+        if (parsed != null && parsed.getLong("creation", 0) == creation) {
+          return candidate;
+        }
+      }
+      suffix++;
+    }
   }
 
 
@@ -386,26 +503,46 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public boolean deleteNote(long noteId, boolean keepAttachments) {
-    // Delete the note markdown file from whichever directory it's in
-    for (File dir : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
-      File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
-      if (files == null) continue;
-      for (File file : files) {
-        ParsedNote parsed = FrontMatterUtils.parse(file);
-        if (parsed != null && parsed.getLong("creation", 0) == noteId) {
-          file.delete();
-          break;
+    // Find and delete the note directory from whichever parent it's in
+    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+      File noteDir = findNoteDirByCreation(parent, noteId);
+      if (noteDir != null) {
+        if (keepAttachments) {
+          // Only delete note.md, keep other files
+          new File(noteDir, NOTE_FILENAME).delete();
+          // Remove dir only if now empty
+          String[] remaining = noteDir.list();
+          if (remaining == null || remaining.length == 0) {
+            noteDir.delete();
+          }
+        } else {
+          deleteDirectory(noteDir);
         }
+        break;
       }
-    }
-
-    // Delete attachments
-    if (!keepAttachments) {
-      File attachDir = new File(ATTACHMENTS_DIR, String.valueOf(noteId));
-      deleteDirectory(attachDir);
     }
     removeNoteFromCache(noteId);
     return true;
+  }
+
+  /**
+   * Finds a note's slug directory by scanning for a {@code note.md}
+   * with the given creation ID.
+   */
+  private File findNoteDirByCreation(File parent, long creation) {
+    File[] dirs = parent.listFiles(File::isDirectory);
+    if (dirs == null) return null;
+    for (File dir : dirs) {
+      String name = dir.getName();
+      if ("archive".equals(name) || "trash".equals(name) || "categories".equals(name)) continue;
+      File md = new File(dir, NOTE_FILENAME);
+      if (!md.exists()) continue;
+      ParsedNote parsed = FrontMatterUtils.parse(md);
+      if (parsed != null && parsed.getLong("creation", 0) == creation) {
+        return dir;
+      }
+    }
+    return null;
   }
 
 
@@ -937,7 +1074,7 @@ public class FlatFileHelper implements NoteDataStore {
   // -------------------------------------------------------------------------
 
   private File notesDir() {
-    return new File(NOTES_DIR);
+    return new File(ACTIVE_DIR);
   }
 
   /**
@@ -975,33 +1112,134 @@ public class FlatFileHelper implements NoteDataStore {
   }
 
   /**
-   * Loads notes from a single directory. Returns the cached list if
-   * available, otherwise scans the directory.
-   * Sets archived/trashed flags based on which directory is being read.
+   * Loads notes from a parent directory by scanning subdirectories for
+   * {@code note.md}. Attachments are discovered as sibling files.
    */
   private List<Note> loadNotesFromDir(File dir, List<Note> cache) {
     if (cache != null) {
       return new ArrayList<>(cache);
     }
     List<Note> notes = new ArrayList<>();
-    File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
-    if (files == null || files.length == 0) {
+    File[] subdirs = dir.listFiles(File::isDirectory);
+    if (subdirs == null || subdirs.length == 0) {
       return notes;
     }
     boolean isArchive = dir.getAbsolutePath().equals(new File(ARCHIVE_DIR).getAbsolutePath());
     boolean isTrash = dir.getAbsolutePath().equals(new File(TRASH_DIR).getAbsolutePath());
-    for (File file : files) {
-      ParsedNote parsed = FrontMatterUtils.parse(file);
+    for (File noteDir : subdirs) {
+      // Skip special directories
+      String name = noteDir.getName();
+      if ("archive".equals(name) || "trash".equals(name) || "categories".equals(name)) continue;
+
+      File mdFile = new File(noteDir, NOTE_FILENAME);
+      if (!mdFile.exists()) continue;
+
+      ParsedNote parsed = FrontMatterUtils.parse(mdFile);
       if (parsed != null) {
         Note note = buildNoteFromParsed(parsed);
         if (note != null) {
           note.setArchived(isArchive);
           note.setTrashed(isTrash);
+          note.setAttachmentsList(discoverAttachments(noteDir, note.getCreation()));
           notes.add(note);
         }
       }
     }
     return notes;
+  }
+
+  /**
+   * Discovers attachments by listing all files in a note directory
+   * that are not {@code note.md}. Returns them in lexicographic order.
+   * MIME types are detected from file headers.
+   */
+  private ArrayList<Attachment> discoverAttachments(File noteDir, Long noteCreation) {
+    ArrayList<Attachment> attachments = new ArrayList<>();
+    File[] files = noteDir.listFiles(f -> f.isFile() && !NOTE_FILENAME.equals(f.getName()));
+    if (files == null || files.length == 0) return attachments;
+
+    Arrays.sort(files, Comparator.comparing(File::getName));
+    for (File file : files) {
+      String mime = detectMimeType(file);
+      Attachment attachment = new Attachment(
+          file.lastModified(),
+          Uri.fromFile(file),
+          file.getName(),
+          file.length(),
+          0,
+          mime != null ? mime : "application/octet-stream");
+      if (noteCreation != null) {
+        attachment.setNoteId(noteCreation);
+      }
+      attachments.add(attachment);
+    }
+    return attachments;
+  }
+
+  /**
+   * Detects MIME type by reading the file's magic bytes.
+   */
+  private String detectMimeType(File file) {
+    try (java.io.InputStream is = new java.io.FileInputStream(file)) {
+      byte[] header = new byte[12];
+      int read = is.read(header);
+      if (read < 4) return null;
+
+      // JPEG: FF D8 FF
+      if (header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 && header[2] == (byte) 0xFF) {
+        return "image/jpeg";
+      }
+      // PNG: 89 50 4E 47
+      if (header[0] == (byte) 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) {
+        return "image/png";
+      }
+      // GIF: 47 49 46 38
+      if (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) {
+        return "image/gif";
+      }
+      // WebP: RIFF....WEBP
+      if (read >= 12 && header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46
+          && header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50) {
+        return "image/webp";
+      }
+      // MP4/MOV: ....ftyp
+      if (read >= 8 && header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70) {
+        return "video/mp4";
+      }
+      // PDF: 25 50 44 46
+      if (header[0] == 0x25 && header[1] == 0x50 && header[2] == 0x44 && header[3] == 0x46) {
+        return "application/pdf";
+      }
+      // AMR: 23 21 41 4D 52
+      if (read >= 5 && header[0] == 0x23 && header[1] == 0x21 && header[2] == 0x41
+          && header[3] == 0x4D && header[4] == 0x52) {
+        return "audio/amr";
+      }
+      // OGG: 4F 67 67 53
+      if (header[0] == 0x4F && header[1] == 0x67 && header[2] == 0x67 && header[3] == 0x53) {
+        return "audio/ogg";
+      }
+      // Try filename extension as fallback
+      return mimeFromExtension(file.getName());
+    } catch (IOException e) {
+      return mimeFromExtension(file.getName());
+    }
+  }
+
+  private String mimeFromExtension(String name) {
+    if (name == null) return null;
+    String lower = name.toLowerCase(Locale.ROOT);
+    if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+    if (lower.endsWith(".png")) return "image/png";
+    if (lower.endsWith(".gif")) return "image/gif";
+    if (lower.endsWith(".webp")) return "image/webp";
+    if (lower.endsWith(".mp4")) return "video/mp4";
+    if (lower.endsWith(".3gp") || lower.endsWith(".3gpp")) return "video/3gpp";
+    if (lower.endsWith(".amr")) return "audio/amr";
+    if (lower.endsWith(".ogg")) return "audio/ogg";
+    if (lower.endsWith(".pdf")) return "application/pdf";
+    if (lower.endsWith(".txt")) return "text/plain";
+    return null;
   }
 
   /**
@@ -1132,64 +1370,10 @@ public class FlatFileHelper implements NoteDataStore {
       note.setCategory(cat);
     }
 
-    // Attachments from JSON
-    String attachmentsJson = parsed.get("attachments_json");
-    if (attachmentsJson != null && !attachmentsJson.isEmpty()) {
-      note.setAttachmentsList(deserializeAttachments(attachmentsJson));
-    }
+    // Attachments are discovered from the note directory, not front matter
 
     return note;
   }
-
-  /**
-   * Removes the existing .md file for a note (by creation ID), so it can be
-   * rewritten with a potentially different slug.
-   */
-  private void removeOldFileForNote(long creation) {
-    for (File dir : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
-      File[] files = dir.listFiles((d, name) -> name.endsWith(".md"));
-      if (files == null) continue;
-      for (File file : files) {
-        ParsedNote parsed = FrontMatterUtils.parse(file);
-        if (parsed != null && parsed.getLong("creation", 0) == creation) {
-          file.delete();
-          return;
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns a unique file in the given directory, appending a numeric suffix
-   * if a file with the same slug but different note already exists.
-   */
-  private File resolveUniqueFile(File dir, String slug, long creation) {
-    File candidate = new File(dir, slug + ".md");
-
-    // If the file doesn't exist or belongs to this same note, use it
-    if (!candidate.exists()) {
-      return candidate;
-    }
-    ParsedNote existing = FrontMatterUtils.parse(candidate);
-    if (existing != null && existing.getLong("creation", 0) == creation) {
-      return candidate;
-    }
-
-    // Slug collision with a different note - add numeric suffix
-    int suffix = 1;
-    while (true) {
-      candidate = new File(dir, slug + "-" + suffix + ".md");
-      if (!candidate.exists()) {
-        return candidate;
-      }
-      existing = FrontMatterUtils.parse(candidate);
-      if (existing != null && existing.getLong("creation", 0) == creation) {
-        return candidate;
-      }
-      suffix++;
-    }
-  }
-
 
   // -------------------------------------------------------------------------
   // Internal helpers - category I/O
@@ -1229,61 +1413,6 @@ public class FlatFileHelper implements NoteDataStore {
   // Internal helpers - attachment serialization
   // -------------------------------------------------------------------------
 
-  /**
-   * Serializes a note's attachments list to a JSON array string for storage
-   * in the YAML front matter.
-   */
-  private String serializeAttachments(List<? extends Attachment> attachments, long noteCreation) {
-    if (attachments == null || attachments.isEmpty()) {
-      return "";
-    }
-    try {
-      JSONArray arr = new JSONArray();
-      for (Attachment a : attachments) {
-        JSONObject obj = new JSONObject();
-        obj.put("id", a.getId() != null ? a.getId() : Calendar.getInstance().getTimeInMillis());
-        obj.put("uri", a.getUri() != null ? a.getUri().toString() : "");
-        obj.put("name", a.getName() != null ? a.getName() : "");
-        obj.put("size", a.getSize());
-        obj.put("length", a.getLength());
-        obj.put("mime_type", a.getMime_type() != null ? a.getMime_type() : "");
-        arr.put(obj);
-      }
-      return arr.toString();
-    } catch (JSONException e) {
-      LogDelegate.e("Error serializing attachments", e);
-      return "";
-    }
-  }
-
-  /**
-   * Deserializes a JSON array string from front matter into an attachments list.
-   */
-  private ArrayList<Attachment> deserializeAttachments(String json) {
-    ArrayList<Attachment> list = new ArrayList<>();
-    if (json == null || json.isEmpty()) {
-      return list;
-    }
-    try {
-      JSONArray arr = new JSONArray(json);
-      for (int i = 0; i < arr.length(); i++) {
-        JSONObject obj = arr.getJSONObject(i);
-        long id = obj.optLong("id", Calendar.getInstance().getTimeInMillis());
-        String uriStr = obj.optString("uri", "");
-        String name = obj.optString("name", "");
-        long size = obj.optLong("size", 0);
-        long length = obj.optLong("length", 0);
-        String mimeType = obj.optString("mime_type", "");
-
-        Uri uri = uriStr.isEmpty() ? Uri.EMPTY : Uri.parse(uriStr);
-        Attachment attachment = new Attachment(id, uri, name, size, length, mimeType);
-        list.add(attachment);
-      }
-    } catch (JSONException e) {
-      LogDelegate.e("Error deserializing attachments", e);
-    }
-    return list;
-  }
 
 
   // -------------------------------------------------------------------------
