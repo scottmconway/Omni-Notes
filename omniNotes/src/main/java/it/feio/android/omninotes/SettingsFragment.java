@@ -60,6 +60,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.async.DataBackupIntentService;
 import it.feio.android.omninotes.helpers.AppVersionHelper;
+import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.helpers.BackupHelper;
 import it.feio.android.omninotes.helpers.ChangelogHelper;
 import it.feio.android.omninotes.helpers.LanguageHelper;
@@ -81,6 +82,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public class SettingsFragment extends PreferenceFragmentCompat {
 
   private static final int RINGTONE_REQUEST_CODE = 100;
+  private static final int CUSTOM_STORAGE_DIR_REQUEST = 300;
   public static final String XML_NAME = "xmlName";
 
 
@@ -406,6 +408,37 @@ public class SettingsFragment extends PreferenceFragmentCompat {
       changelog.setSummary(AppVersionHelper.getCurrentAppVersionName(getActivity()));
     }
 
+    // Storage location
+    Preference storageLocation = findPreference("settings_notes_storage_location");
+    if (storageLocation != null) {
+      storageLocation.setSummary(FlatFileHelper.getNotesDir());
+      storageLocation.setOnPreferenceClickListener(arg0 -> {
+        String[] options = {
+            getString(R.string.storage_app_external),
+            getString(R.string.storage_app_internal),
+            getString(R.string.storage_custom)
+        };
+        new MaterialAlertDialogBuilder(getContext())
+            .setTitle(R.string.settings_storage_location)
+            .setItems(options, (dialog, which) -> {
+              String newPath;
+              if (which == 0) {
+                File extDir = getContext().getExternalFilesDir(null);
+                newPath = new File(extDir, "omni_notes").getAbsolutePath();
+              } else if (which == 1) {
+                newPath = new File(getContext().getFilesDir(), "omni_notes").getAbsolutePath();
+              } else {
+                promptForCustomStorageDir(storageLocation);
+                return;
+              }
+              FlatFileHelper.setNotesDir(newPath);
+              storageLocation.setSummary(newPath);
+              SystemHelper.restartApp();
+            }).show();
+        return false;
+      });
+    }
+
     // Settings reset
     Preference resetData = findPreference("reset_all_data");
     if (resetData != null) {
@@ -479,6 +512,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
           Preference export = findPreference("settings_export_data");
           if (export != null) export.setSummary(path);
         }).show();
+  }
+
+  private void promptForCustomStorageDir(Preference storageLocation) {
+    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+    startActivityForResult(intent, CUSTOM_STORAGE_DIR_REQUEST);
   }
 
   private void importNotes() {
@@ -590,10 +628,37 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
         String notificationSound = uri == null ? null : uri.toString();
         Prefs.edit().putString("settings_notification_ringtone", notificationSound).apply();
+      } else if (requestCode == CUSTOM_STORAGE_DIR_REQUEST && intent.getData() != null) {
+        Uri treeUri = intent.getData();
+        // Take persistable permission
+        getContext().getContentResolver().takePersistableUriPermission(treeUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        // Resolve to a filesystem path
+        String path = resolveTreeUriToPath(treeUri);
+        if (path != null) {
+          FlatFileHelper.setNotesDir(path);
+          Preference storageLocation = findPreference("settings_notes_storage_location");
+          if (storageLocation != null) storageLocation.setSummary(path);
+          SystemHelper.restartApp();
+        }
       } else {
         LogDelegate.e("Wrong element choosen: " + requestCode);
       }
     }
+  }
+
+  private String resolveTreeUriToPath(Uri treeUri) {
+    String docId = android.provider.DocumentsContract.getTreeDocumentId(treeUri);
+    if (docId != null && docId.contains(":")) {
+      String[] parts = docId.split(":");
+      String type = parts[0];
+      String relativePath = parts.length > 1 ? parts[1] : "";
+      if ("primary".equals(type)) {
+        return android.os.Environment.getExternalStorageDirectory().getAbsolutePath()
+            + "/" + relativePath;
+      }
+    }
+    return null;
   }
 
 

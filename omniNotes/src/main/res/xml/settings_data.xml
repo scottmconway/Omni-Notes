@@ -19,6 +19,12 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:fitsSystemWindows="true">
 
+  <Preference
+    android:key="settings_notes_storage_location"
+    android:title="@string/settings_storage_location"
+    android:summary="@string/settings_storage_location_summary"
+    app:iconSpaceReserved="false" />
+
   <PreferenceScreen
     android:key="settings_sync_import_export"
     android:persistent="false"

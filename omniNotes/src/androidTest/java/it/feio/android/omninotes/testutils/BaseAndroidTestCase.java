@@ -116,7 +116,7 @@ public class BaseAndroidTestCase {
 
   private static void prepareDatabase() {
     // Clean all flat files for a fresh test state
-    File notesDir = new File(FlatFileHelper.NOTES_DIR);
+    File notesDir = new File(FlatFileHelper.getNotesDir());
     if (notesDir.exists()) {
       for (File f : notesDir.listFiles()) {
         if (f.isFile() && f.getName().endsWith(".md")) {
@@ -124,7 +124,7 @@ public class BaseAndroidTestCase {
         }
       }
     }
-    File categoriesDir = new File(FlatFileHelper.CATEGORIES_DIR);
+    File categoriesDir = new File(FlatFileHelper.getCategoriesDir());
     if (categoriesDir.exists()) {
       for (File f : categoriesDir.listFiles()) {
         if (f.isFile() && f.getName().endsWith(".md")) {

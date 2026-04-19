@@ -70,11 +70,53 @@ import java.util.regex.Pattern;
  */
 public class FlatFileHelper implements NoteDataStore {
 
+  public static final String PREF_NOTES_DIR = "pref_notes_dir";
+
+  private static String notesDir;
+
+  public static String getNotesDir() {
+    if (notesDir == null) {
+      notesDir = Prefs.getString(PREF_NOTES_DIR, defaultNotesDir());
+    }
+    return notesDir;
+  }
+
+  public static void setNotesDir(String path) {
+    String oldPath = getNotesDir();
+    notesDir = path;
+    Prefs.edit().putString(PREF_NOTES_DIR, path).commit();
+    instance = null;
+
+    // Move contents from old directory to new
+    if (oldPath != null && !oldPath.equals(path)) {
+      File oldDir = new File(oldPath);
+      File newDir = new File(path);
+      newDir.mkdirs();
+      if (oldDir.exists()) {
+        File[] children = oldDir.listFiles();
+        if (children != null) {
+          for (File child : children) {
+            child.renameTo(new File(newDir, child.getName()));
+          }
+        }
+      }
+    }
+  }
+
+  private static String defaultNotesDir() {
+    File extDir = OmniNotes.getAppContext().getExternalFilesDir(null);
+    return extDir != null ? new File(extDir, "omni_notes").getAbsolutePath()
+        : "/sdcard/omni_notes";
+  }
+
+  // Derived paths use getNotesDir() so they update dynamically
+  public static String getActiveDir() { return getNotesDir() + "/notes"; }
+  public static String getArchiveDir() { return getNotesDir() + "/archive"; }
+  public static String getTrashDir() { return getNotesDir() + "/trash"; }
+  public static String getCategoriesDir() { return getNotesDir() + "/categories"; }
+
+  // Keep constants for backward compatibility with callers
   public static final String NOTES_DIR = "/sdcard/omni_notes";
-  public static final String ACTIVE_DIR = NOTES_DIR + "/notes";
-  public static final String ARCHIVE_DIR = NOTES_DIR + "/archive";
-  public static final String TRASH_DIR = NOTES_DIR + "/trash";
-  public static final String CATEGORIES_DIR = NOTES_DIR + "/categories";
   public static final String NOTE_FILENAME = "note.md";
 
   // Re-export column key constants so callers that reference DbHelper.KEY_* can migrate.
@@ -160,20 +202,31 @@ public class FlatFileHelper implements NoteDataStore {
 
   private void ensureDirectories() {
     if (hasStorageAccess()) {
-      new File(NOTES_DIR).mkdirs();
-      new File(ACTIVE_DIR).mkdirs();
-      new File(ARCHIVE_DIR).mkdirs();
-      new File(TRASH_DIR).mkdirs();
-      new File(CATEGORIES_DIR).mkdirs();
+      new File(getNotesDir()).mkdirs();
+      new File(getActiveDir()).mkdirs();
+      new File(getArchiveDir()).mkdirs();
+      new File(getTrashDir()).mkdirs();
+      new File(getCategoriesDir()).mkdirs();
     }
   }
 
   /**
-   * Returns {@code true} if the app has permission to read/write
-   * {@link #NOTES_DIR} on external storage.  On Android 11+ this
-   * requires {@code MANAGE_EXTERNAL_STORAGE}.
+   * Returns {@code true} if the app can read/write the configured notes
+   * directory. App-private directories don't need special permissions;
+   * external directories require {@code MANAGE_EXTERNAL_STORAGE} on
+   * Android 11+.
    */
   public static boolean hasStorageAccess() {
+    String dir = getNotesDir();
+    // App-private directories are always accessible
+    Context ctx = OmniNotes.getAppContext();
+    File intDir = ctx.getFilesDir();
+    File extDir = ctx.getExternalFilesDir(null);
+    if (dir.startsWith(intDir.getAbsolutePath())
+        || (extDir != null && dir.startsWith(extDir.getAbsolutePath()))) {
+      return true;
+    }
+    // External directory needs MANAGE_EXTERNAL_STORAGE on Android 11+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       return Environment.isExternalStorageManager();
     }
@@ -301,9 +354,9 @@ public class FlatFileHelper implements NoteDataStore {
    */
   private File directoryForNote(Note note) {
     if (Boolean.TRUE.equals(note.isTrashed())) {
-      return new File(TRASH_DIR);
+      return new File(getTrashDir());
     } else if (Boolean.TRUE.equals(note.isArchived())) {
-      return new File(ARCHIVE_DIR);
+      return new File(getArchiveDir());
     }
     return notesDir();
   }
@@ -317,7 +370,7 @@ public class FlatFileHelper implements NoteDataStore {
     File target = resolveUniqueDirName(targetParent, slug, creation);
 
     // Search all directories for an existing note dir with this creation ID
-    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+    for (File parent : new File[]{notesDir(), new File(getArchiveDir()), new File(getTrashDir())}) {
       File[] dirs = parent.listFiles(File::isDirectory);
       if (dirs == null) continue;
       for (File dir : dirs) {
@@ -423,7 +476,7 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getNotesArchived() {
-    List<Note> notes = loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+    List<Note> notes = loadNotesFromDir(new File(getArchiveDir()), archiveCache);
     archiveCache = new ArrayList<>(notes);
     sortNotes(notes);
     return notes;
@@ -432,7 +485,7 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getNotesTrashed() {
-    List<Note> notes = loadNotesFromDir(new File(TRASH_DIR), trashCache);
+    List<Note> notes = loadNotesFromDir(new File(getTrashDir()), trashCache);
     trashCache = new ArrayList<>(notes);
     sortNotes(notes);
     return notes;
@@ -503,7 +556,7 @@ public class FlatFileHelper implements NoteDataStore {
   @Override
   public boolean deleteNote(long noteId, boolean keepAttachments) {
     // Find and delete the note directory from whichever parent it's in
-    for (File parent : new File[]{notesDir(), new File(ARCHIVE_DIR), new File(TRASH_DIR)}) {
+    for (File parent : new File[]{notesDir(), new File(getArchiveDir()), new File(getTrashDir())}) {
       File noteDir = findNoteDirByCreation(parent, noteId);
       if (noteDir != null) {
         if (keepAttachments) {
@@ -802,7 +855,7 @@ public class FlatFileHelper implements NoteDataStore {
       return new ArrayList<>(categoriesCache);
     }
     ArrayList<Category> categories = new ArrayList<>();
-    File catDir = new File(CATEGORIES_DIR);
+    File catDir = new File(getCategoriesDir());
     File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
     if (files == null) {
       return categories;
@@ -840,7 +893,7 @@ public class FlatFileHelper implements NoteDataStore {
 
     String markdown = FrontMatterUtils.serialize(fields, "");
     String slug = SlugUtils.slugify(category.getName(), category.getId());
-    File catFile = new File(CATEGORIES_DIR, slug + ".md");
+    File catFile = new File(getCategoriesDir(), slug + ".md");
     writeFile(catFile, markdown);
 
     invalidateCategoriesCache();
@@ -871,7 +924,7 @@ public class FlatFileHelper implements NoteDataStore {
     if (id == null) {
       return null;
     }
-    File catDir = new File(CATEGORIES_DIR);
+    File catDir = new File(getCategoriesDir());
     File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
     if (files == null) {
       return null;
@@ -1059,7 +1112,7 @@ public class FlatFileHelper implements NoteDataStore {
   // -------------------------------------------------------------------------
 
   private File notesDir() {
-    return new File(ACTIVE_DIR);
+    return new File(getActiveDir());
   }
 
   /**
@@ -1089,11 +1142,11 @@ public class FlatFileHelper implements NoteDataStore {
   }
 
   private List<Note> loadArchivedNotes() {
-    return loadNotesFromDir(new File(ARCHIVE_DIR), archiveCache);
+    return loadNotesFromDir(new File(getArchiveDir()), archiveCache);
   }
 
   private List<Note> loadTrashedNotes() {
-    return loadNotesFromDir(new File(TRASH_DIR), trashCache);
+    return loadNotesFromDir(new File(getTrashDir()), trashCache);
   }
 
   /**
@@ -1109,8 +1162,8 @@ public class FlatFileHelper implements NoteDataStore {
     if (subdirs == null || subdirs.length == 0) {
       return notes;
     }
-    boolean isArchive = dir.getAbsolutePath().equals(new File(ARCHIVE_DIR).getAbsolutePath());
-    boolean isTrash = dir.getAbsolutePath().equals(new File(TRASH_DIR).getAbsolutePath());
+    boolean isArchive = dir.getAbsolutePath().equals(new File(getArchiveDir()).getAbsolutePath());
+    boolean isTrash = dir.getAbsolutePath().equals(new File(getTrashDir()).getAbsolutePath());
     for (File noteDir : subdirs) {
       // Skip special directories
       String name = noteDir.getName();
@@ -1380,7 +1433,7 @@ public class FlatFileHelper implements NoteDataStore {
   }
 
   private void removeOldCategoryFile(long categoryId) {
-    File catDir = new File(CATEGORIES_DIR);
+    File catDir = new File(getCategoriesDir());
     File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
     if (files == null) return;
     for (File file : files) {

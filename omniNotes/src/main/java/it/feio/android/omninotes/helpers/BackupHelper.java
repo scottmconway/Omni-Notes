@@ -51,7 +51,7 @@ public final class BackupHelper {
    * @param destFile the output file (e.g. {@code /sdcard/backup.tar.gz})
    */
   public static void exportBackup(File destFile) throws IOException {
-    File notesRoot = new File(FlatFileHelper.NOTES_DIR);
+    File notesRoot = new File(FlatFileHelper.getNotesDir());
     try (FileOutputStream fos = new FileOutputStream(destFile);
          BufferedOutputStream bos = new BufferedOutputStream(fos);
          GZIPOutputStream gzos = new GZIPOutputStream(bos);
@@ -68,7 +68,7 @@ public final class BackupHelper {
    * @param archiveFile the backup archive to restore
    */
   public static void importBackup(File archiveFile) throws IOException {
-    File notesRoot = new File(FlatFileHelper.NOTES_DIR);
+    File notesRoot = new File(FlatFileHelper.getNotesDir());
     deleteDirectoryContents(notesRoot);
 
     try (FileInputStream fis = new FileInputStream(archiveFile);

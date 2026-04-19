@@ -407,5 +407,10 @@
   <string name="location_not_enabled">Device location turned off</string>
   <string name="storage_permission_required">Please grant \"All files access\" so notes can be stored on your device.</string>
   <string name="data_import_failed">Import failed</string>
+  <string name="settings_storage_location">Notes storage location</string>
+  <string name="settings_storage_location_summary">Choose where notes are stored on this device</string>
+  <string name="storage_app_external">App external storage</string>
+  <string name="storage_app_internal">App internal storage</string>
+  <string name="storage_custom">Custom directory</string>
 
 </resources>
