@@ -31,9 +31,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.permissionx.guolindev.PermissionX;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.models.listeners.OnPermissionRequestedListener;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class PermissionsHelper {
 
   public static void requestPermission(Fragment fragment, String permission,

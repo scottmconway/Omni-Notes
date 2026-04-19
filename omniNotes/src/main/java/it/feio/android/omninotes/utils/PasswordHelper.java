@@ -35,10 +35,8 @@ import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
 import it.feio.android.omninotes.db.FlatFileHelper;
 import it.feio.android.omninotes.models.PasswordValidator;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class PasswordHelper {
 
 

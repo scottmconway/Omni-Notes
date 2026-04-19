@@ -134,11 +134,7 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    compileOnly 'org.projectlombok:lombok:1.18.44'
-    annotationProcessor 'org.projectlombok:lombok:1.18.44'
-
-    // Removed unused androidannotations processor + API (no @E* annotations in codebase;
-    // the old 4.8.0 processor crashes with ExceptionInInitializerError under Java 17).
+    // Lombok removed - annotations replaced with hand-written getters/setters
 
     implementation 'androidx.core:core-ktx:1.10.1'
 
@@ -176,7 +172,6 @@ dependencies {
     implementation 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
     implementation 'org.bitbucket.cowwoc:diff-match-patch:1.2'
     implementation 'com.github.bosphere.android-filelogger:filelogger:1.0.7'
-    implementation 'com.github.sevar83:indeterminate-checkbox:1.0.5@aar'
     implementation 'com.pixplicity.easyprefs:EasyPrefs:1.10.0'
     implementation 'com.lazygeniouz:dfc:0.8'
 

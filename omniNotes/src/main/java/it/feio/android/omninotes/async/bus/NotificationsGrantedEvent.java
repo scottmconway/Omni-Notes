@@ -17,15 +17,16 @@
 
 package it.feio.android.omninotes.async.bus;
 
-import lombok.Getter;
-
 public class NotificationsGrantedEvent {
 
-  @Getter
   public final boolean granted;
 
 
   public NotificationsGrantedEvent(boolean granted) {
     this.granted = granted;
+  }
+
+  public boolean isGranted() {
+    return this.granted;
   }
 }

@@ -20,7 +20,6 @@ package it.feio.android.omninotes.helpers
 import android.content.Context
 import android.net.Uri
 import com.lazygeniouz.dfc.file.DocumentFileCompat
-import lombok.experimental.UtilityClass
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.IOException
@@ -43,7 +42,6 @@ import java.nio.charset.Charset
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@UtilityClass
 class DocumentFileHelper {
 
     companion object {

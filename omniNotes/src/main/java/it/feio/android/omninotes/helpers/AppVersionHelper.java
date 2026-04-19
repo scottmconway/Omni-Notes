@@ -22,10 +22,8 @@ import static it.feio.android.omninotes.utils.ConstantsBase.PREF_CURRENT_APP_VER
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import com.pixplicity.easyprefs.library.Prefs;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class AppVersionHelper {
 
   public static boolean isAppUpdated(Context context) {

@@ -48,7 +48,7 @@ import it.feio.android.omninotes.MainActivity;
 import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.async.bus.NotificationsGrantedEvent;
 import it.feio.android.omninotes.helpers.BuildHelper;
-import lombok.NonNull;
+import androidx.annotation.NonNull;
 
 
 public class NotificationsHelper {

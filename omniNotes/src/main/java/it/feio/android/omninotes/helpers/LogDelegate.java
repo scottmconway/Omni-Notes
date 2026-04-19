@@ -30,9 +30,7 @@ import it.feio.android.omninotes.OmniNotes;
 import it.feio.android.omninotes.exceptions.GenericException;
 import it.feio.android.omninotes.utils.StorageHelper;
 import java.io.File;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class LogDelegate {
 
   private static Boolean fileLoggingEnabled;

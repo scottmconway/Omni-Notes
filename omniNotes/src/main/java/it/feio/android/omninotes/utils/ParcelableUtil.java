@@ -19,9 +19,7 @@ package it.feio.android.omninotes.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
 public class ParcelableUtil {
 
   public static byte[] marshall(Parcelable parceable) {

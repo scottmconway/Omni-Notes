@@ -37,10 +37,8 @@ import it.feio.android.omninotes.models.Note;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class TextHelper {
 
 

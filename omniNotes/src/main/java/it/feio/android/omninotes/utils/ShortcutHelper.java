@@ -38,11 +38,8 @@ import it.feio.android.omninotes.R;
 import it.feio.android.omninotes.helpers.BuildHelper;
 import it.feio.android.omninotes.helpers.date.DateHelper;
 import it.feio.android.omninotes.models.Note;
-import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class ShortcutHelper {
 
   /**
@@ -88,7 +85,6 @@ public class ShortcutHelper {
     }
   }
 
-  @SneakyThrows
   @TargetApi(VERSION_CODES.O)
   private static Icon createShortcutIcon(Context context, Note note) {
     if (note.getAttachmentsList().isEmpty()) {

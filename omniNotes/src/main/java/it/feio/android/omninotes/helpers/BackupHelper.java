@@ -55,12 +55,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
-@UtilityClass
 public final class BackupHelper {
 
   public static void exportNotes(DocumentFileCompat backupDir) {

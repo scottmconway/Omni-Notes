@@ -21,10 +21,8 @@ import android.app.Activity;
 import android.content.Context;
 import com.afollestad.materialdialogs.MaterialDialog;
 import it.feio.android.omninotes.R;
-import lombok.experimental.UtilityClass;
 
 
-@UtilityClass
 public class ChangelogHelper {
 
   public static void showChangelog(Activity activity) {
