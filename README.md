@@ -11,8 +11,18 @@ You should probably use his version instead of this one!
 ## Fork Differences
 ### Notes are flat markdown files with YAML front-matter headers, rather than SQLite DB entries.
 _Why_? because with the use of regular flat files, it's very easy to synchronize via a 3rd-party tool such as Syncthing.
+Files can be stored in app-internal, app-external, or custom directories (requires full external storage access).
+Also with this setup, files can be modified out-of-band by other clients.
 
-### non-foss build targets have been removed
+Archive and Trash status is determined by the note's directory - `notes`, `archive`, or `trash`!
+
+### Modified features
+Data backup now simply tars the storage directory rather than creating an intermediary format.
+
+### Feature removals
+Password-lock functionality, photo notes, external synchronization (use syncthing or similar instead), springpad import, and possibly additional features have been removed.
+
+### Non-foss build targets have been removed
 I have no intention of ever building them, so they have been removed.
 
 ## License
