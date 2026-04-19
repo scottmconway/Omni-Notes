@@ -206,8 +206,6 @@
     <string name="settings_export">Izveidot dublējumkopiju</string>
     <string name="settings_sync_import_export">Sinhronizācija un dublējumkopijas</string>
     <string name="settings_import">Atjaunot vai dzēst dublējumkopijas</string>
-    <string name="settings_import_from_springpad">Importēt piezīmes no Springpad</string>
-    <string name="settings_import_from_springpad_summary">Atlasiet eksportētu Springpad arhīvu un pārliecinieties, ka esat pieslēdzies internetam</string>
     <string name="settings_sync_drive">Sinhronizēt ar Google disku</string>
     <string name="settings_sync_drive_summary">Reģistrējiet lietotni, lai sinhronizētu datus ar Google disku</string>
     <string name="export_success">Fails veiksmīgi eksportēts uz mapi</string>

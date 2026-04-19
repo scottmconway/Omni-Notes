@@ -48,10 +48,4 @@
   <!--android:title="@string/settings_enable_automatic_backup"-->
   <!--android:summary="@string/settings_enable_automatic_backup_summary" />-->
 
-  <Preference
-    android:key="settings_import_from_springpad"
-    android:summary="@string/settings_import_from_springpad_summary"
-    android:title="@string/settings_import_from_springpad"
-    app:iconSpaceReserved="false" />
-
 </PreferenceScreen>

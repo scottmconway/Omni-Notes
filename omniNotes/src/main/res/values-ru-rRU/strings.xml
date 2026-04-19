@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Изменить папку резервного копирования</string>
     <string name="settings_import_legacy">Восстановить старую резервную копию</string>
     <string name="settings_import_legacy_summary">Позволяет восстановить старые резервные копии, сделанные в Omni Notes до версии 6</string>
-    <string name="settings_import_from_springpad">Перенести заметки из Springpad</string>
-    <string name="settings_import_from_springpad_summary">Выберите экспортированный из Springpad архив и подключитесь к интернету</string>
     <string name="settings_sync_drive">Синхронизация с Google Диск</string>
     <string name="settings_sync_drive_summary">Активируйте приложение для синхронизации заметок с облачным сервисом Google Диск</string>
     <string name="export_success">Файл успешно экспортирован в папку</string>

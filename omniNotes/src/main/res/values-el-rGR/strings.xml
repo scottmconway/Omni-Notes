@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Αλλαγή φακέλου αντιγράφου ασφαλείας</string>
     <string name="settings_import_legacy">Επαναφορά αντιγράφου ασφαλείας παλαιού τύπου</string>
     <string name="settings_import_legacy_summary">Επιτρέπει την επαναφορά παλαιών αντιγράφων ασφαλείας που έγιναν με τις εκδόσεις των Omni Notes πριν από την έκδοση 6</string>
-    <string name="settings_import_from_springpad">Εισαγωγή σημειώσεων από Springpad</string>
-    <string name="settings_import_from_springpad_summary">Επιλέξτε το εξαγόμενο αρχείο Springpad και βεβαιωθείτε ότι είστε συνδεδεμένοι στο Διαδίκτυο</string>
     <string name="settings_sync_drive">Συγχρονισμός με Google Drive</string>
     <string name="settings_sync_drive_summary">Καταχωρίστε την εφαρμογή για να κάνετε συγχρονισμό δεδομένων στην υπηρεσία αποθήκευσης Google Drive</string>
     <string name="export_success">Το αρχείο εξάχθηκε επιτυχώς στο φάκελο</string>

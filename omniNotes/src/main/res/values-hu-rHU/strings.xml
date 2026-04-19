@@ -226,8 +226,6 @@
     <string name="settings_import">Biztonsági mentés visszaállítása vagy törlése</string>
     <string name="settings_import_legacy">Régebbi biztonsági mentés visszaállítása</string>
     <string name="settings_import_legacy_summary">Lehetővé teszi a 6-os korábbi verziószámú Omni Notes által készített biztonsági mentések visszaállítását</string>
-    <string name="settings_import_from_springpad">Jegyzetek importálása Springpadből</string>
-    <string name="settings_import_from_springpad_summary">Válassza ki az exportált Springpad archívumot, és ellenőrizze van-e internet kapcsolata</string>
     <string name="settings_sync_drive">Google Drive fiók szinkronizálás</string>
     <string name="settings_sync_drive_summary">Az alkalmazás regisztrálása a Google Drive tároló szolgáltatásba szinkronizáláshoz</string>
     <string name="export_success">A fájl mappába exportálása sikerült</string>

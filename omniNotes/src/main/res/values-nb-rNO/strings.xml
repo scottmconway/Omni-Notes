@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Bytt sikkerhetskopimappen</string>
     <string name="settings_import_legacy">Gjenopprett eldre backup</string>
     <string name="settings_import_legacy_summary">Tillater å gjenopprette gamle backuper laget med versjoner av Omni Notes før versjon 6</string>
-    <string name="settings_import_from_springpad">Importer notater fra Springpad</string>
-    <string name="settings_import_from_springpad_summary">Velg ditt Springpad-eksporterte arkiv og vær sikker på at du er koblet til Internett</string>
     <string name="settings_sync_drive">Synkroniser med Google Disk</string>
     <string name="settings_sync_drive_summary">Registrer appen for å synkronisere data til Google Disk</string>
     <string name="export_success">Filen ble vellykket eksportert til mappen</string>

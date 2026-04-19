@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Změnit složku zálohy</string>
     <string name="settings_import_legacy">Obnovit starší zálohu</string>
     <string name="settings_import_legacy_summary">Umožňuje obnovit staré zálohy vytvořené s verzemi Omni Notes před verzí 6</string>
-    <string name="settings_import_from_springpad">Importovat poznámky z aplikace Springpad</string>
-    <string name="settings_import_from_springpad_summary">Vyberte archiv exportovaný z aplikace Springpad a ujistěte se, že připojení k Internetu</string>
     <string name="settings_sync_drive">Synchronizovat s Google Drive</string>
     <string name="settings_sync_drive_summary">Registrovat aplikaci k synchronizaci dat na Google Drive</string>
     <string name="export_success">Soubor byl úspěšně exportován do složky</string>

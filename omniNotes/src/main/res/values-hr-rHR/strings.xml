@@ -207,8 +207,6 @@
     <string name="settings_export">Sigurnosna kopija</string>
     <string name="settings_sync_import_export">Sinkronizacija i Sigurnosne Kopije</string>
     <string name="settings_import">Vrati ili obriši sigurnosne kopije</string>
-    <string name="settings_import_from_springpad">Uvezi bilješke iz Springpada</string>
-    <string name="settings_import_from_springpad_summary">Odaberite izvezenu arhivu iz Springpada i provjerite jeste li povezani s internetom</string>
     <string name="settings_sync_drive">Sinkronizacija s Google Diskom</string>
     <string name="settings_sync_drive_summary">Registriraj aplikaciju za sinkronizaciju podataka s uslugom za pohranu podataka Google Disk</string>
     <string name="export_success">Datoteka uspješno izvezena u mapu</string>

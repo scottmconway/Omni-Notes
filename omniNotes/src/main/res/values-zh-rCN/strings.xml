@@ -234,8 +234,6 @@
     <string name="settings_change_backup_folder">更改备份文件夹</string>
     <string name="settings_import_legacy">恢复旧版备份</string>
     <string name="settings_import_legacy_summary">允许恢复 Omni Note 6 之前的旧版备份</string>
-    <string name="settings_import_from_springpad">从 Springpad 中导入笔记</string>
-    <string name="settings_import_from_springpad_summary">选择您的 Springpad 导出存档并确保已连接至网络</string>
     <string name="settings_sync_drive">与 Google Drive 同步</string>
     <string name="settings_sync_drive_summary">注册本应用，以将数据同步至 Google Drive 存储服务</string>
     <string name="export_success">文件成功导出到文件夹</string>

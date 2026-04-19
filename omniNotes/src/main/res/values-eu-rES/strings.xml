@@ -220,8 +220,6 @@
     <string name="settings_import">Berrezarri edo ezabatu babeskopiak</string>
     <string name="settings_import_legacy">Berrezarri babes-kopia zaharra</string>
     <string name="settings_import_legacy_summary">Omni Notes 6. bertsioaren aurretik egindako babes-kopia zaharrak berrezartzea ahalbidetzen du</string>
-    <string name="settings_import_from_springpad">Inportatu oharrak Springpad-etik</string>
-    <string name="settings_import_from_springpad_summary">Hautatu Springpad-etik esportatu duzun artxiboa eta baieztatu Internetera konektatuta zaudela</string>
     <string name="settings_sync_drive">Sinkronizatu Google Drive-ekin</string>
     <string name="settings_sync_drive_summary">Erregistratu aplikazioa datuak Google Drive biltegiratze zerbitzuarekin sinkronizatzeko</string>
     <string name="export_success">Fitxategia ongi esportatu da karpetara</string>

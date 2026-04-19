@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">Sicherungsordner ändern</string>
     <string name="settings_import_legacy">Alte Sicherung wiederherstellen</string>
     <string name="settings_import_legacy_summary">Erlaubt das Wiederherstellen von alten Sicherungen mit Omni Notes Versionen vor Version 6</string>
-    <string name="settings_import_from_springpad">Importieren von Notizen aus Springpad</string>
-    <string name="settings_import_from_springpad_summary">Wählen Sie Ihr exportiertes Springpadarchiv aus und achten Sie darauf, dass Sie mit dem Internet verbunden sind</string>
     <string name="settings_sync_drive">Mit Google Drive synchronisieren</string>
     <string name="settings_sync_drive_summary">Registrieren Sie die Anwendung um Daten mit Google Drive synchronisieren zu können</string>
     <string name="export_success">Datei erfolgreich in Ordner exportiert</string>

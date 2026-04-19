@@ -230,8 +230,6 @@
     <string name="settings_import_summary">WARNING: No password is set, protected notes will not be restored from backup for security reasons</string>
     <string name="settings_import_legacy">Restore legacy backup</string>
     <string name="settings_import_legacy_summary">Allows restoring old backups made with versions of Omni Notes prior to version 6</string>
-    <string name="settings_import_from_springpad">Import notes from Springpad</string>
-    <string name="settings_import_from_springpad_summary">Select your Springpad exported archive and be sure to be connected to internet</string>
     <string name="settings_sync_drive">Sync with Google Drive</string>
     <string name="settings_sync_drive_summary">Register the application to synchronize data on Google Drive storage service</string>
     <string name="export_success">File exported successfully into folder</string>

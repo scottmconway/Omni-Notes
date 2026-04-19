@@ -231,8 +231,6 @@
     <string name="settings_change_backup_folder">バックアップフォルダの変更</string>
     <string name="settings_import_legacy">従来のバックアップを復元</string>
     <string name="settings_import_legacy_summary">Omni Notes のバージョン 6 より前のバージョンで作成された、古いバックアップを復元することができます</string>
-    <string name="settings_import_from_springpad">Springpad からノートをインポート</string>
-    <string name="settings_import_from_springpad_summary">Springpad でエクスポートしたアーカイブを選択して、インターネットに接続されていることを確認してください</string>
     <string name="settings_sync_drive">Google ドライブと同期</string>
     <string name="settings_sync_drive_summary">アプリケーションを登録して、Google ドライブ ストレージ サービスのデータと同期します</string>
     <string name="export_success">フォルダーに、ファイルを正常にエクスポートしました</string>

@@ -234,8 +234,6 @@
     <string name="settings_change_backup_folder">تغییر پوشه پشتیبان‌گیری</string>
     <string name="settings_import_legacy">بازیابی نسخه پشتیبان قدیمی</string>
     <string name="settings_import_legacy_summary">اجازه می‌دهد نسخه‌های پشتیبان قدیمی که توسط نسخه‌های قدیمی‌تر از ۶ Omni Notes گرفته شده‌اند، بازیابی شوند</string>
-    <string name="settings_import_from_springpad">وارد کردن یادداشت‌ها از Springpad</string>
-    <string name="settings_import_from_springpad_summary">بایگانی خروجی Springpad را انتخاب کنید و مطمئن شوید به اینترنت وصل هستید</string>
     <string name="settings_sync_drive">همگام‌سازی با گوگل درایو</string>
     <string name="settings_sync_drive_summary">ثبت برنامه برای همگام‌سازی داده‌ها در خدمت ذخیره‌سازی گوگل درایو</string>
     <string name="export_success">پرونده با موفقیت به پوشه صادر شد</string>

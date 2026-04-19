@@ -239,11 +239,6 @@
 လည်ရယူ သို့မဟုတ် ဖျက်ပစ်</string>
     <string name="settings_import_legacy">ယခင်အတိုင်းအရံသိမ်းဆည်းခြင်းမှ ပြန်လည်ရယူ</string>
     <string name="settings_import_legacy_summary">OmniNotes မူ ၆ အရင် က မူကွဲများနှင့်ပြုလုပ်ထားသောအရံသိမ်းဆည်းခြင်းများမှပြန်လည်ရယူခွင့်ပြုမည်။</string>
-    <string name="settings_import_from_springpad">Sprinpadမှမှတ်စုများပြန်
-လည်ရယူမည်။</string>
-    <string name="settings_import_from_springpad_summary">Springpad မှတင်ပို့ထားသော သိမ်းဆည်းမှုကိုရွေးပြီးအင်တာ
-နက်ချိတ်ဆက်ထားကြောင်းသေ
-ချာပါစေ။</string>
     <string name="settings_sync_drive">Google Drive နှင့် ဆင့်ခ် လုပ်မည်။</string>
     <string name="settings_sync_drive_summary">Google Drive နှင့် ဆင့်ခ် လုပ်ရန် အက်ပ်ကို စာရင်းသွင်းမည်။</string>
     <string name="export_success">ဖိုင်ကိုဖိုင်တွဲထဲသို့အောင်မြင်

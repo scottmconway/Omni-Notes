@@ -220,8 +220,6 @@
     <string name="settings_import">Obnoviti ali jo izbrisati varnostne kopije</string>
     <string name="settings_import_legacy">Obnovi legacy varnostne kopije</string>
     <string name="settings_import_legacy_summary">Omogoča obnavljanje starih varnostnih kopij, narejenih z različicami Omni notes pred različico 6</string>
-    <string name="settings_import_from_springpad">Uvažanje beležke iz Springpad</string>
-    <string name="settings_import_from_springpad_summary">Izberite Springpad, ki se izvažajo Arhiv in se prepričajte, za povezavo z internetom</string>
     <string name="settings_sync_drive">Sinhronizacijo z Google Drive</string>
     <string name="settings_sync_drive_summary">Register aplikacija sinhronizacijo podatkov na Google Drive shrambe storitev</string>
     <string name="export_success">Datoteka je bila uspešno izvožena v mapo</string>

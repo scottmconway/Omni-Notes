@@ -241,23 +241,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //			});
 //		}
 
-//		Preference syncWithDrive = findPreference("settings_backup_drive");
-//		importFromSpringpad.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-//			@Override
-//			public boolean onPreferenceClick(Preference arg0) {
-//				Intent intent;
-//				intent = new Intent(Intent.ACTION_GET_CONTENT);
-//				intent.addCategory(Intent.CATEGORY_OPENABLE);
-//				intent.setType("application/zip");
-//				if (!IntentChecker.isAvailable(getActivity(), intent, null)) {
-//					Crouton.makeText(getActivity(), R.string.feature_not_available_on_this_device,
-// ONStyle.ALERT).show();
-//					return false;
-//				}
-//				startActivityForResult(intent, SPRINGPAD_IMPORT);
-//				return false;
-//			}
-//		});
 
     // Swiping action
     final SwitchPreference swipeToTrash = findPreference("settings_swipe_to_trash");

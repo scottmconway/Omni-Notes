@@ -219,8 +219,6 @@
     <string name="settings_sync_import_export">同步和備份</string>
     <string name="settings_import">還原或刪除備份</string>
     <string name="settings_import_legacy">從舊版的備份復原</string>
-    <string name="settings_import_from_springpad">從 Springpad 匯入筆記</string>
-    <string name="settings_import_from_springpad_summary">選擇您的 Springpad 匯出存檔並確保已連線至網路</string>
     <string name="settings_sync_drive">連結到 Google 雲端硬碟</string>
     <string name="settings_sync_drive_summary">註冊應用程式以同步 Google Drive 儲存服務上的資料</string>
     <string name="export_success">成功匯出檔案到資料夾</string>

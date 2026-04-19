@@ -220,8 +220,6 @@
     <string name="settings_import">Memulihkan atau menghapus cadangan</string>
     <string name="settings_import_legacy">Pulihkan cadangan lawas</string>
     <string name="settings_import_legacy_summary">Izinkan untuk memulihkan cadangan lawas yang dibuat dengan versi Omni Notes sebelumnya ke versi 6</string>
-    <string name="settings_import_from_springpad">Impor catatan dari Springpad</string>
-    <string name="settings_import_from_springpad_summary">Pilih arsip Springpad anda yang sudah diekspor dan pastikan untuk terhubung ke internet</string>
     <string name="settings_sync_drive">Sinkron dengan Google Drive</string>
     <string name="settings_sync_drive_summary">Daftarkan aplikasi untuk menyinkron data di penyimpanan Google Drive</string>
     <string name="export_success">File berhasil diekspor ke folder</string>
