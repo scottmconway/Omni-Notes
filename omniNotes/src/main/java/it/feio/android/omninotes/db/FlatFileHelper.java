@@ -116,6 +116,10 @@ public class FlatFileHelper implements NoteDataStore {
   private static FlatFileHelper instance = null;
   private final Context mContext;
 
+  // In-memory caches
+  private List<Note> notesCache;
+  private ArrayList<Category> categoriesCache;
+
 
   // -------------------------------------------------------------------------
   // Singleton
@@ -229,6 +233,7 @@ public class FlatFileHelper implements NoteDataStore {
     File noteFile = resolveUniqueFile(slug, creation);
 
     writeFile(noteFile, markdown);
+    updateNoteInCache(note);
     LogDelegate.d("Saved note '" + note.getTitle() + "' to " + noteFile.getName());
 
     return note;
@@ -381,6 +386,7 @@ public class FlatFileHelper implements NoteDataStore {
       File attachDir = new File(ATTACHMENTS_DIR, String.valueOf(noteId));
       deleteDirectory(attachDir);
     }
+    removeNoteFromCache(noteId);
     return true;
   }
 
@@ -650,6 +656,9 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public ArrayList<Category> getCategories() {
+    if (categoriesCache != null) {
+      return new ArrayList<>(categoriesCache);
+    }
     ArrayList<Category> categories = new ArrayList<>();
     File catDir = new File(CATEGORIES_DIR);
     File[] files = catDir.listFiles((dir, name) -> name.endsWith(".md"));
@@ -667,6 +676,7 @@ public class FlatFileHelper implements NoteDataStore {
 
     categories.sort(Comparator.comparing(
         c -> c.getName() != null ? c.getName().toLowerCase(Locale.ROOT) : "zzzzzzzz"));
+    categoriesCache = new ArrayList<>(categories);
     return categories;
   }
 
@@ -691,6 +701,7 @@ public class FlatFileHelper implements NoteDataStore {
     File catFile = new File(CATEGORIES_DIR, slug + ".md");
     writeFile(catFile, markdown);
 
+    invalidateCategoriesCache();
     return category;
   }
 
@@ -708,6 +719,7 @@ public class FlatFileHelper implements NoteDataStore {
 
     // Delete category file
     removeOldCategoryFile(category.getId());
+    invalidateCategoriesCache();
     return 1;
   }
 
@@ -914,10 +926,19 @@ public class FlatFileHelper implements NoteDataStore {
    * Loads every {@code .md} file from the notes directory and converts each
    * into a {@link Note}.
    */
+  /**
+   * Loads every {@code .md} file from the notes directory and converts each
+   * into a {@link Note}. Results are cached; subsequent calls return the
+   * cached list until the cache is invalidated by a write operation.
+   */
   private List<Note> loadAllNotes() {
+    if (notesCache != null) {
+      return new ArrayList<>(notesCache);
+    }
     List<Note> notes = new ArrayList<>();
     File[] files = notesDir().listFiles((dir, name) -> name.endsWith(".md"));
-    if (files == null) {
+    if (files == null || files.length == 0) {
+      notesCache = new ArrayList<>();
       return notes;
     }
     for (File file : files) {
@@ -929,6 +950,7 @@ public class FlatFileHelper implements NoteDataStore {
         }
       }
     }
+    notesCache = new ArrayList<>(notes);
     return notes;
   }
 
@@ -939,6 +961,31 @@ public class FlatFileHelper implements NoteDataStore {
     List<Note> notes = loadAllNotes();
     sortNotes(notes);
     return notes;
+  }
+
+  private void updateNoteInCache(Note note) {
+    if (notesCache == null) return;
+    boolean found = false;
+    for (int i = 0; i < notesCache.size(); i++) {
+      if (notesCache.get(i).getCreation() != null
+          && notesCache.get(i).getCreation().equals(note.getCreation())) {
+        notesCache.set(i, note);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      notesCache.add(note);
+    }
+  }
+
+  private void removeNoteFromCache(long noteId) {
+    if (notesCache == null) return;
+    notesCache.removeIf(n -> n.getCreation() != null && n.getCreation() == noteId);
+  }
+
+  private void invalidateCategoriesCache() {
+    categoriesCache = null;
   }
 
   /**

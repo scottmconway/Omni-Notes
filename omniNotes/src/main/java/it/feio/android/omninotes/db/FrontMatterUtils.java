@@ -16,13 +16,13 @@
  */
 package it.feio.android.omninotes.db;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -272,14 +272,14 @@ public final class FrontMatterUtils {
 
 
   private static String readFile(File file) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-      char[] buf = new char[8192];
-      int read;
-      while ((read = reader.read(buf)) != -1) {
-        sb.append(buf, 0, read);
-      }
+    try (RandomAccessFile raf = new RandomAccessFile(file, "r");
+         FileChannel channel = raf.getChannel()) {
+      long size = channel.size();
+      if (size == 0) return "";
+      MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+      byte[] bytes = new byte[(int) size];
+      buffer.get(bytes);
+      return new String(bytes, StandardCharsets.UTF_8);
     }
-    return sb.toString();
   }
 }
