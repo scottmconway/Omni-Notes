@@ -219,7 +219,6 @@ public class FlatFileHelper implements NoteDataStore {
         note.getLongitude() != null ? String.valueOf(note.getLongitude()) : "",
         note.getAddress(),
         note.getCategory() != null ? note.getCategory().getId() : null,
-        Boolean.TRUE.equals(note.isLocked()),
         Boolean.TRUE.equals(note.isChecklist()));
 
     String markdown = FrontMatterUtils.serialize(fields, note.getContent());
@@ -594,13 +593,10 @@ public class FlatFileHelper implements NoteDataStore {
             return false;
           }
 
-          // Search title and content (locked notes only search title)
+          // Search title and content
           String title = n.getTitle() != null ? n.getTitle().toLowerCase(Locale.ROOT) : "";
           String content = n.getContent() != null ? n.getContent().toLowerCase(Locale.ROOT) : "";
 
-          if (Boolean.TRUE.equals(n.isLocked())) {
-            return title.contains(lowerPattern);
-          }
           return title.contains(lowerPattern) || content.contains(lowerPattern);
         })
         .collect(toList());
@@ -640,9 +636,7 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getNotesWithLock(boolean locked) {
-    return loadAllNotesSorted().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isLocked()) == locked)
-        .collect(toList());
+    return Collections.emptyList();
   }
 
 
@@ -701,13 +695,8 @@ public class FlatFileHelper implements NoteDataStore {
     return loadAllNotesSorted().stream()
         .filter(n -> Boolean.TRUE.equals(n.isTrashed()) == inTrash)
         .filter(n -> {
-          String searchText;
-          if (Boolean.TRUE.equals(n.isLocked())) {
-            searchText = n.getTitle() != null ? n.getTitle() : "";
-          } else {
-            searchText = (n.getTitle() != null ? n.getTitle() : "") + " "
-                + (n.getContent() != null ? n.getContent() : "");
-          }
+          String searchText = (n.getTitle() != null ? n.getTitle() : "") + " "
+              + (n.getContent() != null ? n.getContent() : "");
           return Arrays.stream(tags).allMatch(tag -> searchText.contains(tag));
         })
         // Refine with word-boundary matching (same as DbHelper)
@@ -733,9 +722,7 @@ public class FlatFileHelper implements NoteDataStore {
 
   @Override
   public List<Note> getMasked() {
-    return loadAllNotes().stream()
-        .filter(n -> Boolean.TRUE.equals(n.isLocked()))
-        .collect(toList());
+    return Collections.emptyList();
   }
 
 
@@ -937,7 +924,6 @@ public class FlatFileHelper implements NoteDataStore {
       boolean inTrash = checkNavigation(Navigation.TRASH);
       notesToScan = loadAllNotes().stream()
           .filter(n -> Boolean.TRUE.equals(n.isTrashed()) == inTrash)
-          .filter(n -> !Boolean.TRUE.equals(n.isLocked()))
           .filter(n -> {
             String text = (n.getTitle() != null ? n.getTitle() : "")
                 + (n.getContent() != null ? n.getContent() : "");
@@ -1002,7 +988,6 @@ public class FlatFileHelper implements NoteDataStore {
         }
       }
       if (Boolean.TRUE.equals(note.isChecklist())) checklists++;
-      if (Boolean.TRUE.equals(note.isLocked())) notesMasked++;
       tags += TagsHelper.retrieveTags(note).size();
       try {
         if (note.getLongitude() != null
@@ -1360,7 +1345,6 @@ public class FlatFileHelper implements NoteDataStore {
     note.setLatitude(emptyToNull(parsed.get("latitude")));
     note.setLongitude(emptyToNull(parsed.get("longitude")));
     note.setAddress(emptyToNull(parsed.get("address")));
-    note.setLocked(parsed.getBoolean("locked"));
     note.setChecklist(parsed.getBoolean("checklist"));
 
     // Category

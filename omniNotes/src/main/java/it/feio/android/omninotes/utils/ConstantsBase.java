@@ -73,9 +73,6 @@ public interface ConstantsBase {
   String PREF_LAST_UPDATE_CHECK = "last_update_check";
   String PREF_NAVIGATION = "navigation";
   String PREF_SORTING_COLUMN = "sorting_column";
-  String PREF_PASSWORD = "password";
-  String PREF_PASSWORD_QUESTION = "password_question";
-  String PREF_PASSWORD_ANSWER = "password_answer";
   String PREF_KEEP_CHECKED = "keep_checked";
   String PREF_KEEP_CHECKMARKS = "show_checkmarks";
   String PREF_EXPANDED_VIEW = "expanded_view";

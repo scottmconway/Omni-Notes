@@ -117,12 +117,6 @@
     <string name="notes_category_removed">မှတ်စုများမှအမျိုးအစားကိုဖယ်ရှားပြီး။</string>
     <string name="notes_categorized_as">မှတ်စုများကိုအမျိုးအစားသတ်
 မှတ်မည်။</string>
-    <string name="insert_security_password">စကားဝှက်ထည့်ပါ။</string>
-    <string name="lock">သော့</string>
-    <string name="save_note_to_lock_it">မှတ်စုကိုသော့ခတ်သိမ်းမည်။</string>
-    <string name="save_note_to_unlock_it">မှတ်စုကိုသော့မခတ်ဘဲသိမ်းမည်။</string>
-    <string name="unlock">သော့ဖွင့်</string>
-    <string name="title_activity_password">လုံခြုံရေးစကားဝှက်ကိုတည်းဖြတ်မည်။</string>
     <string name="title_activity_about">အချက်အလက်</string>
     <string name="deleted">ဖျက်ပစ်ပြီး။</string>
     <string name="no_items_in_list">ဤနေရာတွင် ဘာမျှ မရှိပါ!</string>
@@ -272,24 +266,9 @@
     <string name="settings_enable_automatic_backup_dialog">ဤလုပ်ဆောင်ချက်ကိုဖွင့်လိုက်
 ခြင်းဖြင့်အချက်အလက်အပြည်အစုံအရံသိမ်းဆည်းခြင်းကိုလုပ်
 ဆောင်ပါလိမ့်မည်။</string>
-    <string name="settings_password">စကားဝှက်</string>
-    <string name="settings_password_access">အသုံးပြုခွင့်စကားဝှက်ကိုတောင်းဆိုစေမည်။</string>
-    <string name="settings_password_instructions">မှတ်စုများကိုအခြားသူများက
-ကြည့်ရှုခြင်း၊ပြုပြင်ခြင်းမရှိစေရန်စကားဝှက်သုံးခြင်းဖြင့်သေချာစေသည်။\n\nစကားဝှက်အသစ်သတ်မှတ်လျှင်စကားဝှက်အဟောင်းကိုတောင်းဆိုပါမည်။.</string>
-    <string name="settings_password_not_matching">စကားဝှက်အမှား</string>
-    <string name="insert_new_password">စကားဝှက်အသစ်ထည့်ပါ။</string>
-    <string name="confirm_new_password">စကားဝှက်အသစ်အတည်ပြုပါ။</string>
-    <string name="password_successfully_changed">စကားဝှက်ကိုအောင်မြင်စွာပြောင်းလဲပြီးပါပြီ။</string>
-    <string name="password_successfully_removed">စကားဝှက်ကိုဖယ်ရှားပြီးပါပြီ။
-မှတ်စုများကိုသော့မခတ်ထားတော့ပါ။</string>
-    <string name="wrong_password">စကားဝှက်အမှား</string>
-    <string name="empty_password">စကားဝှက်မထည့်ရသေးပါ။</string>
-    <string name="agree_unlocking_all_notes">စကားဝှက်ကိုဖယ်ရှားမလား
-\nမှတ်စုတွေကိုသော့မခတ်ထားတော့ဘူးလား?</string>
     <string name="settings_enable_tag_marker">အမျိုးအစား အမှတ်အသားများ</string>
     <string name="settings_backup_summary">အက်ပ်အချက်အလက်တင်ပို့တင်သွင်း</string>
     <string name="settings_max_video_size_summary">မီဂါဘိုက်အားဖြင့်အမြင့်ဆုံးခွင့်ပြုအရွယ်အစား</string>
-    <string name="settings_password_summary">လုံခြုံရေးစကားဝှက်ကိုတည်းဖြတ်မည်။</string>
     <string name="settings_enable_animations_summary">မှတ်စုစာရင်းထဲတွင်သက်ဝင်လှုပ်ရှားမှုများ အဖွင့်/အပိတ်</string>
     <string name="settings_enable_tag_marker_summary">အမျိုးအစားများအတွက်ရောင်စုံအမှတ်အသားများကိုပြ/မပြ</string>
     <string name="settings_enable_editor_links_summary">ရေးထည့်လိုက်သောကွန်ယက်လိပ်စာနှင့်အီးမေးလ်လိပ်စာများကိုနှိပ်၍ရအောင်အလိုအလျောက်လုပ်စေမည်။</string>
@@ -318,17 +297,7 @@
     <string name="settings_first_day_of_week">ရက်သတ္တပတ်၏ပထမနေ့</string>
     <string name="settings_tour_show_again">အက်ပ် ခရီးစဉ်</string>
     <string name="settings_tour_show_again_summary">အက်ပ် ခရီးစဉ် ကိုထပ်မံပြသစေမည်။</string>
-    <string name="backup_include_settings">စကားဝှက်နှင့်အပြင်အဆင်များပါထည့်သွင်းပါမည်။</string>
     <string name="settings_included">အပြင်အဆင်များထည့်သွင်းပြီး။</string>
-    <string name="settings_password_question_instructions">စကားဝှက်မေ့သွားလျှင်သုံးရန်မေးခွန်းနှင့်လျှို့ဝှက်အဖြေထည့်သွင်းပါ။</string>
-    <string name="settings_password_question">မေးခွန်း</string>
-    <string name="settings_password_answer">အဖြေ</string>
-    <string name="settings_password_answer_check">အဖြေကိုအတည်ပြုမည်။</string>
-    <string name="password_forgot">စကားဝှက်မေ့သွားပြီ။</string>
-    <string name="password_remove">စကားဝှက်ဖယ်ရှားမည်။</string>
-    <string name="settings_answer_not_matching">အဖြေလွဲမှားနေသည်။</string>
-    <string name="password_not_set">စကားဝှက်မသတ်မှတ်ရသေးပါ။</string>
-    <string name="wrong_answer">စကားဝှက်အမှား</string>
     <string name="colors_app">အက်ပ် ရောင်စဉ်</string>
     <string name="colors_widget">ဝစ်ဂျက် ရောင်စဉ်</string>
     <string name="settings_instant_search">ဆက်တိုက် ရှာဖွေရေး</string>

@@ -116,12 +116,6 @@
     <string name="no_categories_created">Поки що категорії відсутні</string>
     <string name="notes_category_removed">Категорію вилучено з нотаток</string>
     <string name="notes_categorized_as">Нотататки класифіковані як</string>
-    <string name="insert_security_password">Введіть пароль безпеки</string>
-    <string name="lock">Заблокувати</string>
-    <string name="save_note_to_lock_it">Збережіть нотатку, щоб заблокувати її</string>
-    <string name="save_note_to_unlock_it">Збережіть нотатку, щоб розблокувати її</string>
-    <string name="unlock">Розблокувати</string>
-    <string name="title_activity_password">Зміна паролю безпеки</string>
     <string name="title_activity_about">Інформація</string>
     <string name="deleted">видалено</string>
     <string name="no_items_in_list">Поки що тут порожньо!</string>
@@ -227,7 +221,6 @@
     <string name="settings_export">Резервування</string>
     <string name="settings_sync_import_export">Синхронізація і резервне копіювання</string>
     <string name="settings_import">Відновлення/видалення резервних копій</string>
-    <string name="settings_import_summary">УВАГА: Не встановлено пароль, захищені нотатки не будуть відновлені з резервної копії з міркувань безпеки</string>
     <string name="settings_change_backup_folder">Змінити папку з резервними копіями</string>
     <string name="settings_import_legacy">Відновити збережену резервну копію</string>
     <string name="settings_import_legacy_summary">Дозволяє відновити старі резервні копії, зроблені за допомогою версій Omni Notes перед версії 6</string>
@@ -256,32 +249,14 @@
     <string name="settings_enable_automatic_backup">Автоматичне резервне копіювання</string>
     <string name="settings_enable_automatic_backup_summary">Нотатки будуть зберігатися в теці з резервної копії \"_autobackup\"</string>
     <string name="settings_enable_automatic_backup_dialog">При активації цієї функції буде виконано повне резервне копіювання даних</string>
-    <string name="settings_password">Пароль</string>
-    <string name="settings_password_access">Запитувати пароль при вході</string>
-    <string name="settings_password_instructions">\"Пароль безпеки використовується, щоб захищені нотатки не можна було переглядати чи редагувати без дозволу.
-
-Щоразу, коли ви намагатиметеся змінити пароль безпеки, необхідно буде ввести попередній.
-
-Вкажіть порожній пароль, щоб видалити його.\"</string>
-    <string name="settings_password_not_matching">Пароль відсутній або не збігається</string>
-    <string name="insert_new_password">Введіть новий пароль</string>
-    <string name="confirm_new_password">Підтвердіть новий пароль</string>
-    <string name="password_successfully_changed">Пароль змінено успішно</string>
-    <string name="password_successfully_removed">Пароль вилучено: всі нотатки були розблоковані</string>
-    <string name="wrong_password">Неправильний пароль</string>
-    <string name="empty_password">Пароль пустий</string>
-    <string name="agree_unlocking_all_notes">\"Ви згодні вилучити пароль безпеки
-і відкрити всі заблоковані нотатки?\"</string>
     <string name="settings_enable_tag_marker">Маркери категорії</string>
     <string name="settings_backup_summary">Імпорт або експорт даних програми</string>
     <string name="settings_max_video_size_summary">Макс. дозволений розмір в МБ</string>
-    <string name="settings_password_summary">Змінити пароль безпеки</string>
     <string name="settings_enable_animations_summary">Увімкніть чи вимкніть анімацію в списку нотаток</string>
     <string name="settings_enable_tag_marker_summary">Показувати/приховувати кольорові маркери категорій</string>
     <string name="settings_enable_editor_links_summary">Увімкнути або вимкнути підсвічування посилань та адрес електронної пошти в редакторі</string>
     <string name="confirm_removing_backup">Видалити резервну копію?</string>
     <string name="confirm_restoring_backup">Підтвердження відновлення</string>
-    <string name="confirm_restoring_backup_warning">УВАГА: Не забудьте встановити пароль у налаштування або захищені нотатки будуть пропущені з міркувань безпеки!</string>
     <string name="data_deletion_completed">Видалення даних завершене</string>
     <string name="settings_checked_items_behavior">Контрольні списки</string>
     <string name="settings_checked_items_behavior_summary">Що виконувати, коли елемент позначений?</string>
@@ -302,17 +277,7 @@
     <string name="settings_first_day_of_week">Перший день тижня</string>
     <string name="settings_tour_show_again">Довідник</string>
     <string name="settings_tour_show_again_summary">Показати довідник програми ще раз</string>
-    <string name="backup_include_settings">Включаючи налаштування (з паролем)</string>
     <string name="settings_included">налаштування включені</string>
-    <string name="settings_password_question_instructions">Вставте запитання і секретну відповідь для відновлення забутого паролю</string>
-    <string name="settings_password_question">Запитання</string>
-    <string name="settings_password_answer">Відповідь</string>
-    <string name="settings_password_answer_check">Підтвердіть відповідь</string>
-    <string name="password_forgot">Забули пароль?</string>
-    <string name="password_remove">Видалити пароль</string>
-    <string name="settings_answer_not_matching">Відповідь відсутня чи неправильна</string>
-    <string name="password_not_set">Пароль не встановлено</string>
-    <string name="wrong_answer">Неправильна відповідь</string>
     <string name="colors_app">Кольори програми</string>
     <string name="colors_widget">Кольори віджета</string>
     <string name="settings_instant_search">Миттєвий пошук</string>

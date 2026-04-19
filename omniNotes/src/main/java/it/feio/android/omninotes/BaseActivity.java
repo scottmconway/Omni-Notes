@@ -20,7 +20,6 @@ import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_UPDATE_DASHCL
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_NAVIGATION;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,13 +36,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.pixplicity.easyprefs.library.Prefs;
 import it.feio.android.omninotes.helpers.LanguageHelper;
 import it.feio.android.omninotes.helpers.LogDelegate;
-import it.feio.android.omninotes.models.Note;
-import it.feio.android.omninotes.models.PasswordValidator;
 import it.feio.android.omninotes.utils.Navigation;
-import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.widget.ListWidgetProvider;
 import java.util.Arrays;
-import java.util.List;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
@@ -85,32 +80,6 @@ public class BaseActivity extends AppCompatActivity {
       Toast.makeText(getApplicationContext(), text, duration).show();
     }
   }
-
-  /**
-   * Method to validate security password to protect a list of notes. When "Request password on
-   * access" in switched on this check not required all the times. It uses an interface callback.
-   */
-  public void requestPassword(final Activity mActivity, List<Note> notes,
-      final PasswordValidator mPasswordValidator) {
-    if (Prefs.getBoolean("settings_password_access", false)) {
-      mPasswordValidator.onPasswordValidated(PasswordValidator.Result.SUCCEED);
-      return;
-    }
-
-    boolean askForPassword = false;
-    for (Note note : notes) {
-      if (Boolean.TRUE.equals(note.isLocked())) {
-        askForPassword = true;
-        break;
-      }
-    }
-    if (askForPassword) {
-      PasswordHelper.requestPassword(mActivity, mPasswordValidator);
-    } else {
-      mPasswordValidator.onPasswordValidated(PasswordValidator.Result.SUCCEED);
-    }
-  }
-
 
   public boolean updateNavigation(String nav) {
     if (nav.equals(navigationTmp) || (navigationTmp == null && Navigation.getNavigationText()

@@ -84,9 +84,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
   private void initThumbnail(Note note, NoteViewHolder holder) {
 
     if (expandedView && holder.attachmentThumbnail != null) {
-      // If note is locked or without attachments nothing is shown
-      if ((note.isLocked() && !Prefs.getBoolean("settings_password_access", false))
-          || note.getAttachmentsList().isEmpty()) {
+      // If without attachments nothing is shown
+      if (note.getAttachmentsList().isEmpty()) {
         holder.attachmentThumbnail.setVisibility(View.GONE);
       } else {
         holder.attachmentThumbnail.setVisibility(View.VISIBLE);
@@ -125,7 +124,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
     // ...the presence of an alarm
     holder.alarmIcon.setVisibility(note.getAlarm() != null ? View.VISIBLE : View.GONE);
     // ...the locked with password state
-    holder.lockedIcon.setVisibility(note.isLocked() ? View.VISIBLE : View.GONE);
+    holder.lockedIcon.setVisibility(View.GONE);
     // ...the attachment icon for contracted view
     if (!expandedView) {
       holder.attachmentIcon

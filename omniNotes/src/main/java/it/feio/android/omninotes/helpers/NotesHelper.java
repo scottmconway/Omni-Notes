@@ -86,7 +86,6 @@ public final class NotesHelper {
   }
 
   public static Note mergeNotes(List<Note> notes, boolean keepMergedNotes) {
-    boolean locked = false;
     ArrayList<Attachment> attachments = new ArrayList<>();
     String reminder = null;
     String reminderRecurrenceRule = null;
@@ -103,7 +102,6 @@ public final class NotesHelper {
 
     for (Note note : notes) {
       appendContent(note, content, includeTitle);
-      locked = locked || note.isLocked();
       String currentReminder = note.getAlarm();
       if (!StringUtils.isEmpty(currentReminder) && reminder == null) {
         reminder = currentReminder;
@@ -116,7 +114,6 @@ public final class NotesHelper {
     }
 
     mergedNote.setContent(content.toString());
-    mergedNote.setLocked(locked);
     mergedNote.setAlarm(reminder);
     mergedNote.setRecurrenceRule(reminderRecurrenceRule);
     mergedNote.setLatitude(latitude);

@@ -24,7 +24,6 @@ import static it.feio.android.omninotes.utils.ConstantsBase.PREF_AUTO_LOCATION;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_BACKUP_FOLDER_URI;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_COLORS_APP_DEFAULT;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_ENABLE_FILE_LOGGING;
-import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_SHOW_UNCATEGORIZED;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_SNOOZE_DEFAULT;
 import static java.util.Arrays.asList;
@@ -71,8 +70,6 @@ import it.feio.android.omninotes.helpers.PermissionsHelper;
 import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
 import it.feio.android.omninotes.intro.IntroActivity;
 import it.feio.android.omninotes.models.ONStyle;
-import it.feio.android.omninotes.models.PasswordValidator.Result;
-import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.ResourcesUtils;
 import it.feio.android.omninotes.utils.StorageHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
@@ -81,7 +78,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -161,9 +157,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     // Import notes
     Preference importData = findPreference("settings_import_data");
     if (importData != null) {
-      if (StringUtils.isEmpty(Prefs.getString(PREF_PASSWORD, ""))) {
-        importData.setSummary(getString(R.string.settings_import_summary));
-      }
       importData.setOnPreferenceClickListener(arg0 -> {
         try {
           var backupFolder = scopedStorageFolderChoosen();
@@ -288,35 +281,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             .setSummary(getString(R.string.settings_max_video_size_summary) + ": " + newValue);
         Prefs.edit().putString("settings_max_video_size", newValue.toString()).apply();
         return false;
-      });
-    }
-
-    // Set notes' protection password
-    Preference password = findPreference("settings_password");
-    if (password != null) {
-      password.setOnPreferenceClickListener(preference -> {
-        Intent passwordIntent = new Intent(getActivity(), PasswordActivity.class);
-        startActivity(passwordIntent);
-        return false;
-      });
-    }
-
-    // Use password to grant application access
-    final SwitchPreference passwordAccess = findPreference("settings_password_access");
-    if (passwordAccess != null) {
-      if (Prefs.getString(PREF_PASSWORD, null) == null) {
-        passwordAccess.setEnabled(false);
-        passwordAccess.setChecked(false);
-      } else {
-        passwordAccess.setEnabled(true);
-      }
-      passwordAccess.setOnPreferenceChangeListener((preference, newValue) -> {
-        PasswordHelper.requestPassword(getActivity(), passwordConfirmed -> {
-          if (passwordConfirmed.equals(Result.SUCCEED)) {
-            passwordAccess.setChecked((Boolean) newValue);
-          }
-        });
-        return true;
       });
     }
 
@@ -567,7 +531,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             new MaterialAlertDialogBuilder(getActivity())
                 .setTitle(R.string.confirm_restoring_backup)
-                .setMessage(backupSelected + "\n\n" + getString(R.string.confirm_restoring_backup_warning))
+                .setMessage(backupSelected)
                 .setPositiveButton(R.string.confirm, (dialog1, which1) -> {
                   // An IntentService will be launched to accomplish the import task
                   Intent service = new Intent(getActivity(),

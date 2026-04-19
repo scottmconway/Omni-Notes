@@ -49,16 +49,6 @@ public class TextHelper {
     String titleText = note.getTitle();
     String contentText = limit(note.getContent().trim(), CONTENT_SUBSTRING_LENGTH, false, true);
 
-    // Masking title and content string if note is locked
-    if (Boolean.TRUE.equals(note.isLocked()) && !Prefs.getBoolean(
-        "settings_password_access", false)) {
-      // This checks if a part of content is used as title and should be partially masked
-      if (!note.getTitle().equals(titleText) && titleText.length() > 3) {
-        titleText = limit(titleText, 4, false, false);
-      }
-      contentText = "";
-    }
-
     // Replacing checkmarks symbols with html entities
     Spanned contentSpanned;
     if (Boolean.TRUE.equals(Boolean.TRUE.equals(note.isChecklist())) && !TextUtils.isEmpty(contentText)) {

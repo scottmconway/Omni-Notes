@@ -96,8 +96,6 @@ Long-click -&gt; delete\"</string>
     <string name="delete_unused_category_confirmation">អះអាងពីការ លប់ជំពូក?</string>
     <string name="discard">បោះបង់</string>
     <string name="remove_category">លប់ជំពូក</string>
-    <string name="insert_security_password">បញ្ចូលពាក្យសំងាត់</string>
-    <string name="title_activity_password">កែពាក្យសំងាត់</string>
     <string name="title_activity_about">អំពី</string>
     <string name="checklist_on">បង្កើតជា បញ្ជី</string>
     <string name="checklist_off">បិទ បញ្ជី</string>
@@ -148,23 +146,8 @@ Send automatic report to developer?\"</string>
     <string name="settings_screen_backup">រក្សាទុក(Backup)</string>
     <string name="settings_screen_data">ទិន្នន័យ</string>
     <string name="settings_backup">រក្សាទុក(Backup)</string>
-    <string name="settings_password">ពាក្យសំងាត់</string>
-    <string name="settings_password_access">ត្រូវការ ពាក្យសំងាត់ទើបអាចប្រើបាន</string>
-    <string name="settings_password_not_matching">ពាក្យសំងាត់ខុស</string>
-    <string name="insert_new_password">បញ្ចូលពាក្យសំងាត់ថ្មី</string>
-    <string name="confirm_new_password">បញ្ចូលពាក្យសំងាត់ម្តងទៀត</string>
-    <string name="password_successfully_changed">ពាក្យសំងាត់ត្រូវបានប្តូរដោយជោគជ័យ</string>
-    <string name="wrong_password">ពាក្យសំងាត់ខុស</string>
-    <string name="settings_password_summary">កែពាក្យសំងាត់</string>
     <string name="settings_tour_show_again">ការណែនាំ</string>
     <string name="settings_tour_show_again_summary">បង្ហាញពីរបៀបប្រើម្តងទៀត</string>
-    <string name="settings_password_question_instructions">សំនួរ និងចំលើយ សំងាត់ សំរាប់ប្រើនៅពេលអ្នកភ្លេច ពាក្យសំងាត់</string>
-    <string name="settings_password_question">សំនួរ</string>
-    <string name="settings_password_answer">ចំលើយ</string>
-    <string name="settings_password_answer_check">ចំលើយម្តងទៀត</string>
-    <string name="settings_answer_not_matching">ចំលើយខុស</string>
-    <string name="password_not_set">មិនបានកំណត់ ពាក្យសំងាត់</string>
-    <string name="wrong_answer">ចំលើយខុស</string>
     <string name="settings_text_size">ទំហំអក្សរ</string>
     <!-- Stats -->
     <string name="stats_reminders">រម្លឹក</string>

@@ -165,12 +165,6 @@
         android:value=".MainActivity" />
     </activity>
 
-    <!-- Password -->
-    <activity
-      android:name="it.feio.android.omninotes.PasswordActivity"
-      android:theme="@style/OmniNotesTheme.ApiSpec.Dialog"
-      android:windowSoftInputMode="stateHidden|adjustResize" />
-
     <!-- Info -->
     <activity
       android:name="it.feio.android.omninotes.AboutActivity"

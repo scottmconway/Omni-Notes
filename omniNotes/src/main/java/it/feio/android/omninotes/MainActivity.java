@@ -32,7 +32,6 @@ import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_WIDGET_TAKE_P
 import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_GOOGLE_NOW;
 import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_KEY;
 import static it.feio.android.omninotes.utils.ConstantsBase.INTENT_NOTE;
-import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_NAVIGATION;
 
 import android.content.Intent;
@@ -61,7 +60,6 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import it.feio.android.omninotes.async.UpdateWidgetsTask;
 import it.feio.android.omninotes.async.bus.NotificationsGrantedEvent;
-import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
 import it.feio.android.omninotes.async.bus.SwitchFragmentEvent;
 import it.feio.android.omninotes.async.notes.NoteProcessorDelete;
 import it.feio.android.omninotes.databinding.ActivityMainBinding;
@@ -75,7 +73,6 @@ import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
 import it.feio.android.omninotes.utils.FileProviderHelper;
-import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
 import it.feio.android.pixlui.links.UrlCompleter;
 import java.io.FileNotFoundException;
@@ -88,7 +85,6 @@ import java.util.HashMap;
 public class MainActivity extends BaseActivity implements
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-  private boolean isPasswordAccepted = false;
   public static final String FRAGMENT_DRAWER_TAG = "fragment_drawer";
   public static final String FRAGMENT_LIST_TAG = "fragment_list";
   public static final String FRAGMENT_DETAIL_TAG = "fragment_detail";
@@ -155,11 +151,7 @@ public class MainActivity extends BaseActivity implements
       promptForStorageAccess();
       return;
     }
-    if (isPasswordAccepted) {
-      init();
-    } else {
-      checkPassword();
-    }
+    init();
   }
 
   private void promptForStorageAccess() {
@@ -185,35 +177,6 @@ public class MainActivity extends BaseActivity implements
   }
 
 
-  /**
-   * This method starts the bootstrap chain.
-   */
-  private void checkPassword() {
-    if (Prefs.getString(PREF_PASSWORD, null) != null
-        && Prefs.getBoolean("settings_password_access", false)) {
-      PasswordHelper.requestPassword(this, passwordConfirmed -> {
-        switch (passwordConfirmed) {
-          case SUCCEED:
-            init();
-            break;
-          case FAIL:
-            finish();
-            break;
-          case RESTORE:
-            PasswordHelper.resetPassword(this);
-        }
-      });
-    } else {
-      init();
-    }
-  }
-
-
-  public void onEvent(PasswordRemovedEvent passwordRemovedEvent) {
-    showMessage(R.string.password_successfully_removed, ONStyle.ALERT);
-    init();
-  }
-
   public void onEvent(NotificationsGrantedEvent notificationsGrantedEvent) {
     if (!notificationsGrantedEvent.granted) {
       showToast(getString(R.string.denied_notifications_permission), Toast.LENGTH_LONG);
@@ -221,8 +184,6 @@ public class MainActivity extends BaseActivity implements
   }
 
   private void init() {
-    isPasswordAccepted = true;
-
     getFragmentManagerInstance();
 
     NavigationDrawerFragment mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManagerInstance()
@@ -355,7 +316,6 @@ public class MainActivity extends BaseActivity implements
         getDrawerLayout().closeDrawer(GravityCompat.START);
       } else {
         if (!((ListFragment) f).closeFab()) {
-          isPasswordAccepted = false;
           super.onBackPressed();
         }
       }

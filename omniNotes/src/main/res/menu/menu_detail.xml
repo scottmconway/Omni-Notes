@@ -63,20 +63,6 @@
     android:visible="false"
     app:showAsAction="ifRoom" />
   <item
-    android:id="@+id/menu_lock"
-    android:icon="@drawable/ic_lock_black_24dp"
-    android:orderInCategory="600"
-    android:title="@string/lock"
-    android:visible="false"
-    app:showAsAction="ifRoom" />
-  <item
-    android:id="@+id/menu_unlock"
-    android:icon="@drawable/ic_lock_black_24dp"
-    android:orderInCategory="600"
-    android:title="@string/unlock"
-    android:visible="false"
-    app:showAsAction="ifRoom" />
-  <item
     android:id="@+id/menu_add_shortcut"
     android:orderInCategory="700"
     android:title="@string/add_shortcut"

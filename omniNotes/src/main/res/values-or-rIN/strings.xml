@@ -56,15 +56,10 @@
     <string name="settings_screen_notifications">ଵିଜ୍ଞପ୍ତି</string>
     <string name="settings_enable_vibration">କମ୍ପନ</string>
     <string name="settings_screen_navigation">ଦିଗଚଳନ</string>
-    <string name="settings_password">ପାସ୍‌ୱର୍ଡ଼</string>
-    <string name="wrong_password">ଭୁଲ ପାସ୍‌ୱର୍ଡ଼</string>
     <string name="settings_category_about">ଵିଷୟରେ</string>
     <string name="settings_choose_language">ଭାଷା</string>
     <string name="minutes">ମିନିଟ୍</string>
     <string name="settings_first_day_of_week">ସପ୍ତାହର ପ୍ରଥମ ଵାର</string>
-    <string name="settings_password_question">ପ୍ରଶ୍ନ</string>
-    <string name="settings_password_answer">ଉତ୍ତର</string>
-    <string name="wrong_answer">ଭୁଲ ଉତ୍ତର</string>
     <string name="settings_instant_search">ତତକ୍ଷଣାତ୍ ସନ୍ଧାନ</string>
     <string name="settings_text_size">ପାଠ୍ୟ ଆକାର</string>
     <string name="settings_screen_behaviors">ଆଚରଣ</string>

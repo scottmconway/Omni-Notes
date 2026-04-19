@@ -218,7 +218,7 @@ public final class FrontMatterUtils {
       String title, long creation, long lastModification,
       String alarm, boolean reminderFired, String recurrenceRule,
       String latitude, String longitude, String address,
-      Long categoryId, boolean locked, boolean checklist) {
+      Long categoryId, boolean checklist) {
 
     LinkedHashMap<String, String> fields = new LinkedHashMap<>();
     fields.put("title", safe(title));
@@ -231,7 +231,6 @@ public final class FrontMatterUtils {
     fields.put("longitude", safe(longitude));
     fields.put("address", safe(address));
     fields.put("category_id", categoryId != null ? String.valueOf(categoryId) : "");
-    fields.put("locked", String.valueOf(locked));
     fields.put("checklist", String.valueOf(checklist));
     return fields;
   }

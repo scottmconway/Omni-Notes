@@ -57,7 +57,6 @@ import static it.feio.android.omninotes.utils.ConstantsBase.PREF_AUTO_LOCATION;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_COLORS_APP_DEFAULT;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_KEEP_CHECKED;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_KEEP_CHECKMARKS;
-import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PRETTIFIED_DATES;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_WIDGET_PREFIX;
 import static it.feio.android.omninotes.utils.ConstantsBase.SWIPE_MARGIN;
@@ -149,7 +148,6 @@ import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
-import it.feio.android.omninotes.models.PasswordValidator.Result;
 import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.models.adapters.AttachmentAdapter;
 import it.feio.android.omninotes.models.adapters.CategoryRecyclerViewAdapter;
@@ -166,7 +164,6 @@ import it.feio.android.omninotes.utils.FileHelper;
 import it.feio.android.omninotes.utils.FileProviderHelper;
 import it.feio.android.omninotes.utils.IntentChecker;
 import it.feio.android.omninotes.utils.KeyboardUtils;
-import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.ReminderHelper;
 import it.feio.android.omninotes.utils.Security;
 import it.feio.android.omninotes.utils.ShortcutHelper;
@@ -195,7 +192,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
   private static final int TAKE_PHOTO = 1;
   private static final int TAKE_VIDEO = 2;
-  private static final int SET_PASSWORD = 3;
   private static final int SKETCH = 4;
   private static final int CATEGORY = 5;
   private static final int DETAIL = 6;
@@ -409,43 +405,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       noteTmp = new Note(note);
     }
 
-    if (Boolean.TRUE.equals(noteTmp.isLocked()) && !noteTmp.isPasswordChecked()) {
-      checkNoteLock(noteTmp);
-      return;
-    }
-
     initViews();
-  }
-
-  /**
-   * Checks note lock and password before showing note content
-   */
-  private void checkNoteLock(Note note) {
-    // If note is locked security password will be requested
-    if (Boolean.TRUE.equals(note.isLocked()
-        && Prefs.getString(PREF_PASSWORD, null) != null)
-        && !Prefs.getBoolean("settings_password_access", false)) {
-      PasswordHelper.requestPassword(mainActivity, passwordConfirmed -> {
-        switch (passwordConfirmed) {
-          case SUCCEED:
-            noteTmp.setPasswordChecked(true);
-            init();
-            break;
-          case FAIL:
-            goBack = true;
-            goHome();
-            break;
-          case RESTORE:
-            goBack = true;
-            goHome();
-            PasswordHelper.resetPassword(mainActivity);
-            break;
-        }
-      });
-    } else {
-      noteTmp.setPasswordChecked(true);
-      init();
-    }
   }
 
   private void handleIntents() {
@@ -1005,8 +965,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
     menu.findItem(R.id.menu_checklist_off).setVisible(noteTmp.isChecklist());
     menu.findItem(R.id.menu_checklist_moveToBottom)
         .setVisible(noteTmp.isChecklist() && mChecklistManager.getCheckedCount() > 0);
-    menu.findItem(R.id.menu_lock).setVisible(!noteTmp.isLocked());
-    menu.findItem(R.id.menu_unlock).setVisible(noteTmp.isLocked());
     // If note is trashed only this options will be available from menu
     if (noteTmp.isTrashed()) {
       menu.findItem(R.id.menu_untrash).setVisible(true);
@@ -1077,8 +1035,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       toggleChecklist();
     } else if (itemId == R.id.menu_checklist_moveToBottom) {
       moveCheckedItemsToBottom();
-    } else if (itemId == R.id.menu_lock || itemId == R.id.menu_unlock) {
-      lockNote();
     } else if (itemId == R.id.menu_pin_note) {
       pinNote();
     } else if (itemId == R.id.menu_add_shortcut) {
@@ -1404,10 +1360,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
         case FILES:
           onActivityResultManageReceivedFiles(intent);
           break;
-        case SET_PASSWORD:
-          noteTmp.setPasswordChecked(true);
-          lockUnlock();
-          break;
         case SKETCH:
           attachment = new Attachment(attachmentUri, MIME_TYPE_SKETCH);
           addAttachment(attachment);
@@ -1571,7 +1523,7 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       note.setLatitude(noteTmp.getLatitude());
       note.setLongitude(noteTmp.getLongitude());
     }
-    return !noteTmp.isChanged(note) || (noteTmp.isLocked() && !noteTmp.isPasswordChecked());
+    return !noteTmp.isChanged(note);
   }
 
   /**
@@ -1582,7 +1534,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
     note.setCategory(noteTmp.getCategory());
     note.setArchived(noteTmp.isArchived());
     note.setTrashed(noteTmp.isTrashed());
-    note.setLocked(noteTmp.isLocked());
     return noteTmp.isChanged(note);
   }
 
@@ -1634,45 +1585,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
     sharedNote.setTitle(getNoteTitle());
     sharedNote.setContent(getNoteContent());
     mainActivity.shareNote(sharedNote);
-  }
-
-  /**
-   * Notes locking with security password to avoid viewing, editing or deleting from unauthorized
-   */
-  private void lockNote() {
-    LogDelegate.d("Locking or unlocking note " + note.get_id());
-
-    // If security password is not set yes will be set right now
-    if (Prefs.getString(PREF_PASSWORD, null) == null) {
-      Intent passwordIntent = new Intent(mainActivity, PasswordActivity.class);
-      startActivityForResult(passwordIntent, SET_PASSWORD);
-      return;
-    }
-
-    // If password has already been inserted will not be asked again
-    if (noteTmp.isPasswordChecked() || Prefs.getBoolean("settings_password_access", false)) {
-      lockUnlock();
-      return;
-    }
-
-    // Password will be requested here
-    PasswordHelper.requestPassword(mainActivity, passwordConfirmed -> {
-      if (passwordConfirmed == Result.SUCCEED) {
-        lockUnlock();
-      }
-    });
-  }
-
-  private void lockUnlock() {
-    // Empty password has been set
-    if (Prefs.getString(PREF_PASSWORD, null) == null) {
-      mainActivity.showMessage(R.string.password_not_set, ONStyle.WARN);
-      return;
-    }
-    mainActivity.showMessage(R.string.save_note_to_lock_it, ONStyle.INFO);
-    mainActivity.supportInvalidateOptionsMenu();
-    noteTmp.setLocked(!noteTmp.isLocked());
-    noteTmp.setPasswordChecked(true);
   }
 
   /**

@@ -91,7 +91,6 @@ import it.feio.android.omninotes.async.bus.NavigationUpdatedNavDrawerClosedEvent
 import it.feio.android.omninotes.async.bus.NotesLoadedEvent;
 import it.feio.android.omninotes.async.bus.NotesMergeEvent;
 import it.feio.android.omninotes.async.bus.NotesUpdatedEvent;
-import it.feio.android.omninotes.async.bus.PasswordRemovedEvent;
 import it.feio.android.omninotes.async.notes.NoteLoaderTask;
 import it.feio.android.omninotes.async.notes.NoteProcessorArchive;
 import it.feio.android.omninotes.async.notes.NoteProcessorCategorize;
@@ -104,7 +103,6 @@ import it.feio.android.omninotes.helpers.NotesHelper;
 import it.feio.android.omninotes.models.Category;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.models.ONStyle;
-import it.feio.android.omninotes.models.PasswordValidator;
 import it.feio.android.omninotes.models.Tag;
 import it.feio.android.omninotes.models.UndoBarController;
 import it.feio.android.omninotes.models.adapters.CategoryRecyclerViewAdapter;
@@ -116,7 +114,6 @@ import it.feio.android.omninotes.utils.AnimationsHelper;
 import it.feio.android.omninotes.utils.IntentChecker;
 import it.feio.android.omninotes.utils.KeyboardUtils;
 import it.feio.android.omninotes.utils.Navigation;
-import it.feio.android.omninotes.utils.PasswordHelper;
 import it.feio.android.omninotes.utils.ReminderHelper;
 import it.feio.android.omninotes.utils.TagsHelper;
 import it.feio.android.omninotes.utils.TextHelper;
@@ -433,17 +430,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
 
     @Override
     public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
-      Integer[] protectedActions = {R.id.menu_select_all, R.id.menu_merge};
-      if (!Arrays.asList(protectedActions).contains(item.getItemId())) {
-        mainActivity.requestPassword(mainActivity, getSelectedNotes(),
-            passwordConfirmed -> {
-              if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-                performAction(item, mode);
-              }
-            });
-      } else {
-        performAction(item, mode);
-      }
+      performAction(item, mode);
       return true;
     }
   }
@@ -771,16 +758,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
 
   @Override
   public boolean onOptionsItemSelected(final MenuItem item) {
-    Integer[] protectedActions = {R.id.menu_empty_trash};
-    if (Arrays.asList(protectedActions).contains(item.getItemId())) {
-      mainActivity.requestPassword(mainActivity, getSelectedNotes(), passwordConfirmed -> {
-        if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-          performAction(item, null);
-        }
-      });
-    } else {
-      performAction(item, null);
-    }
+    performAction(item, null);
     return super.onOptionsItemSelected(item);
   }
 
@@ -881,18 +859,8 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
 
 
   void editNote(final Note note, final View view) {
-    if (note.isLocked() && !Prefs.getBoolean("settings_password_access", false)) {
-      PasswordHelper.requestPassword(mainActivity, passwordConfirmed -> {
-        if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-          note.setPasswordChecked(true);
-          AnimationsHelper.zoomListItem(mainActivity, view, getZoomListItemView(view, note),
-              binding.listRoot, buildAnimatorListenerAdapter(note));
-        }
-      });
-    } else {
-      AnimationsHelper.zoomListItem(mainActivity, view, getZoomListItemView(view, note),
-          binding.listRoot, buildAnimatorListenerAdapter(note));
-    }
+    AnimationsHelper.zoomListItem(mainActivity, view, getZoomListItemView(view, note),
+        binding.listRoot, buildAnimatorListenerAdapter(note));
   }
 
 
@@ -983,21 +951,10 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         .content(R.string.empty_trash_confirmation)
         .positiveText(R.string.ok)
         .onPositive((dialog, which) -> {
-          boolean mustDeleteLockedNotes = false;
           for (int i = 0; i < listAdapter.getItemCount(); i++) {
             selectedNotes.add(listAdapter.getItem(i));
-            mustDeleteLockedNotes = mustDeleteLockedNotes || listAdapter.getItem(i).isLocked();
           }
-          if (mustDeleteLockedNotes) {
-            mainActivity.requestPassword(mainActivity, getSelectedNotes(),
-                passwordConfirmed -> {
-                  if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-                    deleteNotesExecute();
-                  }
-                });
-          } else {
-            deleteNotesExecute();
-          }
+          deleteNotesExecute();
         }).build().show();
   }
 
@@ -1199,17 +1156,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
   private void swipeNote(int swipedPosition) {
     try {
       Note note = listAdapter.getItem(swipedPosition);
-      if (note.isLocked()) {
-        PasswordHelper.requestPassword(mainActivity, passwordConfirmed -> {
-          if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-            onNoteSwipedPerformAction(note);
-          } else {
-            onUndo(null);
-          }
-        });
-      } else {
-        onNoteSwipedPerformAction(note);
-      }
+      onNoteSwipedPerformAction(note);
     } catch (IndexOutOfBoundsException e) {
       LogDelegate.d("Please stop swiping in the zone beneath the last card");
     }
@@ -1236,10 +1183,6 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         archiveNotes(true);
       }
     }
-  }
-
-  public void onEvent(PasswordRemovedEvent passwordRemovedEvent) {
-    initNotesList(mainActivity.getIntent());
   }
 
   private void animateListView() {
@@ -1349,12 +1292,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         .content(R.string.delete_note_confirmation)
         .positiveText(R.string.ok)
         .onPositive(
-            (dialog, which) -> mainActivity.requestPassword(mainActivity, getSelectedNotes(),
-                passwordConfirmed -> {
-                  if (passwordConfirmed.equals(PasswordValidator.Result.SUCCEED)) {
-                    deleteNotesExecute();
-                  }
-                }))
+            (dialog, which) -> deleteNotesExecute())
         .build()
         .show();
   }

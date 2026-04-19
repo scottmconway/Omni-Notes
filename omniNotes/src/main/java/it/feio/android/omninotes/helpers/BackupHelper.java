@@ -23,7 +23,6 @@ import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 import static it.feio.android.omninotes.OmniNotes.getAppContext;
 import static it.feio.android.omninotes.utils.ConstantsBase.DATABASE_NAME;
 import static it.feio.android.omninotes.utils.ConstantsBase.PREF_BACKUP_FOLDER_URI;
-import static it.feio.android.omninotes.utils.ConstantsBase.PREF_PASSWORD;
 import static java.util.stream.Collectors.toList;
 
 import android.content.Context;
@@ -42,7 +41,6 @@ import it.feio.android.omninotes.helpers.notifications.NotificationsHelper;
 import it.feio.android.omninotes.models.Attachment;
 import it.feio.android.omninotes.models.Note;
 import it.feio.android.omninotes.utils.Constants;
-import it.feio.android.omninotes.utils.Security;
 import it.feio.android.omninotes.utils.StorageHelper;
 import it.feio.android.omninotes.utils.TextHelper;
 import java.io.File;
@@ -56,7 +54,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 
 public final class BackupHelper {
@@ -69,9 +66,6 @@ public final class BackupHelper {
   }
 
   public static void exportNote(DocumentFileCompat backupDir, Note note) {
-    if (Boolean.TRUE.equals(note.isLocked())) {
-      note.setContent(Security.encrypt(note.getContent(), Prefs.getString(PREF_PASSWORD, "")));
-    }
     var noteFile = getBackupNoteFile(backupDir, note);
     try {
       DocumentFileHelper.write(getAppContext(), noteFile, note.toJSON());
@@ -159,13 +153,6 @@ public final class BackupHelper {
   @Nullable
   public static Note importNote(DocumentFileCompat file) {
     Note note = getImportNote(file);
-
-    if (Boolean.TRUE.equals(note.isLocked())) {
-      if (StringUtils.isEmpty(Prefs.getString(PREF_PASSWORD, ""))) {
-        return null;
-      }
-      note.setContent(Security.decrypt(note.getContent(), Prefs.getString(PREF_PASSWORD, "")));
-    }
 
     if (note.getCategory() != null) {
       FlatFileHelper.getInstance().updateCategory(note.getCategory());

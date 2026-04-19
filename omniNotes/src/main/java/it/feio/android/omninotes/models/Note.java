@@ -42,10 +42,6 @@ public class Note extends BaseNote implements Parcelable {
       return new Note[size];
     }
   };
-  // Not saved in DB
-  private boolean passwordChecked = false;
-
-
   public Note() {
     super();
   }
@@ -65,7 +61,6 @@ public class Note extends BaseNote implements Parcelable {
 
   public Note(Note note) {
     super(note);
-    setPasswordChecked(note.isPasswordChecked());
   }
 
 
@@ -124,14 +119,6 @@ public class Note extends BaseNote implements Parcelable {
 
   public void setAttachmentsListOld(ArrayList<Attachment> attachmentsListOld) {
     super.setAttachmentsListOld(attachmentsListOld);
-  }
-
-  public boolean isPasswordChecked() {
-    return passwordChecked;
-  }
-
-  public void setPasswordChecked(boolean passwordChecked) {
-    this.passwordChecked = passwordChecked;
   }
 
   @Override

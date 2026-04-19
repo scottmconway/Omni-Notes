@@ -41,9 +41,6 @@
     <string name="category">ප්‍රවර්ගය</string>
     <string name="title_activity_category">ප්‍රවර්ගය සංස්කරණය</string>
     <string name="remove_category">ප්‍රවර්ගය ඉවත් කරන්න</string>
-    <string name="insert_security_password">මුරපදය ඇතුළු කරන්න</string>
-    <string name="lock">අගුළුලන්න</string>
-    <string name="unlock">අගුළුහරින්න</string>
     <string name="title_activity_about">තොරතුරු</string>
     <string name="add_shortcut">කෙටිමඟක් එකතු කරන්න</string>
     <string name="notes">සටහන්</string>
@@ -73,14 +70,10 @@
     <string name="settings_max_video_size">දෘශ්‍යක ඇමුණුම්</string>
     <string name="settings_screen_data">දත්ත</string>
     <string name="settings_backup">උපස්ථය</string>
-    <string name="settings_password">මුරපදය</string>
     <string name="settings_category_about">පිළිබඳව</string>
     <string name="donate">පරිත්‍යාග</string>
     <string name="settings_choose_language">භාෂාව</string>
     <string name="minutes">විනාඩි</string>
-    <string name="settings_password_question">ප්‍රශ්නය</string>
-    <string name="settings_password_answer">උත්තරය</string>
-    <string name="password_remove">මුරපදය ඉවත් කරන්න</string>
     <!-- Stats -->
     <string name="stats_categories">ප්‍රවර්ග</string>
     <string name="stats_files">ගොනු</string>
