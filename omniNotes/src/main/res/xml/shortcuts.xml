@@ -26,7 +26,7 @@
     <intent
       android:action="action_shortcut_widget"
       android:targetClass="it.feio.android.omninotes.MainActivity"
-      android:targetPackage="it.feio.android.omninotes" />
+      android:targetPackage="org.scottmconway.omninotes" />
   </shortcut>
   <shortcut
     android:enabled="true"
@@ -36,6 +36,6 @@
     <intent
       android:action="action_widget_take_photo"
       android:targetClass="it.feio.android.omninotes.MainActivity"
-      android:targetPackage="it.feio.android.omninotes" />
+      android:targetPackage="org.scottmconway.omninotes" />
   </shortcut>
 </shortcuts>

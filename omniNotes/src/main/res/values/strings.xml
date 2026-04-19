@@ -18,6 +18,8 @@
   -->
 <resources>
 
+  <string name="app_name">Omni Notes</string>
+  <string name="app_package">org.scottmconway.omninotes</string>
   <string name="logo">Logo</string>
   <string name="version_postfix"></string>
   <string name="copyleft">Copyleft Feio 2015-2022</string>
