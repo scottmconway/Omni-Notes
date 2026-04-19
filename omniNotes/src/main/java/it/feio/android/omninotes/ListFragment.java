@@ -21,7 +21,6 @@ import static android.text.Html.fromHtml;
 import static android.text.TextUtils.isEmpty;
 import static androidx.core.view.ViewCompat.animate;
 import static it.feio.android.omninotes.helpers.BuildHelper.isDebugBuild;
-import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_FAB_TAKE_PHOTO;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_MERGE;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_POSTPONE;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_SEARCH_UNCOMPLETE_CHECKLISTS;
@@ -265,12 +264,7 @@ public class ListFragment extends BaseFragment implements OnViewTouchedListener,
         Prefs.getBoolean(PREF_FAB_EXPANSION_BEHAVIOR, false));
     fab.setOnFabItemClickedListener(id -> {
       View v = mainActivity.findViewById(id);
-      if (id == R.id.fab_camera) {
-        Intent i = mainActivity.getIntent();
-        i.setAction(ACTION_FAB_TAKE_PHOTO);
-        mainActivity.setIntent(i);
-        editNote(new Note(), v);
-      } else if (id == R.id.fab_checklist) {
+      if (id == R.id.fab_checklist) {
         Note note = new Note();
         note.setChecklist(true);
         editNote(note, v);

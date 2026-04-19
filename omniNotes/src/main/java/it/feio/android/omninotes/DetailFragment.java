@@ -28,7 +28,6 @@ import static it.feio.android.omninotes.MainActivity.FRAGMENT_DETAIL_TAG;
 import static it.feio.android.omninotes.MainActivity.FRAGMENT_SKETCH_TAG;
 import static it.feio.android.omninotes.OmniNotes.getAppContext;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_DISMISS;
-import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_FAB_TAKE_PHOTO;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_MERGE;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_NOTIFICATION_CLICK;
 import static it.feio.android.omninotes.utils.ConstantsBase.ACTION_PINNED;
@@ -502,10 +501,6 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
       if (IntentChecker.checkAction(i, ACTION_WIDGET_TAKE_PHOTO)) {
         takePhoto();
       }
-    }
-
-    if (IntentChecker.checkAction(i, ACTION_FAB_TAKE_PHOTO)) {
-      takePhoto();
     }
 
     // Handles third party apps requests of sharing

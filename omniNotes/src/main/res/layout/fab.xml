@@ -33,16 +33,6 @@
   fab:fab_labelStyle="@style/fab_labels_style">
 
   <com.getbase.floatingactionbutton.FloatingActionButton
-    android:id="@+id/fab_camera"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    fab:fab_icon="@drawable/camera_white"
-    fab:fab_colorNormal="@color/action_color"
-    fab:fab_colorPressed="@color/action_color_pressed"
-    fab:fab_size="mini"
-    fab:fab_title="@string/photo" />
-
-  <com.getbase.floatingactionbutton.FloatingActionButton
     android:id="@+id/fab_checklist"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
