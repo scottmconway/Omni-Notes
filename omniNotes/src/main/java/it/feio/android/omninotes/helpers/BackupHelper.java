@@ -69,6 +69,7 @@ public final class BackupHelper {
    */
   public static void importBackup(File archiveFile) throws IOException {
     File notesRoot = new File(FlatFileHelper.getNotesDir());
+    String canonicalRoot = notesRoot.getCanonicalPath();
     deleteDirectoryContents(notesRoot);
 
     try (FileInputStream fis = new FileInputStream(archiveFile);
@@ -77,7 +78,16 @@ public final class BackupHelper {
          TarArchiveInputStream tar = new TarArchiveInputStream(gzis)) {
       TarArchiveEntry entry;
       while ((entry = tar.getNextEntry()) != null) {
+        // Guard against path traversal
         File dest = new File(notesRoot, entry.getName());
+        if (!dest.getCanonicalPath().startsWith(canonicalRoot + File.separator)
+            && !dest.getCanonicalPath().equals(canonicalRoot)) {
+          throw new IOException("Tar entry outside target dir: " + entry.getName());
+        }
+        // Skip symlinks
+        if (entry.isSymbolicLink() || entry.isLink()) {
+          continue;
+        }
         if (entry.isDirectory()) {
           dest.mkdirs();
         } else {

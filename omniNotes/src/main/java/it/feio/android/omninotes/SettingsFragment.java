@@ -74,6 +74,7 @@ import it.feio.android.omninotes.utils.StorageHelper;
 import it.feio.android.omninotes.utils.SystemHelper;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
@@ -83,6 +84,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
   private static final int RINGTONE_REQUEST_CODE = 100;
   private static final int CUSTOM_STORAGE_DIR_REQUEST = 300;
+  private static final int BACKUP_FOLDER_REQUEST = 310;
   public static final String XML_NAME = "xmlName";
 
 
@@ -496,22 +498,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
   }
 
   private void promptForBackupFolder() {
-    View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_backup_layout, null);
-    final EditText pathEditText = v.findViewById(R.id.export_file_name);
-    String currentPath = BackupHelper.getBackupFolderPath();
-    pathEditText.setHint(currentPath != null ? currentPath : "/sdcard/OmniNotesBackup");
-
-    new MaterialAlertDialogBuilder(getContext())
-        .setTitle(R.string.settings_change_backup_folder)
-        .setView(v)
-        .setPositiveButton(R.string.confirm, (dialog, which) -> {
-          String path = TextUtils.isEmpty(pathEditText.getText().toString()) ?
-              pathEditText.getHint().toString() : pathEditText.getText().toString();
-          new File(path).mkdirs();
-          Prefs.edit().putString(PREF_BACKUP_FOLDER_URI, path).apply();
-          Preference export = findPreference("settings_export_data");
-          if (export != null) export.setSummary(path);
-        }).show();
+    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+    startActivityForResult(intent, BACKUP_FOLDER_REQUEST);
   }
 
   private void promptForCustomStorageDir(Preference storageLocation) {
@@ -547,10 +535,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
               .setTitle(R.string.confirm_restoring_backup)
               .setMessage(backupSelected)
               .setPositiveButton(R.string.confirm, (dialog1, which1) -> {
-                Intent service = new Intent(getActivity(), DataBackupIntentService.class);
-                service.setAction(DataBackupIntentService.ACTION_DATA_IMPORT);
-                service.putExtra(DataBackupIntentService.INTENT_BACKUP_NAME, backupSelected);
-                getActivity().startService(service);
+                String finalBackupFolder = Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
+                Toast.makeText(getContext(), R.string.working, Toast.LENGTH_SHORT).show();
+                new Thread(() -> {
+                  File archiveFile = new File(finalBackupFolder, backupSelected);
+                  try {
+                    BackupHelper.importBackup(archiveFile);
+                    FlatFileHelper.getInstance(true);
+                    getActivity().runOnUiThread(() -> {
+                      Toast.makeText(getContext(), R.string.data_import_completed, Toast.LENGTH_LONG).show();
+                      SystemHelper.restartApp();
+                    });
+                  } catch (Exception e) {
+                    LogDelegate.e("Backup import failed", e);
+                    getActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), R.string.data_import_failed, Toast.LENGTH_LONG).show());
+                  }
+                }).start();
               }).show();
         })
         .setNegativeButton(R.string.delete, (dialog, which) -> {
@@ -576,10 +577,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
 
   private void exportNotes() {
+    String backupFolder = BackupHelper.getBackupFolderPath();
+    if (backupFolder == null || backupFolder.isEmpty()) {
+      // Set default backup folder
+      backupFolder = new File(
+          android.os.Environment.getExternalStorageDirectory(), "OmniNotesBackup"
+      ).getAbsolutePath();
+      new File(backupFolder).mkdirs();
+      Prefs.edit().putString(PREF_BACKUP_FOLDER_URI, backupFolder).commit();
+      Preference export = findPreference("settings_export_data");
+      if (export != null) export.setSummary(backupFolder);
+    }
+
     View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_backup_layout, null);
 
-    String[] backupsArray = StorageHelper.getOrCreateExternalStoragePublicDir().list();
-    final List<String> backups = ArrayUtils.isEmpty(backupsArray) ? emptyList() : asList(backupsArray);
+    File[] existingBackups = BackupHelper.listBackups();
+    final List<String> backups = new ArrayList<>();
+    for (File f : existingBackups) backups.add(f.getName());
 
     // Sets default export file name
     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_EXPORT);
@@ -590,20 +604,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     fileNameEditText.addTextChangedListener(new TextWatcher() {
       @Override
       public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-        // Nothing to do
       }
-
 
       @Override
       public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-        // Nothing to do
       }
-
 
       @Override
       public void afterTextChanged(Editable arg0) {
-
-        if (backups.contains(arg0.toString())) {
+        if (backups.contains(arg0.toString() + ".tar.gz")) {
           backupExistingTextView.setText(R.string.backup_existing);
         } else {
           backupExistingTextView.setText("");
@@ -617,7 +626,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         .setPositiveButton(R.string.confirm, (dialog, which) -> {
           String backupName = TextUtils.isEmpty(fileNameEditText.getText().toString()) ?
               fileNameEditText.getHint().toString() : fileNameEditText.getText().toString();
-          BackupHelper.startBackupService(backupName);
+          Toast.makeText(getContext(), R.string.working, Toast.LENGTH_SHORT).show();
+          String finalBackupFolder = Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
+          new Thread(() -> {
+            File destFile = new File(finalBackupFolder, backupName + ".tar.gz");
+            destFile.getParentFile().mkdirs();
+            try {
+              BackupHelper.exportBackup(destFile);
+              getActivity().runOnUiThread(() ->
+                  Toast.makeText(getContext(), R.string.data_export_completed, Toast.LENGTH_LONG).show());
+            } catch (Exception e) {
+              LogDelegate.e("Backup export failed", e);
+              getActivity().runOnUiThread(() ->
+                  Toast.makeText(getContext(), R.string.data_export_failed, Toast.LENGTH_LONG).show());
+            }
+          }).start();
         }).show();
   }
 
@@ -640,6 +663,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
           Preference storageLocation = findPreference("settings_notes_storage_location");
           if (storageLocation != null) storageLocation.setSummary(path);
           SystemHelper.restartApp();
+        }
+      } else if (requestCode == BACKUP_FOLDER_REQUEST && intent.getData() != null) {
+        Uri treeUri = intent.getData();
+        getContext().getContentResolver().takePersistableUriPermission(treeUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        String path = resolveTreeUriToPath(treeUri);
+        if (path != null) {
+          new File(path).mkdirs();
+          Prefs.edit().putString(PREF_BACKUP_FOLDER_URI, path).commit();
+          Preference export = findPreference("settings_export_data");
+          if (export != null) export.setSummary(path);
+          Toast.makeText(getContext(), "Backup folder set to: " + path, Toast.LENGTH_SHORT).show();
         }
       } else {
         LogDelegate.e("Wrong element choosen: " + requestCode);

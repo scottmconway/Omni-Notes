@@ -69,6 +69,7 @@ public class DataBackupIntentService extends IntentService {
   private void exportData(Intent intent) {
     String backupName = intent.getStringExtra(INTENT_BACKUP_NAME);
     String backupFolder = Prefs.getString(PREF_BACKUP_FOLDER_URI, null);
+    LogDelegate.d("Export starting: name=" + backupName + " folder=" + backupFolder);
     if (backupFolder == null) {
       mNotificationsHelper.finish(getString(R.string.data_export_failed), "No backup folder set");
       return;
@@ -78,9 +79,10 @@ public class DataBackupIntentService extends IntentService {
     destFile.getParentFile().mkdirs();
     try {
       BackupHelper.exportBackup(destFile);
+      LogDelegate.d("Export completed: " + destFile.getAbsolutePath() + " size=" + destFile.length());
       mNotificationsHelper.finish(getString(R.string.data_export_completed),
           destFile.getAbsolutePath());
-    } catch (IOException e) {
+    } catch (Exception e) {
       LogDelegate.e("Backup export failed", e);
       mNotificationsHelper.finish(getString(R.string.data_export_failed), e.getMessage());
     }

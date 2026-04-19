@@ -81,11 +81,6 @@
     app:iconSpaceReserved="false">
 
     <Preference
-      android:key="settings_changelog"
-      android:title="@string/settings_changelog"
-      app:iconSpaceReserved="false" />
-
-    <Preference
       android:title="@string/settings_statistics"
       app:iconSpaceReserved="false">
       <intent
