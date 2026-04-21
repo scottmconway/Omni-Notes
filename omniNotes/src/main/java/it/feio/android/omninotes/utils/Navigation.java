@@ -80,7 +80,12 @@ public class Navigation {
    * @return ID of category or null if current navigation is not a category
    */
   public static Long getCategory() {
-    return CATEGORY == getNavigation() ? Long.valueOf(Prefs.getString(PREF_NAVIGATION, "")) : null;
+    if (CATEGORY != getNavigation()) return null;
+    try {
+      return Long.valueOf(Prefs.getString(PREF_NAVIGATION, ""));
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
 

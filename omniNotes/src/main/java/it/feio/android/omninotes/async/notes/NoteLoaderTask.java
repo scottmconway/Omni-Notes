@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import it.feio.android.omninotes.async.bus.NotesLoadedEvent;
 import it.feio.android.omninotes.db.FlatFileHelper;
+import it.feio.android.omninotes.helpers.LogDelegate;
 import it.feio.android.omninotes.exceptions.NotesLoadingException;
 import it.feio.android.omninotes.models.Note;
 import java.lang.reflect.InvocationTargetException;
@@ -59,24 +60,26 @@ public class NoteLoaderTask extends AsyncTask<Object, Void, List<Note>> {
     String methodName = params[0].toString();
     FlatFileHelper db = FlatFileHelper.getInstance();
 
-    if (params.length < 2 || params[1] == null) {
-      try {
-        Method method = db.getClass().getDeclaredMethod(methodName);
+    try {
+      if (params.length < 2 || params[1] == null) {
+        Method method = db.getClass().getMethod(methodName);
         return (List<Note>) method.invoke(db);
-      } catch (NoSuchMethodException e) {
-        return new ArrayList<>();
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new NotesLoadingException(ERROR_RETRIEVING_NOTES, e);
-      }
-    } else {
-      Object methodArgs = params[1];
-      Class[] paramClass = new Class[]{methodArgs.getClass()};
-      try {
-        Method method = db.getClass().getDeclaredMethod(methodName, paramClass);
+      } else {
+        Object methodArgs = params[1];
+        Class[] paramClass = new Class[]{methodArgs.getClass()};
+        Method method = db.getClass().getMethod(methodName, paramClass);
         return (List<Note>) method.invoke(db, paramClass[0].cast(methodArgs));
-      } catch (Exception e) {
-        throw new NotesLoadingException(ERROR_RETRIEVING_NOTES, e);
       }
+    } catch (NoSuchMethodException e) {
+      LogDelegate.e(ERROR_RETRIEVING_NOTES + ": method not found: " + methodName);
+      return new ArrayList<>();
+    } catch (InvocationTargetException e) {
+      Throwable cause = e.getCause() != null ? e.getCause() : e;
+      LogDelegate.e(ERROR_RETRIEVING_NOTES + ": " + methodName + " - " + cause.getMessage(), cause);
+      return new ArrayList<>();
+    } catch (Exception e) {
+      LogDelegate.e(ERROR_RETRIEVING_NOTES + ": " + methodName, e);
+      return new ArrayList<>();
     }
   }
 

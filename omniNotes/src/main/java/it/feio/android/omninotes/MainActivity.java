@@ -217,8 +217,17 @@ public class MainActivity extends BaseActivity implements
     }
     super.onNewIntent(intent);
     setIntent(intent);
+
+    // Handle search directly since ListFragment.onResume may not fire
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      Fragment f = getSupportFragmentManager().findFragmentByTag(FRAGMENT_LIST_TAG);
+      if (f instanceof ListFragment) {
+        ((ListFragment) f).initNotesList(intent);
+      }
+      return;
+    }
+
     handleIntents();
-    LogDelegate.d("onNewIntent");
   }
 
 
