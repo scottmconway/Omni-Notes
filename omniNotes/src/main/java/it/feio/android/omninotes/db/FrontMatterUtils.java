@@ -161,9 +161,13 @@ public final class FrontMatterUtils {
 
     String frontMatterBlock = content.substring(firstDelimEnd + 1, secondDelimStart);
     int bodyStart = content.indexOf('\n', secondDelimStart + 1);
-    body = (bodyStart >= 0 && bodyStart + 1 < content.length())
-        ? content.substring(bodyStart + 1)
-        : "";
+    if (bodyStart >= 0 && bodyStart + 1 < content.length()) {
+      body = content.substring(bodyStart + 1);
+    }
+    // Strip the trailing newline that serialize() adds for file formatting
+    if (body.endsWith("\n")) {
+      body = body.substring(0, body.length() - 1);
+    }
 
     // Parse key-value pairs
     for (String line : frontMatterBlock.split("\n")) {
