@@ -1934,6 +1934,27 @@ public class DetailFragment extends BaseFragment implements OnReminderPickedList
 
   @Override
   public void onCheckListChanged() {
+    // When the first checklist item is deleted via backspace,
+    // the library's focusView(FOCUS_UP) fails to find EditTextMultiLineNoEnter above,
+    // leaving no view focused.
+    // Detect this state and recover focus to the first remaining item
+    CheckListView checkListView = (CheckListView) toggleChecklistView;
+    int currentCount = mChecklistManager.getCount();
+    if (currentCount < contentLineCounter && mChecklistManager.getFocusedItemView() == null) {
+      if (currentCount > 0) {
+        for (int i = 0; i < checkListView.getChildCount(); i++) {
+         CheckListViewItem item = checkListView.getChildAt(i);
+          if (!item.isHintItem()) {
+            item.getEditText().requestFocus();
+            item.getEditText().setSelection(0);
+            break;
+          }
+        }
+      } else {
+        checkListView.addItem("", false, 0);
+        checkListView.getChildAt(0).getEditText().requestFocus();
+      }
+    }
     scrollContent();
   }
 
